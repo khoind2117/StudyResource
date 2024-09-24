@@ -1,0 +1,132 @@
+﻿@{
+    ViewData["Title"] = "Document";
+}
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - StudyResource</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="~/etrain-master/img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/owl.carousel.min.css">
+    <!-- themify CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/themify-icons.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/flaticon.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/magnific-popup.css">
+    <!-- swiper CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/slick.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/style.css">
+    <style>
+        body {
+        .upload_part {
+            padding: 60px 0;
+            background-color: #f8f9fa;
+            margin-top: 100px;
+        }
+
+        .upload_part h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #333;
+        }
+
+        .upload-form .form-control {
+            border-radius: 5px;
+            height: 45px;
+            font-size: 16px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .btn_1 {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .btn_1:hover {
+            background-color: #0056b3;
+        }
+
+        .input-group-append {
+            text-align: center;
+            margin-top: 20px; 
+        }
+
+        input[type="file"] {
+            padding: 6px;
+            font-size: 16px;
+            display: block;
+            margin: 0 auto;
+            width: 100%;
+            background-color: #f8f9fa;
+        }
+
+        }
+    </style>
+</head>
+
+<body>
+    <!-- upload documents start -->
+    <section class="upload_part">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="text-center">Tải lên tài liệu</h2>
+                    <form action="@Url.Action("Upload", "Document")" method="post" enctype="multipart/form-data" class="upload-form">
+                        <div class="input-group mb-3">
+                            <input type="file" class="form-control" name="documentFile" id="documentFile" aria-label="Upload">
+                        </div>
+                        <div class="input-group-append text-center">
+                            <button class="btn btn_1" type="submit" id="upload-btn">Tải lên</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- upload documents end -->
+
+    <!-- jquery plugins here-->
+    <!-- jquery -->
+    <script src="~/etrain-master/js/jquery-1.12.1.min.js"></script>
+    <!-- popper js -->
+    <script src="~/etrain-master/js/popper.min.js"></script>
+    <!-- bootstrap js -->
+    <script src="~/etrain-master/js/bootstrap.min.js"></script>
+    <!-- easing js -->
+    <script src="~/etrain-master/js/jquery.magnific-popup.js"></script>
+    <!-- swiper js -->
+    <script src="~/etrain-master/js/swiper.min.js"></script>
+    <!-- swiper js -->
+    <script src="~/etrain-master/js/masonry.pkgd.js"></script>
+    <!-- particles js -->
+    <script src="~/etrain-master/js/owl.carousel.min.js"></script>
+    <script src="~/etrain-master/js/jquery.nice-select.min.js"></script>
+    <!-- swiper js -->
+    <script src="~/etrain-master/js/slick.min.js"></script>
+    <script src="~/etrain-master/js/jquery.counterup.min.js"></script>
+    <script src="~/etrain-master/js/waypoints.min.js"></script>
+    <!-- custom js -->
+    <script src="~/etrain-master/js/custom.js"></script>
+</body>

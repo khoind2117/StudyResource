@@ -1,0 +1,337 @@
+﻿@{
+    ViewData["Title"] = "Document";
+}
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - StudyResource</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="~/etrain-master/img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/owl.carousel.min.css">
+    <!-- themify CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/themify-icons.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/flaticon.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/magnific-popup.css">
+    <!-- swiper CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/slick.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/style.css">
+    <style>
+        body {
+        .search_part {
+            padding: 60px 0; 
+            background-color: #f8f9fa; 
+            margin-top: 100px; 
+        }
+
+        .search_part h2 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .search-form {
+            max-width: 700px;
+            margin: 0 auto; 
+        }
+
+        .search-form .input-group {
+                box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-form .form-control {
+                height: 50px;
+                border-radius: 0;
+                font-size: 18px;
+        }
+
+        .search-form .btn {
+                height: 50px;
+                font-size: 18px;
+                background-color: #ff5f6d; 
+                color: #fff;
+                border: none;
+        }
+
+        .search-form .btn:hover {
+            background-color: #ff3f4d;
+        }
+
+        .category_menu {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .category_title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .category_list_main {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .category_item {
+            margin-bottom: 10px;
+        }
+
+        .category_item a {
+            color: #333;
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            padding: 8px 0;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .category_item a:hover {
+            color: #007bff;
+        }
+
+        .category_sublist {
+            list-style: none;
+            padding-left: 20px;
+            display: none;
+        }
+
+        .category_item:hover .category_sublist {
+            display: block; 
+        }
+
+        .category_sublist li {
+            margin-bottom: 5px;
+        }
+
+        .category_sublist li a {
+            font-size: 16px;
+            color: #555;
+            padding: 5px 0;
+        }
+
+        .category_sublist li a:hover {
+            color: #007bff;
+            padding-left: 5px;
+        }
+
+        }
+    </style>
+</head>
+
+<body>
+    <!-- search documents start -->
+    <section class="search_part">
+        <div class="container">
+            <div class="row">
+
+                <!-- categories -->
+
+                <div class="col-lg-3 col-md-4">
+                    <div class="category_menu">
+                        <h3 class="category_title">Danh mục tài liệu</h3>
+                        <ul class="category_list_main">
+
+                            <!-- tài liệu phổ thông -->
+                            <li class="category_item">
+                                <a href="#">Tài liệu phổ thông</a>
+                                <ul class="category_sublist">
+                                    <li><a href="#">Ngữ Văn</a></li>
+                                    <li><a href="#">Toán</a></li>
+                                    <li><a href="#">Lịch Sử</a></li>
+                                    <li><a href="#">Địa Lý</a></li>
+                                    <li><a href="#">Vật Lý</a></li>
+                                    <li><a href="#">Hóa Học</a></li>
+                                    <li><a href="#">Sinh Học</a></li>
+                                    <li><a href="#">Tiếng Anh</a></li>
+                                </ul>
+                            </li>
+
+                            <!-- tài liệu tham khảo -->
+                            <li class="category_item">
+                                <a href="#">Tài liệu tham khảo</a>
+                                <ul class="category_sublist">
+                                    <li><a href="#">Đề thi - Kiểm tra</a></li>
+                                    <li><a href="#">Bài tập SGK</a></li>
+                                    <li><a href="#">Ôn thi</a></li>
+                                    <li><a href="#">Tài liệu nâng cao</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- search -->
+
+                <div class="col-lg-9 col-md-8">
+                    <h2 class="text-center">Tìm kiếm tài liệu</h2>
+                    <form action="@Url.Action("Search", "Document")" method="get" class="search-form">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" name="query" placeholder="Nhập tên tài liệu hoặc môn học" aria-label="Search" aria-describedby="search-btn">
+                            <div class="input-group-append">
+                                <button class="btn btn_1" type="submit" id="search-btn">Tìm kiếm</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- search documents end -->
+
+    <!-- new documents start -->
+    <section class="feature_part">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6 col-xl-3 align-self-center">
+                    <div class="single_feature_text">
+                        <h2>Tài liệu <br> mới nhất</h2>
+                        <p>
+                            Dưới đây là các tài liệu mới được cập nhật.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-xl-3">
+                    <div class="single_feature">
+                        <div class="single_feature_part">
+                            <span class="single_feature_icon"><i class="ti-book"></i></span>
+                            <h4>Toán lớp 10</h4>
+                            <p>
+                                Các bài giảng và đề thi Toán lớp 10 cho kỳ thi học kỳ 1.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-xl-3">
+                    <div class="single_feature">
+                        <div class="single_feature_part">
+                            <span class="single_feature_icon"><i class="ti-book"></i></span>
+                            <h4>Văn lớp 11</h4>
+                            <p>
+                                Tài liệu ôn thi Ngữ Văn cho học sinh lớp 11.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-xl-3">
+                    <div class="single_feature">
+                        <div class="single_feature_part">
+                            <span class="single_feature_icon"><i class="ti-book"></i></span>
+                            <h4>Lịch sử lớp 12</h4>
+                            <p>
+                                Tài liệu ôn thi giữ kì môn Lịch sử lớp 12.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-12 text-center">
+                    <a href="@Url.Action("AllDocuments", "Document")" class="btn_1">Xem thêm tài liệu</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- new documents end -->
+
+    <!-- featured documents start -->
+    <section class="feature_part">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6 col-xl-3 align-self-center">
+                    <div class="single_feature_text">
+                        <h2>Tài liệu <br> nổi bật</h2>
+                        <p>
+                            Dưới đây là các tài liệu nổi bật.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-xl-3">
+                    <div class="single_feature">
+                        <div class="single_feature_part">
+                            <span class="single_feature_icon"><i class="ti-book"></i></span>
+                            <h4>Toán lớp 10</h4>
+                            <p>
+                                Các bài giảng và đề thi Toán lớp 10 cho kỳ thi học kỳ 1.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-xl-3">
+                    <div class="single_feature">
+                        <div class="single_feature_part">
+                            <span class="single_feature_icon"><i class="ti-book"></i></span>
+                            <h4>Văn lớp 11</h4>
+                            <p>
+                                Tài liệu ôn thi Ngữ Văn cho học sinh lớp 11.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-xl-3">
+                    <div class="single_feature">
+                        <div class="single_feature_part">
+                            <span class="single_feature_icon"><i class="ti-book"></i></span>
+                            <h4>Lịch sử lớp 12</h4>
+                            <p>
+                                Tài liệu ôn thi giữa kỳ môn Lịch sử lớp 12.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-12 text-center">
+                    <a href="@Url.Action("AllDocuments", "Document")" class="btn_1">Xem thêm tài liệu</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- featured documents end -->
+
+
+    <!-- jquery plugins here-->
+    <!-- jquery -->
+    <script src="~/etrain-master/js/jquery-1.12.1.min.js"></script>
+    <!-- popper js -->
+    <script src="~/etrain-master/js/popper.min.js"></script>
+    <!-- bootstrap js -->
+    <script src="~/etrain-master/js/bootstrap.min.js"></script>
+    <!-- easing js -->
+    <script src="~/etrain-master/js/jquery.magnific-popup.js"></script>
+    <!-- swiper js -->
+    <script src="~/etrain-master/js/swiper.min.js"></script>
+    <!-- swiper js -->
+    <script src="~/etrain-master/js/masonry.pkgd.js"></script>
+    <!-- particles js -->
+    <script src="~/etrain-master/js/owl.carousel.min.js"></script>
+    <script src="~/etrain-master/js/jquery.nice-select.min.js"></script>
+    <!-- swiper js -->
+    <script src="~/etrain-master/js/slick.min.js"></script>
+    <script src="~/etrain-master/js/jquery.counterup.min.js"></script>
+    <script src="~/etrain-master/js/waypoints.min.js"></script>
+    <!-- custom js -->
+    <script src="~/etrain-master/js/custom.js"></script>
+</body>
