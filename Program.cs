@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using StudyResource;
 using StudyResource.Data;
 using StudyResource.Models;
 
@@ -48,7 +49,27 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
        .AddCookie();
 #endregion
 
+#region Register Seed Service
+builder.Services.AddTransient<Seed>();
+#endregion
+
 var app = builder.Build();
+
+#region Handle Seed Data on Application Startup
+if (args.Length == 1 && args[0].ToLower() == "seeddata")
+    await SeedData(app);
+
+async Task SeedData(IHost app)
+{
+    var scopedFactory = app.Services.GetService<IServiceScopeFactory>();
+
+    using (var scope = scopedFactory.CreateScope())
+    {
+        var service = scope.ServiceProvider.GetService<Seed>();
+        await service.SeedApplicationDbContextAsync();
+    }
+}
+#endregion
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -65,8 +86,17 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapAreaControllerRoute(
+           name: "admin",
+           areaName: "Admin",
+           pattern: "Admin/{controller=Home}/{action=Index}/{id?}");
+
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+
+});
 
 app.Run();

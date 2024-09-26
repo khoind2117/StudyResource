@@ -23,6 +23,8 @@ namespace StudyResource.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             #region FluentAPI
 
             // Favorite (Pivot Table: User - Document) N-N Relationship
@@ -103,8 +105,6 @@ namespace StudyResource.Data
             });
 
             #endregion
-
-            base.OnModelCreating(modelBuilder);
         }
     }
 }
