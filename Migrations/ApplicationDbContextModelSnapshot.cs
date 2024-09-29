@@ -177,15 +177,12 @@ namespace StudyResource.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("GradeId")
+                    b.Property<int>("GradeSubjectId")
                         .HasColumnType("int");
 
                     b.Property<string>("Slug")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SubjectId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -201,9 +198,7 @@ namespace StudyResource.Migrations
 
                     b.HasIndex("DocumentTypeId");
 
-                    b.HasIndex("GradeId");
-
-                    b.HasIndex("SubjectId");
+                    b.HasIndex("GradeSubjectId");
 
                     b.ToTable("Document", (string)null);
                 });
@@ -297,6 +292,37 @@ namespace StudyResource.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Grade", (string)null);
+                });
+
+            modelBuilder.Entity("StudyResource.Models.GradeSubject", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GradeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GradeId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("GradeSubject", (string)null);
                 });
 
             modelBuilder.Entity("StudyResource.Models.Subject", b =>
@@ -452,23 +478,15 @@ namespace StudyResource.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("StudyResource.Models.Grade", "Grade")
+                    b.HasOne("StudyResource.Models.GradeSubject", "GradeSubject")
                         .WithMany("Documents")
-                        .HasForeignKey("GradeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("StudyResource.Models.Subject", "Subject")
-                        .WithMany("Documents")
-                        .HasForeignKey("SubjectId")
+                        .HasForeignKey("GradeSubjectId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("DocumentType");
 
-                    b.Navigation("Grade");
-
-                    b.Navigation("Subject");
+                    b.Navigation("GradeSubject");
                 });
 
             modelBuilder.Entity("StudyResource.Models.DownloadHistory", b =>
@@ -507,6 +525,25 @@ namespace StudyResource.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("StudyResource.Models.GradeSubject", b =>
+                {
+                    b.HasOne("StudyResource.Models.Grade", "Grade")
+                        .WithMany("GradeSubjects")
+                        .HasForeignKey("GradeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StudyResource.Models.Subject", "Subject")
+                        .WithMany("GradeSubjects")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Grade");
+
+                    b.Navigation("Subject");
+                });
+
             modelBuilder.Entity("StudyResource.Models.Document", b =>
                 {
                     b.Navigation("DownloadHistories");
@@ -521,12 +558,17 @@ namespace StudyResource.Migrations
 
             modelBuilder.Entity("StudyResource.Models.Grade", b =>
                 {
+                    b.Navigation("GradeSubjects");
+                });
+
+            modelBuilder.Entity("StudyResource.Models.GradeSubject", b =>
+                {
                     b.Navigation("Documents");
                 });
 
             modelBuilder.Entity("StudyResource.Models.Subject", b =>
                 {
-                    b.Navigation("Documents");
+                    b.Navigation("GradeSubjects");
                 });
 
             modelBuilder.Entity("StudyResource.Models.User", b =>
