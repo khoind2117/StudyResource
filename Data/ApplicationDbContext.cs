@@ -19,6 +19,7 @@ namespace StudyResource.Data
         public DbSet<DocumentType> DocumentTypes { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Grade> Grades { get; set; }
+        public DbSet<GradeSubject> GradeSubjects { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -44,7 +45,7 @@ namespace StudyResource.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // DownloadHistory (Pivot Table: User-Document
+            // DownloadHistory (Pivot Table: User-Document) N-N Relationship
             modelBuilder.Entity<DownloadHistory>(entity =>
             {
                 entity.ToTable("DownloadHistory").HasKey(dh => dh.Id);
@@ -84,27 +85,38 @@ namespace StudyResource.Data
             modelBuilder.Entity<Subject>(entity =>
             {
                 entity.ToTable("Subject").HasKey(s => s.Id);
-
-                // One-to-Many relationship with Document
-                entity.HasMany(s => s.Documents)
-                    .WithOne(d => d.Subject)
-                    .HasForeignKey(d => d.SubjectId)
-                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Grade
             modelBuilder.Entity<Grade>(entity =>
             {
                 entity.ToTable("Grade").HasKey(g => g.Id);
-
-                // One-to-Many relationship with Document
-                entity.HasMany(s => s.Documents)
-                    .WithOne(g => g.Grade)
-                    .HasForeignKey(d => d.GradeId)
-                    .OnDelete(DeleteBehavior.Restrict);
             });
 
-            #endregion
+            // GradeSubject (Pivot Table: Grade-Subject) N-N Relationship
+            modelBuilder.Entity<GradeSubject>(entity =>
+            {
+                entity.ToTable("GradeSubject").HasKey(gs => gs.Id);
+
+                // Many-to-One relationship with Grade
+                entity.HasOne(gs => gs.Grade)
+                    .WithMany(g => g.GradeSubjects)
+                    .HasForeignKey(gs => gs.GradeId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Many-to-One relationship with Subject
+                entity.HasOne(gs => gs.Subject)
+                    .WithMany(s => s.GradeSubjects)
+                    .HasForeignKey(gs => gs.SubjectId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // One-to-Many relationship with Document
+                entity.HasMany(gs => gs.Documents)
+                    .WithOne(d => d.GradeSubject)
+                    .HasForeignKey(d => d.GradeSubjectId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+        #endregion
         }
     }
 }
