@@ -11,11 +11,8 @@
         public required string FilePath { get; set; }
         public DateTime UploadDate { get; set; }
 
-        public int SubjectId { get; set; }
-        public virtual Subject? Subject { get; set; }
-
-        public int GradeId { get; set; }
-        public virtual Grade? Grade { get; set; }
+        public int GradeSubjectId { get; set; }
+        public virtual GradeSubject? GradeSubject { get; set; }
 
         public int DocumentTypeId { get; set; }
         public virtual DocumentType? DocumentType { get; set; }

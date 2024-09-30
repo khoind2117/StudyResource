@@ -32,7 +32,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
-    <Folder Include="ViewModels\" />
+    <Folder Include="Templates\" />
   </ItemGroup>
 
   <ItemGroup>
