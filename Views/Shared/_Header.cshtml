@@ -20,16 +20,13 @@
                             <li class="nav-item">
                                 <a asp-controller="Document" asp-action="Index" class="nav-link">Tài liệu</a>
                             </li>
-                            <li class="nav-item">
-                                <a asp-controller="Upload" asp-action="Index" class="nav-link">Upload</a>
-                            </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="blog.html" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Pages
+                                    Trang
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="">Single blog</a>
-                                    <a class="dropdown-item" href="">Elements</a>
+                                    <a asp-controller="Favorite" asp-action="Index" class="nav-link">Tài liệu yêu thích</a>
+                                    <a asp-controller="DownloadHistory" asp-action="Index" class="nav-link">Lịch sử tải</a>
                                 </div>
                             </li>
                             <li class="nav-item">

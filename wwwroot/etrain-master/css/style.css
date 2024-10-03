@@ -1,5 +1,5 @@
 /**************** extend css start ****************/
-@import url("https://fonts.googleapis.com/css?family=Open+Sans:800|Poppins:300,400,500,600,700,800|Roboto:300,400,500");
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:800|Montserrat :300,400,500,600,700,800|Roboto:300,400,500");
 /* line 2, E:/172 Etrain Education/172_Etrain_Education_html/sass/_extends.scss */
 .btn_1, .btn_2:hover, .main_menu .navbar-toggler:after, .banner_part .banner_text .btn_1, .feature_part .single_feature:hover span {
   background-image: linear-gradient(to left, #ee390f 0%, #f9b700 51%, #ee390f 100%);
@@ -16,10 +16,10 @@
 /**************** common css start ****************/
 /* line 3, E:/172 Etrain Education/172_Etrain_Education_html/sass/_common.scss */
 body {
-  font-family: "Roboto", sans-serif;
-  padding: 0;
-  margin: 0;
-  font-size: 14px;
+    font-family: "Roboto", sans-serif;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
 }
 
 /* line 9, E:/172 Etrain Education/172_Etrain_Education_html/sass/_common.scss */
@@ -151,8 +151,8 @@ a:hover {
 
 /* line 72, E:/172 Etrain Education/172_Etrain_Education_html/sass/_common.scss */
 h1, h2, h3, h4, h5, h6 {
-  color: #0c2e60;
-  font-family: "Poppins", sans-serif;
+    color: #0c2e60;
+    font-family: "Montserrat ", sans-serif;
 }
 
 /* line 76, E:/172 Etrain Education/172_Etrain_Education_html/sass/_common.scss */
@@ -2879,12 +2879,12 @@ ul {
 
 /* line 42, E:/172 Etrain Education/172_Etrain_Education_html/sass/_about.scss */
 .about_part .about_text h4 {
-  margin-bottom: 32px;
-  color: #ff7e5f;
-  font-size: 22px;
-  font-style: italic;
-  font-family: "Poppins", sans-serif;
-  font-weight: 300;
+    margin-bottom: 32px;
+    color: #ff7e5f;
+    font-size: 22px;
+    font-style: italic;
+    font-family: "Montserrat ", sans-serif;
+    font-weight: 300;
 }
 
 @media (max-width: 576px) {
@@ -3840,10 +3840,10 @@ ul {
 
 /* line 49, E:/172 Etrain Education/172_Etrain_Education_html/sass/_member_counter.scss */
 .member_counter .single_member_counter span {
-  font-size: 60px;
-  font-weight: 700;
-  color: #fff;
-  font-style: "Poppins", sans-serif;
+    font-size: 60px;
+    font-weight: 700;
+    color: #fff;
+    font-style: "Montserrat ", sans-serif;
 }
 
 @media (max-width: 576px) {
