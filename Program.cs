@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using StudyResource;
 using StudyResource.Data;
 using StudyResource.Models;
+using StudyResource.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +48,11 @@ builder.Services.AddSession(options =>
 });
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
        .AddCookie();
+#endregion
+
+#region Service
+builder.Services.AddScoped<GoogleDriveService>();
+builder.Services.AddScoped<SlugService>();
 #endregion
 
 #region Register Seed Service

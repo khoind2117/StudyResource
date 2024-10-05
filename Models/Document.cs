@@ -8,7 +8,7 @@
         public required string Description { get; set; }
         public int Views { get; set; }
         public int Downloads { get; set; }
-        public required string FilePath { get; set; }
+        public required string GoogleDriveId { get; set; }
         public DateTime UploadDate { get; set; }
 
         public int GradeSubjectId { get; set; }

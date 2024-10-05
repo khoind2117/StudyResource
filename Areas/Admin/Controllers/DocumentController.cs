@@ -35,8 +35,7 @@ namespace StudyResource.Areas.Admin.Controllers
             return View(document);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Create()
+        private async Task PopulateSelectLists()
         {
             var grades = await _context.Grades.ToListAsync();
             var subjects = await _context.Subjects.ToListAsync();
@@ -47,6 +46,13 @@ namespace StudyResource.Areas.Admin.Controllers
             ViewBag.Subjects = new SelectList(subjects, "Id", "Name");
             ViewBag.GradeSubjects = gradeSubjects;
             ViewBag.DocumentTypes = new SelectList(documentTypes, "Id", "Name");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            await PopulateSelectLists();
+
             return View();
         }
 
@@ -55,34 +61,33 @@ namespace StudyResource.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                var filePath = string.Empty;
+                var slug = string.Empty;
+                var fileId = string.Empty;
 
                 if (model.FileUpload != null && model.FileUpload.Length > 0)
                 {
-                    model.Slug = _slugService.GenerateSlug(model.Title);
+                    slug = _slugService.GenerateSlug(model.Title);
                     var fileExtension = Path.GetExtension(model.FileUpload.FileName);
 
-                    var tempFileName = $"{model.Slug}{fileExtension}";
+                    var tempFileName = $"{slug}{fileExtension}";
                     var tempPath = Path.Combine(Path.GetTempPath(), tempFileName);
                     using (var stream = new FileStream(tempPath, FileMode.Create))
                     {
                         await model.FileUpload.CopyToAsync(stream);
                     }
 
-                    var fileId = await _googleDriveService.UploadFileAsync(tempPath);
-                    filePath = _googleDriveService.GetFileLink(fileId);
-                    model.UploadDate = DateTime.Now;
+                    fileId = await _googleDriveService.UploadFileAsync(tempPath);
                 }
 
                 var document = new Document
                 {
                     Title = model.Title,
-                    Slug = model.Slug,
+                    Slug = slug,
                     Description = model.Description,
-                    Views = model.Views,
-                    Downloads = model.Downloads,
-                    FilePath = filePath,
-                    UploadDate = model.UploadDate,
+                    Views = 0,
+                    Downloads = 0,
+                    GoogleDriveId = fileId,
+                    UploadDate = DateTime.Now,
                     GradeSubjectId = model.GradeSubjectId,
                     DocumentTypeId = model.DocumentTypeId
                 };
@@ -92,6 +97,8 @@ namespace StudyResource.Areas.Admin.Controllers
 
                 return RedirectToAction("Create");
             }
+
+            await PopulateSelectLists();
 
             return View(model);
         }

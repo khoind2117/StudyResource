@@ -22,7 +22,7 @@ namespace StudyResource.Services
                 ClientId = clientId,
                 ClientSecret = clientSecret
             },
-            new[] { DriveService.Scope.DriveFile },
+            scopes,
             "user",
             CancellationToken.None).Result;
 
@@ -31,7 +31,6 @@ namespace StudyResource.Services
                 HttpClientInitializer = credential,
                 ApplicationName = "Study Resources"
             });
-
         }
 
         public async Task<string> UploadFileAsync(string path)
@@ -65,10 +64,19 @@ namespace StudyResource.Services
             }
         }
 
-        public string GetFileLink(string fileId)
+        public string GetDownloadLink(string fileId)
         {
-            // This link will download the file directly from Google Drive
             return $"https://drive.google.com/uc?export=download&id={fileId}";
+        }
+
+        public string GetViewLink(string fileId)
+        {
+            return $"https://drive.google.com/file/d/{fileId}/view";
+        }
+
+        public string GetPreviewLink(string fileId)
+        {
+            return $"https://drive.google.com/file/d/{fileId}/preview";
         }
 
         private string GetMimeType(string fileName)
