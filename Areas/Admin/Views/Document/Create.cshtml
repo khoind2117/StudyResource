@@ -1,47 +1,88 @@
-﻿@* @model YourNamespace.Models.Document
+﻿@using StudyResource.ViewModels.Document
+@model CreateDocumentViewModel
 
-<form asp-action="Create" method="post" enctype="multipart/form-data">
-    <div class="mb-3">
-        <label asp-for="Title" class="form-label">Title</label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
+@{
+    Layout = "_AdminLayout";
+}
 
-    <div class="mb-3">
-        <label asp-for="Slug" class="form-label">Slug</label>
-        <input asp-for="Slug" class="form-control" />
-        <span asp-validation-for="Slug" class="text-danger"></span>
-    </div>
+<div class="container-fluid">
+    <h3>Tạo tài liệu</h3>
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label asp-for="Title" class="form-label">Tiêu đề</label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="Description" class="form-label">Description</label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Mô tả</label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="FilePath" class="form-label">File Upload</label>
-        <input asp-for="FilePath" class="form-control" type="file" />
-        <span asp-validation-for="FilePath" class="text-danger"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="FileUpload" class="form-label">Tải lên tài liệu</label>
+            <input asp-for="FileUpload" class="form-control" type="file" />
+            <span asp-validation-for="FileUpload" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="SubjectId" class="form-label">Subject</label>
-        <select asp-for="SubjectId" class="form-select" asp-items="ViewBag.Subjects"></select>
-        <span asp-validation-for="SubjectId" class="text-danger"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="GradeId" class="form-label">Lớp học</label>
+            <select asp-for="GradeId" class="form-select" id="gradeSelect">
+                <option value="">--Chọn lớp học--</option>
+                @foreach (var grade in ViewBag.Grades)
+                {
+                    <option value="@grade.Value">@grade.Text</option>
+                }
+            </select>
+            <span asp-validation-for="GradeId" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="GradeId" class="form-label">Grade</label>
-        <select asp-for="GradeId" class="form-select" asp-items="ViewBag.Grades"></select>
-        <span asp-validation-for="GradeId" class="text-danger"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="GradeSubjectId" class="form-label">Môn học</label>
+            <select asp-for="GradeSubjectId" class="form-select" id="gradesubjectSelect">
+                <option value="">--Chọn môn học--</option>
+            </select>
+            <span asp-validation-for="GradeSubjectId" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="DocumentTypeId" class="form-label">Document Type</label>
-        <select asp-for="DocumentTypeId" class="form-select" asp-items="ViewBag.DocumentTypes"></select>
-        <span asp-validation-for="DocumentTypeId" class="text-danger"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="DocumentTypeId" class="form-label">Loại tài liệu</label>
+            <select asp-for="DocumentTypeId" class="form-select">
+                <option value="">--Chọn loại tài liệu--</option>
+                @foreach (var grade in ViewBag.DocumentTypes)
+                {
+                    <option value="@grade.Value">@grade.Text</option>
+                }
+            </select>
+            <span asp-validation-for="DocumentTypeId" class="text-danger"></span>
+        </div>
 
-    <button type="submit" class="btn btn-primary">Create</button>
-</form> *@
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        const gradeSubjects = @Html.Raw(Json.Serialize(ViewBag.GradeSubjects)); // Chuyển đổi sang JSON
+
+        document.getElementById("gradeSelect").addEventListener("change", function() {
+            const gradeId = this.value;
+            const gradesubjectSelect = document.getElementById("gradesubjectSelect");
+
+            // Xóa tất cả các tùy chọn hiện tại trong dropdown môn học
+            gradesubjectSelect.innerHTML = '<option value="">--Chọn môn học--</option>';
+
+            // Lọc các GradeSubject dựa trên GradeId
+            const filteredSubjects = gradeSubjects.filter(gs => gs.gradeId == gradeId);
+
+            // Thêm các tùy chọn vào dropdown môn học
+            filteredSubjects.forEach(gs => {
+                const option = document.createElement("option");
+                option.value = gs.id; // Giá trị của GradeSubject
+                option.textContent = gs.name; // Tên của GradeSubject
+                subjectSelect.appendChild(option);
+            });
+        });
+    </script>
+}

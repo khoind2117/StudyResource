@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Modernize Free</title>
+    <title>Admin</title>
     <link rel="shortcut icon" type="image/png" href="~/admin-template/images/logos/favicon.png" />
     <link rel="stylesheet" href="~/admin-template/css/styles.min.css" />
 </head>
@@ -29,6 +29,8 @@
     <script src="~/admin-template/libs/apexcharts/dist/apexcharts.min.js"></script>
     <script src="~/admin-template/libs/simplebar/dist/simplebar.js"></script>
     <script src="~/admin-template/js/dashboard.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 
 </html>
