@@ -39,6 +39,9 @@ namespace StudyResource.Services
                          .Replace("ú", "u").Replace("ù", "u").Replace("ủ", "u").Replace("ũ", "u").Replace("ụ", "u")
                          .Replace("ư", "u").Replace("ứ", "u").Replace("ừ", "u").Replace("ử", "u").Replace("ữ", "u").Replace("ự", "u");
 
+            // Thay thế ký tự gạch dưới thành gạch ngang
+            title = title.Replace("_", "-");
+
             // Xóa ký tự đặc biệt (giữ lại 0-9, a-z, dấu gạch nối và khoảng trắng)
             title = Regex.Replace(title, @"[^0-9a-z-\s]", "");
 
