@@ -39,7 +39,7 @@ input:hover, input:focus {
 
 /* line 18, E:/172 Etrain Education/172_Etrain_Education_html/sass/_common.scss */
 .section_padding {
-  padding: 140px 0px;
+  padding: 40px 0px;
 }
 
 @media only screen and (min-width: 992px) and (max-width: 1200px) {
@@ -105,7 +105,7 @@ input:hover, input:focus {
 
 /* line 48, E:/172 Etrain Education/172_Etrain_Education_html/sass/_common.scss */
 .padding_top {
-  padding-top: 140px;
+    padding-top: 40px;
 }
 
 @media only screen and (min-width: 992px) and (max-width: 1200px) {
@@ -160,7 +160,7 @@ p {
   color: #666666;
   font-family: "Roboto", sans-serif;
   line-height: 1.929;
-  font-size: 14px;
+  font-size: 18px;
   margin-bottom: 0px;
   color: #888888;
 }
@@ -2635,7 +2635,7 @@ ul {
 
 /* line 106, E:/172 Etrain Education/172_Etrain_Education_html/sass/_banner.scss */
 .banner_part .banner_text p {
-  font-size: 15px;
+  font-size: 18px;
   line-height: 1.8;
   font-family: "Roboto", sans-serif;
   color: #777777;
@@ -4202,7 +4202,7 @@ ul {
 
 /* line 40, E:/172 Etrain Education/172_Etrain_Education_html/sass/_cource_details.scss */
 .desc p {
-  font-size: 12px !important;
+  font-size: 1px !important;
 }
 
 /* line 47, E:/172 Etrain Education/172_Etrain_Education_html/sass/_cource_details.scss */
