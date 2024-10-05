@@ -1,25 +1,38 @@
 using Microsoft.AspNetCore.Mvc;
 using StudyResource.Models;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Identity;
+using StudyResource.Data;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace StudyResource.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ApplicationDbContext context, ILogger<HomeController> logger)
         {
+            _context = context;
             _logger = logger;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var documents = _context.Documents
+                .Include(d => d.GradeSubject)         
+                .Include(d => d.DocumentType)  
+                .Take(6)                        
+                .ToList();
+
+            return View(documents);
         }
 
         public IActionResult Privacy()
         {
+
             return View();
         }
 
