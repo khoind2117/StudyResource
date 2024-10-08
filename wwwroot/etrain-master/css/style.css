@@ -1,4 +1,4 @@
-/**************** extend css start ****************/
+﻿/**************** extend css start ****************/
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:800|Montserrat :300,400,500,600,700,800|Roboto:300,400,500");
 /* line 2, E:/172 Etrain Education/172_Etrain_Education_html/sass/_extends.scss */
 .btn_1, .btn_2:hover, .main_menu .navbar-toggler:after, .banner_part .banner_text .btn_1, .feature_part .single_feature:hover span {
@@ -157,12 +157,12 @@ h1, h2, h3, h4, h5, h6 {
 
 /* line 76, E:/172 Etrain Education/172_Etrain_Education_html/sass/_common.scss */
 p {
-  color: #666666;
-  font-family: "Roboto", sans-serif;
-  line-height: 1.929;
-  font-size: 18px;
-  margin-bottom: 0px;
-  color: #888888;
+    color: #666666;
+    font-family: "Roboto", sans-serif;
+    line-height: 1.929;
+    font-size: 18px;
+    margin-bottom: 0px;
+    color: #888888;
 }
 
 /* line 85, E:/172 Etrain Education/172_Etrain_Education_html/sass/_common.scss */
@@ -6408,18 +6408,18 @@ h1, h2, h3, h4, h5, h6 {
 
 /* line 39, E:/172 Etrain Education/172_Etrain_Education_html/sass/_blog_part.scss */
 .blog_part .single-home-blog .card {
-  border-radius: 0px;
-  background-color: transparent;
-  position: relative;
+    border-radius: 0px;
+    background-color: transparent;
+    position: relative;
 }
 
 /* line 44, E:/172 Etrain Education/172_Etrain_Education_html/sass/_blog_part.scss */
 .blog_part .single-home-blog .card .card-body {
-  padding: 35px 30px 23px;
-  background-color: #fff;
-  -webkit-transition: 0.5s;
-  transition: 0.5s;
-  border: 1px solid #edeff2;
+    padding: 35px 30px 23px;
+    background-color: #fff;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    border: 1px solid #edeff2;
 }
 
 /* line 49, E:/172 Etrain Education/172_Etrain_Education_html/sass/_blog_part.scss */
