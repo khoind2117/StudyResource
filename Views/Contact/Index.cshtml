@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Document";
+    ViewData["Title"] = "Contact";
 }
 
 <head>
@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="~/etrain-master/css/slick.css">
     <!-- style CSS -->
     <link rel="stylesheet" href="~/etrain-master/css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
@@ -47,34 +48,24 @@
                     <h2 class="contact-title">Liên hệ với chúng tôi</h2>
                 </div>
                 <div class="col-lg-8">
-                    <form class="form-contact contact_form" action="" method="post" id="contactForm" novalidate="novalidate">
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-group">
-
-                                    <textarea class="form-control w-100" name="message" id="message" cols="30" rows="9" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter Message'" placeholder='Nhập lời nhắn'></textarea>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <input class="form-control" name="name" id="name" type="text" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter your name'" placeholder='Nhập tên của bạn'>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <input class="form-control" name="email" id="email" type="email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter email address'" placeholder='Nhập địa chỉ email'>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <input class="form-control" name="subject" id="subject" type="text" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter Subject'" placeholder='Nhập môn học'>
-                                </div>
-                            </div>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <input class="form-control" name="Name" type="text" placeholder="Nhập tên của bạn">
                         </div>
-                        <div class="form-group mt-3">
+                        <div class="form-group">
+                            <input class="form-control" name="Email" type="email" placeholder="Nhập địa chỉ email">
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" name="Subject" type="text" placeholder="Nhập môn học">
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" name="Message" placeholder="Nhập lời nhắn"></textarea>
+                        </div>
+                        <div class="form-group">
                             <button type="submit" class="button button-contactForm btn_1">Gửi</button>
                         </div>
                     </form>
+                    <div id="responseMessage" style="margin-top: 20px;"></div>
                 </div>
                 <div class="col-lg-4">
                     <div class="media contact-info">
@@ -103,7 +94,6 @@
         </div>
     </section>
     <!-- contact end -->
-
     <!-- jquery plugins here-->
     <!-- jquery -->
     <script src="~/etrain-master/js/jquery-1.12.1.min.js"></script>
@@ -115,15 +105,43 @@
     <script src="~/etrain-master/js/jquery.magnific-popup.js"></script>
     <!-- swiper js -->
     <script src="~/etrain-master/js/swiper.min.js"></script>
-    <!-- swiper js -->
+    <!-- masonry js -->
     <script src="~/etrain-master/js/masonry.pkgd.js"></script>
     <!-- particles js -->
     <script src="~/etrain-master/js/owl.carousel.min.js"></script>
     <script src="~/etrain-master/js/jquery.nice-select.min.js"></script>
-    <!-- swiper js -->
+    <!-- slick js -->
     <script src="~/etrain-master/js/slick.min.js"></script>
     <script src="~/etrain-master/js/jquery.counterup.min.js"></script>
     <script src="~/etrain-master/js/waypoints.min.js"></script>
     <!-- custom js -->
     <script src="~/etrain-master/js/custom.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#contactForm").on("submit", function (event) {
+                event.preventDefault(); // Ngăn chặn gửi form mặc định
+
+                $.ajax({
+                    url: '@Url.Action("SubmitContactForm", "Contact")',
+                    type: 'POST',
+                    data: $(this).serialize(), // Lấy dữ liệu từ form
+                    success: function (response) {
+                        // Hiển thị thông báo dựa trên phản hồi
+                        $("#responseMessage").text(response.message);
+                        if (response.success) {
+                            $("#responseMessage").css("color", "green");
+                        } else {
+                            $("#responseMessage").css("color", "red");
+                        }
+                        $("#contactForm")[0].reset(); // Đặt lại biểu mẫu
+                    },
+                    error: function () {
+                        $("#responseMessage").text("Có lỗi xảy ra. Vui lòng thử lại.");
+                        $("#responseMessage").css("color", "red");
+                    }
+                });
+            });
+        });
+    </script>
 </body>
