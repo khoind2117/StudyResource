@@ -9,12 +9,14 @@ namespace StudyResource.Services
     public class GoogleDriveService
     {
         private readonly DriveService _driveService;
+        private readonly string apiKey;
         public GoogleDriveService(IConfiguration configuration)
         {
-            string[] scopes = { DriveService.Scope.Drive, DriveService.Scope.DriveFile };
+            string[] scopes = { DriveService.Scope.Drive, DriveService.Scope.DriveFile, DriveService.Scope.DriveReadonly };
 
             var clientId = configuration["GoogleDrive:ClientId"];
             var clientSecret = configuration["GoogleDrive:ClientSecret"];
+            apiKey = configuration["GoogleDrive:ApiKey"];
 
             var credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
             new ClientSecrets
@@ -64,9 +66,65 @@ namespace StudyResource.Services
             }
         }
 
-        public string GetDownloadLink(string fileId)
+        public async Task<bool> DeleteFileAsync(string fileId)
         {
-            return $"https://drive.google.com/uc?export=download&id={fileId}";
+            try
+            {
+                await _driveService.Files.Delete(fileId).ExecuteAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting file: {ex.Message}");
+                return false;
+            }
+        }
+
+        // Use for uploading file with code
+        // Using OAuth 2.0
+        public async Task<Stream> DownloadFileAsync(string fileId)
+        {
+            try
+            {
+                var request = _driveService.Files.Get(fileId);
+                var stream = new MemoryStream();
+                await request.DownloadAsync(stream);
+                stream.Position = 0;
+                if (stream.Length == 0)
+                {
+                    throw new Exception("File size is zero bytes.");
+                }
+                return stream;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error downloading file: {ex.Message}");
+                return null;
+            }
+        }
+
+        // Use for uploading file manually
+        // Using API Key
+        public async Task<Stream> DownloadFileWithApiKeyAsync(string fileId)
+        {
+            var requestUri = $"https://www.googleapis.com/drive/v3/files/{fileId}?alt=media&key={apiKey}";
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var response = await httpClient.GetAsync(requestUri);
+                    response.EnsureSuccessStatusCode();
+
+                    var stream = await response.Content.ReadAsStreamAsync();
+                    return stream;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error downloading file: {ex.Message}");
+                return null;
+            }
         }
 
         public string GetViewLink(string fileId)

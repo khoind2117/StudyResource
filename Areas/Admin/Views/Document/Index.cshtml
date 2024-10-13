@@ -6,7 +6,7 @@
 
 <div class="container-fluid">
     <h3>Quản lý tài liệu</h3>
-    <a class="btn btn-primary">Tạo tài liệu</a>
+    <a asp-area="Admin" asp-controller="Document" asp-action="Create" class="btn btn-primary mb-3">Tạo tài liệu</a>
     <table class="table table-striped table-bordered">
         <thead class="bg-primary text-white">
             <tr >
@@ -39,9 +39,10 @@
                     <td>@doc.UploadDate.ToString("dd/MM/yyyy")</td>
                     <td>
                         <a class="btn btn-info btn-sm" href="@Url.Action("Details", "Document", new { id = doc.Id })">Chi tiết</a>
-                        <a class="btn btn-warning btn-sm" href="@Url.Action("Edit", "Document", new { id = doc.Id })">Cập nhật</a>
-                        <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "Document", new { id = doc.Id })"
-                            onclick="return confirm('Bạn có chắc muốn xóa tài liệu này?');">Xóa</a>
+                        <a class="btn btn-warning btn-sm" href="@Url.Action("Update", "Document", new { id = doc.Id })">Cập nhật</a>
+                        <a class="btn btn-danger btn-sm"
+                            href="javascript:void(0);"
+                            onclick="confirmDelete('@Url.Action("Delete", "Document", new { id = doc.Id })');">Xóa</a>
                     </td>
                 </tr>
             }
@@ -49,3 +50,52 @@
         </tbody>
     </table>
 </div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(url) {
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Tài liệu này sẽ bị xóa vĩnh viễn!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Có, xóa nó!',
+                cancelButtonText: 'Không, giữ nó!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Tài liệu đang được xóa...',
+                        text: 'Vui lòng chờ trong giây lát.',
+                        allowOutsideClick: false,
+                        onBeforeOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        success: function (response) {
+                            Swal.fire(
+                                'Đã xóa!',
+                                'Tài liệu đã được xóa.',
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            Swal.fire(
+                                'Lỗi!',
+                                'Có lỗi xảy ra khi xóa tài liệu.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}
