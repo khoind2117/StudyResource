@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/wwwroot/js/pdfviewer.js
+/Areas/Admin/Views/Document/Ebook.cshtml
+/Areas/Admin/Views/Document/PDFViewer.cshtml

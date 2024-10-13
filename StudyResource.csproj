@@ -9,15 +9,25 @@
 
   <ItemGroup>
     <Compile Remove="Templates\**" />
+    <Compile Remove="wwwroot\lib\pdfjs-4.7.76-dist\**" />
+    <Compile Remove="wwwroot\turn.js-5\**" />
     <Content Remove="Templates\**" />
+    <Content Remove="wwwroot\lib\pdfjs-4.7.76-dist\**" />
+    <Content Remove="wwwroot\turn.js-5\**" />
     <EmbeddedResource Remove="Templates\**" />
+    <EmbeddedResource Remove="wwwroot\lib\pdfjs-4.7.76-dist\**" />
+    <EmbeddedResource Remove="wwwroot\turn.js-5\**" />
     <None Remove="Templates\**" />
+    <None Remove="wwwroot\lib\pdfjs-4.7.76-dist\**" />
+    <None Remove="wwwroot\turn.js-5\**" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CloudinaryDotNet" Version="1.26.2" />
     <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
     <PackageReference Include="Google.Apis.Drive.v3" Version="1.68.0.3544" />
+    <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">

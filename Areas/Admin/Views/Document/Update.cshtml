@@ -1,13 +1,23 @@
 ﻿@using StudyResource.ViewModels.Document
-@model CreateDocumentViewModel
+@model UpdateDocumentViewModel
 
 @{
     Layout = "_AdminLayout";
 }
 
 <div class="container-fluid">
-    <h3>Tạo tài liệu</h3>
-    <form asp-action="Create" method="post" enctype="multipart/form-data">
+    <h3>Cập nhật tài liệu</h3>
+    <div>
+        <label>Tài liệu hiện tại:</label>
+        <a href="https://drive.google.com/file/d/@Model.GoogleDriveId/view" target="_blank">
+            <strong>Xem tệp trên Google Drive</strong>
+        </a>
+        <p>
+            <small>ID của tài liệu trên Google Drive: <code id="driveId">@Model.GoogleDriveId</code></small>
+            <button type="button" onclick="copyToClipboard()">Copy</button>
+        </p>
+    </div>
+    <form asp-action="Update" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label asp-for="Title" class="form-label">Tiêu đề</label>
             <input asp-for="Title" class="form-control" />
@@ -42,6 +52,10 @@
             <label asp-for="GradeSubjectId" class="form-label">Môn học</label>
             <select asp-for="GradeSubjectId" class="form-select" id="gradesubjectSelect">
                 <option value="">--Chọn môn học--</option>
+                @foreach (var gradeSubject in ViewBag.GradeSubjects)
+                {
+                    <option value="@gradeSubject.Value">@gradeSubject.Text</option>
+                }
             </select>
             <span asp-validation-for="GradeSubjectId" class="text-danger"></span>
         </div>
@@ -58,7 +72,7 @@
             <span asp-validation-for="DocumentTypeId" class="text-danger"></span>
         </div>
 
-        <button type="submit" class="btn btn-primary">Tạo</button>
+        <button type="submit" class="btn btn-primary">Cập nhật</button>
     </form>
 </div>
 
@@ -81,5 +95,13 @@
                 gradesubjectSelect.appendChild(option);
             });
         });
+    </script>
+    <script>
+        function copyToClipboard() {
+            const driveId = document.getElementById("driveId").innerText;
+            navigator.clipboard.writeText(driveId).then(() => {
+                alert("Google Drive ID đã được sao chép!");
+            });
+        }
     </script>
 }
