@@ -1,0 +1,34 @@
+﻿@using StudyResource.ViewModels.Document
+@model UploadCsvViewModel
+
+@{
+    Layout = "_AdminLayout";
+}
+<div class="container-fluid">
+    <h2>Nhập tài liệu từ tệp CSV</h2>
+    <form asp-action="UploadCsv" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label asp-for="CsvFile" class="control-label"></label>
+            <input asp-for="CsvFile" type="file" class="form-control" />
+            <span asp-validation-for="CsvFile" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Tải lên</button>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var errorList = @Html.Raw(Json.Serialize(TempData["ErrorList"]));
+            if (errorList && errorList.length > 0) {
+                let errorMessage = errorList.join('<br/>');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi khi nhập dữ liệu',
+                    html: errorMessage,
+                    confirmButtonText: 'Đã hiểu'
+                });
+            }
+        });
+    </script>
+}

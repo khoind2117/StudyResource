@@ -1,0 +1,21 @@
+﻿@using StudyResource.ViewModels.DocumentType
+@model UpdateDocumentTypeViewModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Cập nhật loại tài liệu";
+}
+
+<div class="container-fluid">
+    <h3>@ViewData["Title"]</h3>
+    <form asp-action="Update" method="post">
+        <div class="form-group mb-3">
+            <label asp-for="Name" class="form-label">Tên loại tài liệu</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Cập nhật</button>
+        <a asp-action="Index" class="btn btn-secondary mx-3">Quay lại</a>
+    </form>
+</div>

@@ -1,11 +1,13 @@
-﻿namespace StudyResource.Models
+﻿using CsvHelper.Configuration.Attributes;
+
+namespace StudyResource.Models
 {
     public class Document
     {
         public int Id { get; set; }
         public required string Title { get; set; }
         public required string Slug { get; set; }
-        public required string Description { get; set; }
+        public required string Description { get; set; } = string.Empty;
         public int Views { get; set; }
         public int Downloads { get; set; }
         public required string GoogleDriveId { get; set; }
