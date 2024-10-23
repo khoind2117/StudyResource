@@ -17,5 +17,8 @@ namespace StudyResource.ViewModels.Document
 
         public int DocumentTypeId { get; set; }
         public virtual Models.DocumentType? DocumentType { get; set; }
+
+        public int? SetId { get; set; }
+        public virtual Set? Set { get; set; }
     }
 }

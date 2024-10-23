@@ -12,6 +12,7 @@ namespace StudyResource.Services
             Map(m => m.GoogleDriveId).Name("GoogleDriveId");
             Map(m => m.GradeSubject).Name("Môn học + lớp");
             Map(m => m.DocumentType).Name("Loại tài liệu");
+            Map(m => m.Set).Name("Bộ sách");
         }
     }
 }

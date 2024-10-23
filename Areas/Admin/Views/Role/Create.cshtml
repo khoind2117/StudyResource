@@ -1,23 +1,31 @@
-﻿@using StudyResource.ViewModels.DocumentType
-@model CreateDocumentTypeViewModel
+﻿@model string
 
 @{
     Layout = "_AdminLayout";
-    ViewData["Title"] = "Tạo Loại Tài Liệu";
+    ViewData["Title"] = "Thêm Vai Trò";
 }
 
 <div class="container-fluid">
-    <h3>@ViewData["Title"]</h3>
-    <form asp-action="create" method="post">
-        <div class="form-group mb-3">
-            <label asp-for="Name" class="form-label">Tên Loại Tài Liệu</label>
-            <input asp-for="Name" class="form-control" />
-            <span asp-validation-for="Name" class="text-danger"></span>
-        </div>
+    <h2>@ViewData["Title"]</h2>
 
-        <button type="submit" class="btn btn-primary">Tạo</button>
+    <form asp-action="Create" method="post" asp-antiforgery="true">
+        <div class="form-group mb-3">
+            <label for="roleName">Tên vai trò</label>
+            <input type="text" class="form-control" id="roleName" name="roleName" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Thêm vai trò</button>
         <a asp-action="Index" class="btn btn-secondary mx-3">Quay lại</a>
     </form>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger mt-2">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <p>@error.ErrorMessage</p>
+            }
+        </div>
+    }
 </div>
 
 @section Scripts {

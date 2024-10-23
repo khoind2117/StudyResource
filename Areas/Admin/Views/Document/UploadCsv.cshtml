@@ -7,7 +7,7 @@
 <div class="container-fluid">
     <h2>Nhập tài liệu từ tệp CSV</h2>
     <form asp-action="UploadCsv" method="post" enctype="multipart/form-data">
-        <div class="form-group">
+        <div class="form-group mb-3">
             <label asp-for="CsvFile" class="control-label"></label>
             <input asp-for="CsvFile" type="file" class="form-control" />
             <span asp-validation-for="CsvFile" class="text-danger"></span>
@@ -18,14 +18,27 @@
 
 @section Scripts {
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             var errorList = @Html.Raw(Json.Serialize(TempData["ErrorList"]));
+
             if (errorList && errorList.length > 0) {
-                let errorMessage = errorList.join('<br/>');
+                let generalMessage = '<strong>Một số dữ liệu đã được nhập thành công.</strong><br/><br/>';
+
+                let errorMessage = generalMessage + 'Những hàng sau <strong>gặp lỗi</strong> và <strong>không</strong> thể nhập:<br/><br/>' + errorList.join('<br/>');
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi khi nhập dữ liệu',
+                    icon: 'warning',
+                    title: 'Cảnh báo khi nhập dữ liệu',
                     html: errorMessage,
+                    confirmButtonText: 'Đã hiểu'
+                });
+            }
+
+            var successMessage = @Html.Raw(Json.Serialize(TempData["SuccessMessage"]));
+            if (successMessage && successMessage.length > 0) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thêm dữ liệu thành công',
+                    text: successMessage,
                     confirmButtonText: 'Đã hiểu'
                 });
             }

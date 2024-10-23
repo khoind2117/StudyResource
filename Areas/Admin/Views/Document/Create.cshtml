@@ -58,6 +58,18 @@
             <span asp-validation-for="DocumentTypeId" class="text-danger"></span>
         </div>
 
+        <div class="mb-3">
+            <label asp-for="SetId" class="form-label">Bộ sách</label>
+            <select asp-for="SetId" class="form-select">
+                <option value="">--Chọn bộ sách--</option>
+                @foreach (var set in ViewBag.Sets)
+                {
+                    <option value="@set.Value">@set.Text</option>
+                }
+            </select>
+            <span asp-validation-for="SetId" class="text-danger"></span>
+        </div>
+
         <button type="submit" class="btn btn-primary">Tạo</button>
         <a asp-area="Admin" asp-controller="Document" asp-action="Index" class="btn btn-secondary mx-3">Quay lại</a>
     </form>
@@ -83,4 +95,25 @@
             });
         });
     </script>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+            Toast.fire({
+                icon: "success",
+                title: "@TempData["SuccessMessage"]"
+            });
+        </script>
+    }
 }
