@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CsvHelper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StudyResource.Data;
 using StudyResource.Models;
 using StudyResource.Services;
 using StudyResource.ViewModels.Document;
+using System.Globalization;
 
 namespace StudyResource.Areas.Admin.Controllers
 {
@@ -31,6 +33,7 @@ namespace StudyResource.Areas.Admin.Controllers
                 .Include(d => d.DocumentType)
                 .OrderByDescending(d => d.UploadDate)
                 .ToListAsync();
+
 
             return View(document);
         }
@@ -104,6 +107,99 @@ namespace StudyResource.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> UploadCsv()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadCsv(UploadCsvViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var csvFile = model.CsvFile;
+                if (csvFile != null && csvFile.Length > 0)
+                {
+                    try
+                    {
+                        using (var reader = new StreamReader(csvFile.OpenReadStream()))
+                        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                        {
+                            // Đăng ký DocumentMap
+                            csv.Context.RegisterClassMap<DocumentMap>();
+
+                            var records = csv.GetRecords<DocumentCsvViewModel>().ToList();
+
+                            var errorList = new List<string>();
+                            int rowIndex = 2;
+
+                            foreach (var record in records)
+                            {
+
+                                if (string.IsNullOrWhiteSpace(record.Title) ||
+                                   string.IsNullOrWhiteSpace(record.GradeSubjectName) ||
+                                   string.IsNullOrWhiteSpace(record.DocumentTypeName) ||
+                                   string.IsNullOrWhiteSpace(record.GoogleDriveId))
+                                {
+                                    errorList.Add($"Hàng {rowIndex}: Một hoặc nhiều cột bị thiếu dữ liệu.");
+                                    rowIndex++;
+                                    continue;
+                                }
+
+                                var gradeSubject = await _context.GradeSubjects
+                                    .FirstOrDefaultAsync(gs => gs.Name.ToLower() == record.GradeSubjectName.ToLower());
+                                if (gradeSubject == null)
+                                {
+                                    errorList.Add($"Hàng {rowIndex}: Môn học '{record.GradeSubjectName}' không tồn tại.");
+                                    rowIndex++;
+                                    continue;
+                                }
+
+                                var documentType = await _context.DocumentTypes
+                                    .FirstOrDefaultAsync(dt => dt.Name.ToLower() == record.DocumentTypeName.ToLower());
+                                if (documentType == null)
+                                {
+                                    errorList.Add($"Hàng {rowIndex}: Loại tài liệu '{record.DocumentTypeName}' không tồn tại.");
+                                    rowIndex++;
+                                    continue;
+                                }
+
+                                var document = new Document
+                                {
+                                    Title = record.Title,
+                                    Slug = _slugService.GenerateSlug(record.Title),
+                                    Description = record.Description,
+                                    GoogleDriveId = record.GoogleDriveId,
+                                    UploadDate = DateTime.Now,
+                                    GradeSubjectId = gradeSubject.Id,
+                                    DocumentTypeId = documentType.Id
+                                };
+
+                                _context.Documents.Add(document);
+                                rowIndex++;
+                            }
+
+                            await _context.SaveChangesAsync();
+
+                            if (errorList.Any())
+                            {
+                                TempData["ErrorList"] = errorList;
+                            }
+
+                            return RedirectToAction("UploadCsv");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", "Đã xảy ra lỗi trong quá trình tải file CSV. Vui lòng kiểm tra file và thử lại.");
+                    }
+                }
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
             var document = await _context.Documents
@@ -133,7 +229,7 @@ namespace StudyResource.Areas.Admin.Controllers
             return View(viewModel);
         }
 
-        [HttpPut]
+        [HttpPost]
         public async Task<IActionResult> Update(int id, UpdateDocumentViewModel model)
         {
             if (!ModelState.IsValid)
@@ -208,6 +304,45 @@ namespace StudyResource.Areas.Admin.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteMultiple([FromBody] List<int> ids)
+        {
+            if (ids == null || !ids.Any())
+            {
+                return BadRequest("Không có tài liệu nào được chọn để xóa.");
+            }
+
+            var documentsToDelete = await _context.Documents
+                .Where(d => ids.Contains(d.Id))
+                .ToListAsync();
+
+            if (documentsToDelete == null || !documentsToDelete.Any())
+            {
+                return NotFound("Không tìm thấy tài liệu nào để xóa.");
+            }
+
+            foreach (var document in documentsToDelete)
+            {
+                if (!string.IsNullOrEmpty(document.GoogleDriveId))
+                {
+                    try
+                    {
+                        await _googleDriveService.DeleteFileAsync(document.GoogleDriveId);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Lỗi khi xóa file trên Google Drive với ID {document.GoogleDriveId}: {ex.Message}");
+                    }
+                }
+            }
+
+            _context.Documents.RemoveRange(documentsToDelete);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> Ebook()

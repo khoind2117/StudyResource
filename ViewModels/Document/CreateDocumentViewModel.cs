@@ -15,6 +15,6 @@ namespace StudyResource.ViewModels.Document
         public GradeSubject? GradeSubject { get; set; }
 
         public int DocumentTypeId { get; set; }
-        public virtual DocumentType? DocumentType { get; set; }
+        public virtual Models.DocumentType? DocumentType { get; set; }
     }
 }

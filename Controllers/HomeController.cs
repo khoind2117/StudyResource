@@ -24,7 +24,6 @@ namespace StudyResource.Controllers
             var documents = _context.Documents
                 .Include(d => d.GradeSubject)
                 .Include(d => d.DocumentType)
-                .Take(6)
                 .ToList();
 
             return View(documents);

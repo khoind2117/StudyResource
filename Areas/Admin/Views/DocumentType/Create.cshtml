@@ -1,0 +1,21 @@
+﻿@using StudyResource.ViewModels.DocumentType
+@model CreateDocumentTypeViewModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Tạo Loại Tài Liệu";
+}
+
+<div class="container-fluid">
+    <h3>@ViewData["Title"]</h3>
+    <form asp-action="create" method="post">
+        <div class="form-group mb-3">
+            <label asp-for="Name" class="form-label">Tên Loại Tài Liệu</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Tạo</button>
+        <a asp-action="Index" class="btn btn-secondary mx-3">Quay lại</a>
+    </form>
+</div>

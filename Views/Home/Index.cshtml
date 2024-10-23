@@ -1,5 +1,4 @@
-﻿@model IEnumerable<StudyResource.Models.Document>
-
+﻿@model List<StudyResource.Models.Document>
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -12,9 +11,7 @@
             align-items: center;
             justify-content: center;
             height: 100%;
-        }
-
-        ,
+        },
         p {
             color: #000000;
         }
@@ -45,18 +42,18 @@
     </div>
 </section>
 <!-- banner part end-->
-<!-- new document part start-->
+<!-- SGK part start-->
 <section class="blog_part section_padding">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-xl-5">
                 <div class="section_tittle text-center">
-                    <h2>Tài liệu mới</h2>
+                    <h2>Sách Giáo Khoa</h2>
                 </div>
             </div>
         </div>
         <div class="row">
-            @foreach (var document in Model)
+            @* @foreach (var document in Model)
             {
                 var downloadLink = $"https://drive.google.com/uc?export=download&id={document.GoogleDriveId}";
                 var viewLink = $"https://drive.google.com/file/d/{document.GoogleDriveId}/view";
@@ -80,6 +77,27 @@
                                         <span>@document.Downloads tải</span>
                                     </li>
                                 </ul>
+                                <a href="@downloadLink" class="btn_4">Tải về</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            } *@
+            @foreach (var document in Model.Where(d => d.DocumentTypeId == 1).Take(6))
+            {
+                var downloadLink = $"https://drive.google.com/uc?export=download&id={document.GoogleDriveId}";
+                var viewLink = $"https://drive.google.com/file/d/{document.GoogleDriveId}/view";
+                var thumbnailLink = $"https://drive.google.com/thumbnail?id={document.GoogleDriveId}";
+
+                <div class="col-sm-6 col-lg-4 col-xl-4 d-flex justify-content-center">
+                    <div class="single-home-blog text-center">
+                        <div class="card" style="border: none">
+                            <div class="card-body">
+                                <a href="@viewLink" target="_blank">
+                                    <img src="@thumbnailLink" alt="Document thumbnail" class="img-fluid" />
+                                    <h5 class="card-title mt-3">@document.Title</h5>
+                                </a>
+                                <p>@document.DocumentType?.Name</p>
                                 <a href="@downloadLink" class="btn_4">Tải về</a>
                             </div>
                         </div>
@@ -97,42 +115,33 @@
         </div>
     </div>
 </section>
-<!--new document part end-->
-<!--featured document part start-->
+<!--SGK part end-->
+<!--SBT part start-->
 <section class="blog_part section_padding">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-xl-5">
                 <div class="section_tittle text-center">
-                    <h2>Tài liệu nổi bật</h2>
+                    <h2>Sách Bài Tập</h2>
                 </div>
             </div>
         </div>
         <div class="row">
-            @foreach (var document in Model)
+            @foreach (var document in Model.Where(d => d.DocumentTypeId == 5).Take(6))
             {
                 var downloadLink = $"https://drive.google.com/uc?export=download&id={document.GoogleDriveId}";
                 var viewLink = $"https://drive.google.com/file/d/{document.GoogleDriveId}/view";
+                var thumbnailLink = $"https://drive.google.com/thumbnail?id={document.GoogleDriveId}";
 
-                <div class="col-sm-6 col-lg-4 col-xl-4">
-                    <div class="single-home-blog">
-                        <div class="card">
+                <div class="col-sm-6 col-lg-4 col-xl-4 d-flex justify-content-center">
+                    <div class="single-home-blog text-center">
+                        <div class="card" style="border: none">
                             <div class="card-body">
                                 <a href="@viewLink" target="_blank">
-                                    <h5 class="card-title">@document.Title</h5>
+                                    <img src="@thumbnailLink" alt="Document thumbnail" class="img-fluid" />
+                                    <h5 class="card-title mt-3">@document.Title</h5>
                                 </a>
-                                <p>Môn học: @document.GradeSubject?.Name</p>
-                                <p>Loại tài liệu: @document.DocumentType?.Name</p>
-                                <ul class="list-inline">
-                                    <li class="list-inline-item">
-                                        <span class="ti-view-list"></span>
-                                        <span>@document.Views xem</span>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <span class="ti-download"></span>
-                                        <span>@document.Downloads tải</span>
-                                    </li>
-                                </ul>
+                                <p>@document.DocumentType?.Name</p>
                                 <a href="@downloadLink" class="btn_4">Tải về</a>
                             </div>
                         </div>
@@ -149,143 +158,188 @@
             </div>
         </div>
     </div>
-    <!--featured document part end-->
-    <!-- about part start-->
-    <section class="learning_part">
+</section>
+<!--SBT part end-->
+<!--SGV part start-->
+<section class="blog_part section_padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-5">
+                <div class="section_tittle text-center">
+                    <h2>Sách Giáo Viên</h2>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @foreach (var document in Model.Where(d => d.DocumentTypeId == 6).Take(6))
+            {
+                var downloadLink = $"https://drive.google.com/uc?export=download&id={document.GoogleDriveId}";
+                var viewLink = $"https://drive.google.com/file/d/{document.GoogleDriveId}/view";
+                var thumbnailLink = $"https://drive.google.com/thumbnail?id={document.GoogleDriveId}";
+
+                <div class="col-sm-6 col-lg-4 col-xl-4 d-flex justify-content-center">
+                    <div class="single-home-blog text-center">
+                        <div class="card" style="border: none">
+                            <div class="card-body">
+                                <a href="@viewLink" target="_blank">
+                                    <img src="@thumbnailLink" alt="Document thumbnail" class="img-fluid" />
+                                    <h5 class="card-title mt-3">@document.Title</h5>
+                                </a>
+                                <p>@document.DocumentType?.Name</p>
+                                <a href="@downloadLink" class="btn_4">Tải về</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
         </br>
-        <div class="container">
-            <div class="row align-items-sm-center align-items-lg-stretch">
-                <div class="col-md-7 col-lg-7">
-                    <div class="learning_img">
-                        <img src="~/etrain-master/img/learning_img.png" alt="">
-                    </div>
-                </div>
-                <div class="col-md-5 col-lg-5">
-                    <div class="learning_member_text">
-                        <h2>
-                            Về Etrain
-                        </h2>
-                        <p>
-                            Etrain là doanh nghiệp đi đầu về lĩnh vực công nghệ trong giáo dục.
-                            Etrain mong muốn xây dựng nền tảng giáo dục bằng cách tạo nên một môi truờng
-                            dạy và học trực tuyến chất lượng cao, đầy nhiệt huyết, hứng thú và sáng tạo.
-                        </p>
-                        <ul>
-                            <li>
-                                <span class="ti-pencil-alt"></span>Cả đọc và viết đều là những trải nghiệm suốt đời
-                            </li>
-                            <li>
-                                <span class="ti-ruler-pencil"></span>Việc học không bao giờ làm cạn kiệt tâm trí
-                            </li>
-                        </ul>
-                    </div>
+        <div class="row justify-content-center">
+            <div class="col-xl-5">
+                <div class="section_tittle text-center">
+                    <a asp-controller="Document" asp-action="Index" class="btn_1">Xem thêm</a>
                 </div>
             </div>
         </div>
-    </section>
-    <!-- about part end-->
-    <!-- online documents part start-->
-    <section class="testimonial_part">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-xl-5">
-                    <div class="section_tittle text-center">
-                        <h2>Tài liệu điện tử</h2>
-                    </div>
+    </div>
+</section>
+<!--SGV part end-->
+<!-- about part start-->
+<section class="learning_part">
+    </br>
+    <div class="container">
+        <div class="row align-items-sm-center align-items-lg-stretch">
+            <div class="col-md-7 col-lg-7">
+                <div class="learning_img">
+                    <img src="~/etrain-master/img/learning_img.png" alt="">
                 </div>
             </div>
-            <div class="row">
-                <div class="col-lg-3 col-md-6">
-                    <div class="featured">
-                        <div class="img-wrapper style="width: 96px; margin: 0 auto 32px;">
-                            <img src="~/etrain-master/img/icon-sgt1.svg" alt="Học liệu điện tử">
-                        </div>
-                        <h4>Học liệu điện tử</h4>
-                        <p style="text-align: center">
-                            Các học liệu điện tử được tích hợp trong phiên bản điện tử SGK Cánh Diều làm
-                            phong phú quá trình dạy và học.
-                        </p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="featured">
-                        <div class="img-wrapper style="width: 96px; margin: 0 auto 32px;">
-                            <img src="~/etrain-master/img/icon-sgt2.svg" alt="Học liệu điện tử">
-                        </div>
-                        <h4>Mục lục điện tử</h4>
-                        <p style="text-align: center">
-                            Mục lục điện tử giúp người dùng truy cập dễ dàng và nhanh chóng theo chương, bài học cụ thể.
-                        </p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="featured">
-                        <div class="img-wrapper style="width: 96px; margin: 0 auto 32px;">
-                            <img src="~/etrain-master/img/icon-sgt3.svg" alt="Học liệu điện tử">
-                        </div>
-                        <h4>Thanh công cụ</h4>
-                        <p style="text-align: center">
-                            Thanh công cụ cung cấp những tính năng tiện ích và quan trọng; là công cụ thiết thực
-                            và đem lại hiệu quả cao.
-                        </p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="featured">
-                        <div class="img-wrapper style="width: 96px; margin: 0 auto 32px;">
-                            <img src="~/etrain-master/img/icon-sgt4.svg" alt="Học liệu điện tử">
-                        </div>
-                        <h4>Tài liệu phong phú</h4>
-                        <p style="text-align: center">
-                            Kho bài tập tương tác đa dạng và phong phú với nhiều hình thức và thể loại khác nhau;
-                            luôn được cập nhật hàng tuần.
-                        </p>
-                    </div>
+            <div class="col-md-5 col-lg-5">
+                <div class="learning_member_text">
+                    <h2>
+                        Về Etrain
+                    </h2>
+                    <p>
+                        Etrain là doanh nghiệp đi đầu về lĩnh vực công nghệ trong giáo dục.
+                        Etrain mong muốn xây dựng nền tảng giáo dục bằng cách tạo nên một môi truờng
+                        dạy và học trực tuyến chất lượng cao, đầy nhiệt huyết, hứng thú và sáng tạo.
+                    </p>
+                    <ul>
+                        <li>
+                            <span class="ti-pencil-alt"></span>Cả đọc và viết đều là những trải nghiệm suốt đời
+                        </li>
+                        <li>
+                            <span class="ti-ruler-pencil"></span>Việc học không bao giờ làm cạn kiệt tâm trí
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
-    </section>
-    <!-- online documents part end-->
-    <!-- contact part start-->
-    <section class="advance_feature learning_part">
-        <div class="container">
-            <div class="row align-items-sm-center align-items-xl-stretch">
-                <div class="col-md-6 col-lg-6">
-                    <div class="learning_member_text">
-                        <h5>Văn phòng</h5>
-                        <h2>
-                            Hệ thống Etrain
-                        </h2>
-                        <p>
-                            Hiểu rõ quy tắc 1% và sức mạnh của sự tích lũy, Etrain nhấn mạnh vào việc xây dựng thói quen
-                            và sự nỗ lực cho học sinh: sự khác biệt được tạo ra khi mỗi ngày ta cố gắng tốt hơn ngày hôm qua 1%.
-                        </p>
-                        <div class="row">
-                            <div class="col-sm-6 col-md-12 col-lg-6">
-                                <div class="learning_member_text_iner">
-                                    <span class="ti-pencil-alt"></span>
-                                    <h4>Địa chỉ</h4>
-                                    <p>280 An Dương Vương, phường 4, quận 5, Thành phố Hồ Chí Minh</p>
-                                </div>
+    </div>
+</section>
+<!-- about part end-->
+<!-- online documents part start-->
+<section class="testimonial_part">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-5">
+                <div class="section_tittle text-center">
+                    <h2>Tài liệu điện tử</h2>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="featured">
+                    <div class="img-wrapper style="width: 96px; margin: 0 auto 32px;">
+                        <img src="~/etrain-master/img/icon-sgt1.svg" alt="Học liệu điện tử">
+                    </div>
+                    <h4>Học liệu điện tử</h4>
+                    <p style="text-align: center">
+                        Các học liệu điện tử được tích hợp trong phiên bản điện tử SGK Cánh Diều làm
+                        phong phú quá trình dạy và học.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="featured">
+                    <div class="img-wrapper style="width: 96px; margin: 0 auto 32px;">
+                        <img src="~/etrain-master/img/icon-sgt2.svg" alt="Học liệu điện tử">
+                    </div>
+                    <h4>Mục lục điện tử</h4>
+                    <p style="text-align: center">
+                        Mục lục điện tử giúp người dùng truy cập dễ dàng và nhanh chóng theo chương, bài học cụ thể.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="featured">
+                    <div class="img-wrapper style="width: 96px; margin: 0 auto 32px;">
+                        <img src="~/etrain-master/img/icon-sgt3.svg" alt="Học liệu điện tử">
+                    </div>
+                    <h4>Thanh công cụ</h4>
+                    <p style="text-align: center">
+                        Thanh công cụ cung cấp những tính năng tiện ích và quan trọng; là công cụ thiết thực
+                        và đem lại hiệu quả cao.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="featured">
+                    <div class="img-wrapper style="width: 96px; margin: 0 auto 32px;">
+                        <img src="~/etrain-master/img/icon-sgt4.svg" alt="Học liệu điện tử">
+                    </div>
+                    <h4>Tài liệu phong phú</h4>
+                    <p style="text-align: center">
+                        Kho bài tập tương tác đa dạng và phong phú với nhiều hình thức và thể loại khác nhau;
+                        luôn được cập nhật hàng tuần.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- online documents part end-->
+<!-- contact part start-->
+<section class="advance_feature learning_part">
+    <div class="container">
+        <div class="row align-items-sm-center align-items-xl-stretch">
+            <div class="col-md-6 col-lg-6">
+                <div class="learning_member_text">
+                    <h5>Văn phòng</h5>
+                    <h2>
+                        Hệ thống Etrain
+                    </h2>
+                    <p>
+                        Hiểu rõ quy tắc 1% và sức mạnh của sự tích lũy, Etrain nhấn mạnh vào việc xây dựng thói quen
+                        và sự nỗ lực cho học sinh: sự khác biệt được tạo ra khi mỗi ngày ta cố gắng tốt hơn ngày hôm qua 1%.
+                    </p>
+                    <div class="row">
+                        <div class="col-sm-6 col-md-12 col-lg-6">
+                            <div class="learning_member_text_iner">
+                                <span class="ti-pencil-alt"></span>
+                                <h4>Địa chỉ</h4>
+                                <p>280 An Dương Vương, phường 4, quận 5, Thành phố Hồ Chí Minh</p>
                             </div>
-                            <div class="col-sm-6 col-md-12 col-lg-6">
-                                <div class="learning_member_text_iner">
-                                    <span class="ti-stamp"></span>
-                                    <h4>Số điện thoại</h4>
-                                    <p>+84 111 111 111</p>
-                                </div>
+                        </div>
+                        <div class="col-sm-6 col-md-12 col-lg-6">
+                            <div class="learning_member_text_iner">
+                                <span class="ti-stamp"></span>
+                                <h4>Số điện thoại</h4>
+                                <p>+84 111 111 111</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6 col-md-6">
-                    <div class="learning_img">
-                        <img src="~/etrain-master/img/advance_feature_img.png" alt="">
-                    </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <div class="learning_img">
+                    <img src="~/etrain-master/img/advance_feature_img.png" alt="">
                 </div>
             </div>
-            </br></br>
-            <a asp-controller="Contact" asp-action="Index" class="btn_1">Liên hệ</a>
         </div>
-    </section>
-    <!-- contact part end-->
+        </br></br>
+        <a asp-controller="Contact" asp-action="Index" class="btn_1">Liên hệ</a>
+    </div>
+</section>
+<!-- contact part end-->

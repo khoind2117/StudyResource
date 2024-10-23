@@ -117,7 +117,11 @@ namespace StudyResource
                     new Subject { Name = "Địa lý", Slug = _slugService.GenerateSlug("Địa lý") },
                     new Subject { Name = "Tiếng Anh", Slug = _slugService.GenerateSlug("Tiếng Anh") },
                     new Subject { Name = "Giáo dục công dân", Slug = _slugService.GenerateSlug("Giáo dục công dân") },
-                    new Subject { Name = "Tin học", Slug = _slugService.GenerateSlug("Tin học") }
+                    new Subject { Name = "Tin học", Slug = _slugService.GenerateSlug("Tin học") },
+                    new Subject { Name = "Đạo đức", Slug = _slugService.GenerateSlug("Đạo đức") },
+                    new Subject { Name = "Tự nhiên và xã hội", Slug = _slugService.GenerateSlug("Tự nhiên và xã hội") },
+                    new Subject { Name = "Công nghệ", Slug = _slugService.GenerateSlug("Công nghệ") },
+                    new Subject { Name = "Âm nhạc", Slug = _slugService.GenerateSlug("Âm nhạc") }
                 };
 
                 _context.Subjects.AddRange(subjects);
@@ -126,49 +130,32 @@ namespace StudyResource
             #endregion
 
             #region GradeSubject
-            if (!_context.GradeSubjects.Any())
-            {
-                var gradesubjects = new List<GradeSubject>
-                {
-                    // 10
-                    new GradeSubject { Name = "Toán lớp 10", Slug = _slugService.GenerateSlug("Toán lớp 10"), GradeId = 10, SubjectId = 1 },
-                    new GradeSubject { Name = "Ngữ văn lớp 10", Slug = _slugService.GenerateSlug("Ngữ văn lớp 10"), GradeId = 10, SubjectId = 2 },
-                    new GradeSubject { Name = "Vật lý lớp 10", Slug = _slugService.GenerateSlug("Vật lý lớp 10"), GradeId = 10, SubjectId = 3 },
-                    new GradeSubject { Name = "Hóa học lớp 10", Slug = _slugService.GenerateSlug("Hóa học lớp 10"), GradeId = 10, SubjectId = 4 },
-                    new GradeSubject { Name = "Sinh học lớp 10", Slug = _slugService.GenerateSlug("Sinh học lớp 10"), GradeId = 10, SubjectId = 5 },
-                    new GradeSubject { Name = "Lịch sử lớp 10", Slug = _slugService.GenerateSlug("Lịch sử  lớp 10"), GradeId = 10, SubjectId = 6 },
-                    new GradeSubject { Name = "Địa lý lớp 10", Slug = _slugService.GenerateSlug("Địa lý lớp 10"), GradeId = 10, SubjectId = 7 },
-                    new GradeSubject { Name = "Tiếng Anh lớp 10", Slug = _slugService.GenerateSlug("Tiếng Anh lớp 10"), GradeId = 10, SubjectId = 8 },
-                    new GradeSubject { Name = "Giáo dục công dân lớp 10", Slug = _slugService.GenerateSlug("Giáo dục công dân lớp 10"), GradeId = 10, SubjectId = 9 },
-                    new GradeSubject { Name = "Tin học lớp 10", Slug = _slugService.GenerateSlug("Tin học lớp 10"), GradeId = 10, SubjectId = 10 },
+            //if (!_context.GradeSubjects.Any())
+            //{
+            //    var gradeSubjects = new List<GradeSubject>();
 
-                    // 11
-                    new GradeSubject { Name = "Toán lớp 11", Slug = _slugService.GenerateSlug("Toán lớp 11"), GradeId = 11, SubjectId = 1 },
-                    new GradeSubject { Name = "Ngữ văn lớp 11", Slug = _slugService.GenerateSlug("Ngữ văn lớp 11"), GradeId = 11, SubjectId = 2 },
-                    new GradeSubject { Name = "Vật lý lớp 11", Slug = _slugService.GenerateSlug("Vật lý lớp 11"), GradeId = 11, SubjectId = 3 },
-                    new GradeSubject { Name = "Hóa học lớp 11", Slug = _slugService.GenerateSlug("Hóa học lớp 11"), GradeId = 11, SubjectId = 4 },
-                    new GradeSubject { Name = "Sinh học lớp 11", Slug = _slugService.GenerateSlug("Sinh học lớp 11"), GradeId = 11, SubjectId = 5 },
-                    new GradeSubject { Name = "Lịch sử lớp 11", Slug = _slugService.GenerateSlug("Lịch sử  lớp 11"), GradeId = 11, SubjectId = 6 },
-                    new GradeSubject { Name = "Địa lý lớp 11", Slug = _slugService.GenerateSlug("Địa lý lớp 11"), GradeId = 11, SubjectId = 7 },
-                    new GradeSubject { Name = "Tiếng Anh lớp 11", Slug = _slugService.GenerateSlug("Tiếng Anh lớp 11"), GradeId = 11, SubjectId = 8 },
-                    new GradeSubject { Name = "Giáo dục công dân lớp 11", Slug = _slugService.GenerateSlug("Giáo dục công dân lớp 11"), GradeId = 11, SubjectId = 9 },
-                    new GradeSubject { Name = "Tin học lớp 11", Slug = _slugService.GenerateSlug("Tin học lớp 11"), GradeId = 11, SubjectId = 10 },
-                    // 12
-                    new GradeSubject { Name = "Toán lớp 12", Slug = _slugService.GenerateSlug("Toán lớp 12"), GradeId = 12, SubjectId = 1 },
-                    new GradeSubject { Name = "Ngữ văn lớp 12", Slug = _slugService.GenerateSlug("Ngữ văn lớp 12"), GradeId = 12, SubjectId = 2 },
-                    new GradeSubject { Name = "Vật lý lớp 12", Slug = _slugService.GenerateSlug("Vật lý lớp 12"), GradeId = 12, SubjectId = 3 },
-                    new GradeSubject { Name = "Hóa học lớp 12", Slug = _slugService.GenerateSlug("Hóa học lớp 12"), GradeId = 12, SubjectId = 4 },
-                    new GradeSubject { Name = "Sinh học lớp 12", Slug = _slugService.GenerateSlug("Sinh học lớp 12"), GradeId = 12, SubjectId = 5 },
-                    new GradeSubject { Name = "Lịch sử lớp 12", Slug = _slugService.GenerateSlug("Lịch sử  lớp 12"), GradeId = 12, SubjectId = 6 },
-                    new GradeSubject { Name = "Địa lý lớp 12", Slug = _slugService.GenerateSlug("Địa lý lớp 12"), GradeId = 12, SubjectId = 7 },
-                    new GradeSubject { Name = "Tiếng Anh lớp 12", Slug = _slugService.GenerateSlug("Tiếng Anh lớp 12"), GradeId = 12, SubjectId = 8 },
-                    new GradeSubject { Name = "Giáo dục công dân lớp 12", Slug = _slugService.GenerateSlug("Giáo dục công dân lớp 12"), GradeId = 12, SubjectId = 9 },
-                    new GradeSubject { Name = "Tin học lớp 12", Slug = _slugService.GenerateSlug("Tin học lớp 12"), GradeId = 12, SubjectId = 10 },
-                };
+            //    for (int grade = 1; grade <= 12; grade++)
+            //    {
+            //        gradeSubjects.Add(new GradeSubject { Name = $"Toán lớp {grade}", Slug = _slugService.GenerateSlug($"Toán lớp {grade}"), GradeId = grade, SubjectId = 1 });
+            //        gradeSubjects.Add(new GradeSubject { Name = $"Ngữ văn lớp {grade}", Slug = _slugService.GenerateSlug($"Ngữ văn lớp {grade}"), GradeId = grade, SubjectId = 2 });
+            //        gradeSubjects.Add(new GradeSubject { Name = $"Vật lý lớp {grade}", Slug = _slugService.GenerateSlug($"Vật lý lớp {grade}"), GradeId = grade, SubjectId = 3 });
+            //        gradeSubjects.Add(new GradeSubject { Name = $"Hóa học lớp {grade}", Slug = _slugService.GenerateSlug($"Hóa học lớp {grade}"), GradeId = grade, SubjectId = 4 });
+            //        gradeSubjects.Add(new GradeSubject { Name = $"Sinh học lớp {grade}", Slug = _slugService.GenerateSlug($"Sinh học lớp {grade}"), GradeId = grade, SubjectId = 5 });
+            //        gradeSubjects.Add(new GradeSubject { Name = $"Lịch sử lớp {grade}", Slug = _slugService.GenerateSlug($"Lịch sử lớp {grade}"), GradeId = grade, SubjectId = 6 });
+            //        gradeSubjects.Add(new GradeSubject { Name = $"Địa lý lớp {grade}", Slug = _slugService.GenerateSlug($"Địa lý lớp {grade}"), GradeId = grade, SubjectId = 7 });
+            //        gradeSubjects.Add(new GradeSubject { Name = $"Tiếng Anh lớp {grade}", Slug = _slugService.GenerateSlug($"Tiếng Anh lớp {grade}"), GradeId = grade, SubjectId = 8 });
+            //        gradeSubjects.Add(new GradeSubject { Name = $"Giáo dục công dân lớp {grade}", Slug = _slugService.GenerateSlug($"Giáo dục công dân lớp {grade}"), GradeId = grade, SubjectId = 9 });
+            //        gradeSubjects.Add(new GradeSubject { Name = $"Tin học lớp {grade}", Slug = _slugService.GenerateSlug($"Tin học lớp {grade}"), GradeId = grade, SubjectId = 10 });
+            //        gradeSubjects.Add(new GradeSubject { Name = $"Đạo đức lớp {grade}", Slug = _slugService.GenerateSlug($"Đạo đức lớp {grade}"), GradeId = grade, SubjectId = 11 });
+            //        gradeSubjects.Add(new GradeSubject { Name = $"Tự nhiên và xã hội lớp {grade}", Slug = _slugService.GenerateSlug($"Tự nhiên và xã hội lớp {grade}"), GradeId = grade, SubjectId = 12 });
+            //        gradeSubjects.Add(new GradeSubject { Name = $"Công nghệ lớp {grade}", Slug = _slugService.GenerateSlug($"Công nghệ lớp {grade}"), GradeId = grade, SubjectId = 13 });
+            //        gradeSubjects.Add(new GradeSubject { Name = $"Âm nhạc lớp {grade}", Slug = _slugService.GenerateSlug($"Âm nhạc lớp {grade}"), GradeId = grade, SubjectId = 14 });
+            //    }
 
-                _context.GradeSubjects.AddRange(gradesubjects);
-                await _context.SaveChangesAsync();
-            };
+
+            //    _context.GradeSubjects.AddRange(gradesubjects);
+            //    await _context.SaveChangesAsync();
+            //};
             #endregion
 
             #region DocumentType
@@ -183,18 +170,18 @@ namespace StudyResource
                     },
                     new DocumentType
                     {
+                        Name = "Sách bổ trợ",
+                        Slug = _slugService.GenerateSlug("Sách bổ trợ"),
+                    },
+                    new DocumentType
+                    {
+                        Name = "Sách giáo viên",
+                        Slug = _slugService.GenerateSlug("Sách giáo viên"),
+                    },
+                    new DocumentType
+                    {
                         Name = "Bài giảng",
                         Slug = _slugService.GenerateSlug("Bài giảng"),
-                    },
-                    new DocumentType
-                    {
-                        Name = "Tài liệu tham khảo",
-                        Slug = _slugService.GenerateSlug("Tài liệu tham khảo"),
-                    },
-                    new DocumentType
-                    {
-                        Name = "Đề cương ôn thi",
-                        Slug = _slugService.GenerateSlug("Đề cương ôn thi"),
                     }
                 };
 

@@ -1,5 +1,106 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model List<DocumentType>
+
 @{
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <h3>Quản lý loại tài liệu</h3>
+    <a asp-area="Admin" asp-controller="DocumentType" asp-action="Create" class="btn btn-primary mb-3">Tạo loại tài liệu</a>
+    <table class="table table-striped table-bordered">
+        <thead class="bg-primary text-white">
+            <tr>
+                <th>Tên loại</th>
+                <th>Tổng tài liệu hiện có</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model == null || Model.Count == 0)
+            {
+                <tr>
+                    <td colspan="5" class="text-center">
+                        <strong>
+                            Hiện tại không tìm thấy loại tài liệu
+                        </strong>
+                    </td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var doc in Model)
+                {
+                    <tr>
+                        <td>@doc.Name</td>
+                        <td>@(doc.Documents?.Count() ?? 0)</td>
+
+                        <td>
+                            <a class="btn btn-warning btn-sm" href="@Url.Action("Update", "DocumentType", new { id = doc.Id })">Cập nhật</a>
+                            <a class="btn btn-danger btn-sm" href="javascript:void(0);" onclick="confirmDelete('@Url.Action("Delete", "DocumentType", new { id = doc.Id })');">Xóa</a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        // Delete
+        function confirmDelete(url) {
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Tài liệu này sẽ bị xóa vĩnh viễn!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Có, xóa nó!',
+                cancelButtonText: 'Không, giữ nó!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Tài liệu đang được xóa...',
+                        text: 'Vui lòng chờ trong giây lát.',
+                        allowOutsideClick: false,
+                        onBeforeOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    $.ajax({
+                        type: 'DELETE',
+                        url: url,
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire(
+                                    'Đã xóa!',
+                                    response.message,
+                                    'success'
+                                ).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Lỗi!',
+                                    response.message,
+                                    'error'
+                                );
+                            }
+                        },
+                        error: function (xhr) {
+                            // Kiểm tra lỗi trả về từ server
+                            var errorMessage = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Có lỗi xảy ra khi xóa loại tài liệu.';
+                            Swal.fire(
+                                'Lỗi!',
+                                errorMessage,
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        }
+    </script>
 }
