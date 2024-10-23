@@ -4,7 +4,6 @@ using StudyResource.Data;
 using StudyResource.Models;
 using StudyResource.Services;
 using StudyResource.ViewModels.DocumentType;
-using System.Xml.Linq;
 
 namespace StudyResource.Areas.Admin.Controllers
 {
@@ -22,7 +21,6 @@ namespace StudyResource.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        [Route("")]
         public async Task<IActionResult> IndexAsync()
         {
             var documentTypes = await _context.DocumentTypes
@@ -50,7 +48,9 @@ namespace StudyResource.Areas.Admin.Controllers
 
                 _context.DocumentTypes.Add(documentType);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                TempData["SuccessMessage"] = "Loại tài liệu đã được tạo thành công!";
+                return RedirectToAction(nameof(Create));
             }
 
             return View(model);

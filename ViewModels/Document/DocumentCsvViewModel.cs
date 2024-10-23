@@ -14,5 +14,7 @@ namespace StudyResource.ViewModels.Document
         public string? GradeSubjectName { get; set; }
         [Name("Loại tài liệu")]
         public string? DocumentTypeName { get; set; }
+        [Name("Bộ sách")]
+        public string? SetName { get; set; }
     }
 }

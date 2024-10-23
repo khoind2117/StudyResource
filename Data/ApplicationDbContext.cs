@@ -17,6 +17,7 @@ namespace StudyResource.Data
         public DbSet<DownloadHistory> DownloadHistories { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<DocumentType> DocumentTypes { get; set; }
+        public DbSet<Set> Sets { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Grade> Grades { get; set; }
         public DbSet<GradeSubject> GradeSubjects { get; set; }
@@ -80,6 +81,18 @@ namespace StudyResource.Data
                     .HasForeignKey(d => d.DocumentTypeId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
+
+            // Set
+            modelBuilder.Entity<Set>(entity =>
+            {
+                entity.ToTable("Set").HasKey(s => s.Id);
+
+                // One-to-Many relationship with Set
+                entity.HasMany(s => s.Documents)
+                    .WithOne(d => d.Set)
+                    .HasForeignKey(s => s.SetId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });  
 
             // Subject
             modelBuilder.Entity<Subject>(entity =>

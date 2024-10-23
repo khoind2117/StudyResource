@@ -28,14 +28,14 @@ namespace StudyResource.Areas.Admin.Controllers
 
         public async Task<IActionResult> IndexAsync()
         {
-            var document = await _context.Documents
-                .Include(d => d.GradeSubject)
-                .Include(d => d.DocumentType)
-                .OrderByDescending(d => d.UploadDate)
-                .ToListAsync();
+            var documents = await _context.Documents
+              .Include(d => d.GradeSubject)
+              .Include(d => d.DocumentType)
+              .Include(d => d.Set)
+              .OrderByDescending(d => d.UploadDate)
+              .ToListAsync();
 
-
-            return View(document);
+            return View(documents);
         }
 
         private async Task PopulateSelectLists(int? gradeId = null)
@@ -45,11 +45,13 @@ namespace StudyResource.Areas.Admin.Controllers
             var gradeSubjects = gradeId.HasValue
                 ? await _context.GradeSubjects.Where(gs => gs.GradeId == gradeId.Value).ToListAsync()
                 : new List<GradeSubject>();
+            var sets = await _context.Sets.ToListAsync();
 
             ViewBag.Grades = new SelectList(grades, "Id", "Name");
             ViewBag.GradeSubjects = new SelectList(gradeSubjects, "Id", "Name");
             ViewBag.DocumentTypes = new SelectList(documentTypes, "Id", "Name");
             ViewBag.GradeSubjectsJson = await _context.GradeSubjects.ToListAsync();
+            ViewBag.Sets = new SelectList(sets, "Id", "Name");
         }
 
         [HttpGet]
@@ -92,12 +94,15 @@ namespace StudyResource.Areas.Admin.Controllers
                     GoogleDriveId = fileId,
                     UploadDate = DateTime.Now,
                     GradeSubjectId = model.GradeSubjectId,
-                    DocumentTypeId = model.DocumentTypeId
+                    DocumentTypeId = model.DocumentTypeId,
+                    SetId = model.SetId,
+                    Set = model.Set,
                 };
 
                 _context.Documents.Add(document);
                 await _context.SaveChangesAsync();
 
+                TempData["SuccessMessage"] = "Tài liệu đã được tạo thành công!";
                 return RedirectToAction("Create");
             }
 
@@ -164,6 +169,19 @@ namespace StudyResource.Areas.Admin.Controllers
                                     continue;
                                 }
 
+                                Set set = null;
+                                if (!string.IsNullOrWhiteSpace(record.SetName)) 
+                                {
+                                    set = await _context.Sets
+                                        .FirstOrDefaultAsync(s => s.Name.ToLower() == record.SetName.ToLower());
+                                    if (set == null)
+                                    {
+                                        errorList.Add($"Hàng {rowIndex}: Bộ sách '{record.SetName}' không tồn tại.");
+                                        rowIndex++;
+                                        continue;
+                                    }
+                                }
+
                                 var document = new Document
                                 {
                                     Title = record.Title,
@@ -172,7 +190,8 @@ namespace StudyResource.Areas.Admin.Controllers
                                     GoogleDriveId = record.GoogleDriveId,
                                     UploadDate = DateTime.Now,
                                     GradeSubjectId = gradeSubject.Id,
-                                    DocumentTypeId = documentType.Id
+                                    DocumentTypeId = documentType.Id,
+                                    SetId = set?.Id
                                 };
 
                                 _context.Documents.Add(document);
@@ -184,6 +203,10 @@ namespace StudyResource.Areas.Admin.Controllers
                             if (errorList.Any())
                             {
                                 TempData["ErrorList"] = errorList;
+                            }
+                            else
+                            {
+                                TempData["SuccessMessage"] = "Dữ liệu đã được nhập thành công!";
                             }
 
                             return RedirectToAction("UploadCsv");
@@ -206,6 +229,7 @@ namespace StudyResource.Areas.Admin.Controllers
                 .Include(d => d.GradeSubject)
                     .ThenInclude(gs => gs.Grade)
                 .Include(d => d.DocumentType)
+                .Include(d => d.Set)
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (document == null)
@@ -223,6 +247,8 @@ namespace StudyResource.Areas.Admin.Controllers
                 GradeSubjectId = document.GradeSubjectId,
                 GradeSubject = document.GradeSubject,
                 DocumentTypeId = document.DocumentTypeId,
+                SetId = document.SetId,
+                Set = document.Set,
             };
 
             await PopulateSelectLists(document.GradeSubject.GradeId);
@@ -253,6 +279,7 @@ namespace StudyResource.Areas.Admin.Controllers
             document.Description = model.Description;
             document.GradeSubjectId = model.GradeSubjectId;
             document.DocumentTypeId = model.DocumentTypeId;
+            document.SetId = model.SetId;
 
             if (model.FileUpload != null && model.FileUpload.Length > 0)
             {

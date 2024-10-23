@@ -90,7 +90,6 @@
                             }
                         },
                         error: function (xhr) {
-                            // Kiểm tra lỗi trả về từ server
                             var errorMessage = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Có lỗi xảy ra khi xóa loại tài liệu.';
                             Swal.fire(
                                 'Lỗi!',

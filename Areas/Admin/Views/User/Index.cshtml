@@ -1,0 +1,74 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model IEnumerable<User>
+@inject UserManager<User> UserManager
+@{
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <h2>Danh Sách Người Dùng</h2>
+    <table id="userTable" class="table table-striped table-bordered">
+        <thead class="bg-primary text-white">
+            <tr>
+                <th>Tên</th>
+                <th>Email</th>
+                <th>Vai Trò</th>
+                <th>Ngày tạo</th>
+            </tr>
+        </thead>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.UserName</td>
+                    <td>@user.Email</td>
+                    <td>
+                        @{
+                            var roles = await UserManager.GetRolesAsync(user);
+                        }
+                        @if (roles.Contains("Admin"))
+                        {
+                            @:Admin
+                        }
+                        else
+                        {
+                            @:User
+                        }
+                    </td>
+                    <td>@user.CreatedAt</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#userTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                responsive: true,
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                language: {
+                    lengthMenu: "Hiển thị _MENU_ mục mỗi trang",
+                    zeroRecords: "Không tìm thấy kết quả nào",
+                    info: "Hiển thị từ _START_ đến _END_ trong tổng số _TOTAL_ mục",
+                    infoEmpty: "Không có dữ liệu",
+                    infoFiltered: "(Được lọc từ _MAX_ tổng số mục)",
+                    search: "Tìm kiếm:",
+                    paginate: {
+                        first: "Đầu tiên",
+                        last: "Cuối cùng",
+                        next: "Tiếp theo",
+                        previous: "Trước"
+                    },
+                    emptyTable: "Không có dữ liệu trong bảng",
+                },
+
+                order: [[1, 'asc'], [0, 'desc']],
+            });
+        });
+    </script>
+}

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using StudyResource.Data;
@@ -96,6 +97,7 @@ namespace StudyResource.Controllers
                     UserName = registerViewModel.Email,
                     FirstName = registerViewModel.FirstName,
                     LastName = registerViewModel.LastName,
+                    CreatedAt = DateTime.Now,
                     PhoneNumber = registerViewModel.PhoneNumber,
                     Email = registerViewModel.Email,
                 };
