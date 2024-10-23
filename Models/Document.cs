@@ -19,6 +19,9 @@ namespace StudyResource.Models
         public int DocumentTypeId { get; set; }
         public virtual DocumentType? DocumentType { get; set; }
 
+        public int? SetId { get; set; }
+        public virtual Set? Set { get; set; }
+
         public virtual ICollection<Favorite>? Favorite { get; set; }
         public virtual ICollection<DownloadHistory>? DownloadHistories { get; set; }
     }
