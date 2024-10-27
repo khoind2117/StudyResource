@@ -53,41 +53,11 @@
             </div>
         </div>
         <div class="row">
-            @* @foreach (var document in Model)
-            {
-                var downloadLink = $"https://drive.google.com/uc?export=download&id={document.GoogleDriveId}";
-                var viewLink = $"https://drive.google.com/file/d/{document.GoogleDriveId}/view";
-
-                <div class="col-sm-6 col-lg-4 col-xl-4">
-                    <div class="single-home-blog">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="@viewLink" target="_blank">
-                                    <h5 class="card-title">@document.Title</h5>
-                                </a>
-                                <p>Môn học: @document.GradeSubject?.Name</p>
-                                <p>Loại tài liệu: @document.DocumentType?.Name</p>
-                                <ul class="list-inline">
-                                    <li class="list-inline-item">
-                                        <span class="ti-view-list"></span>
-                                        <span>@document.Views xem</span>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <span class="ti-download"></span>
-                                        <span>@document.Downloads tải</span>
-                                    </li>
-                                </ul>
-                                <a href="@downloadLink" class="btn_4">Tải về</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            } *@
             @foreach (var document in Model.Where(d => d.DocumentTypeId == 1).Take(6))
             {
                 var downloadLink = $"https://drive.google.com/uc?export=download&id={document.GoogleDriveId}";
                 var viewLink = $"https://drive.google.com/file/d/{document.GoogleDriveId}/view";
-                var thumbnailLink = $"https://drive.google.com/thumbnail?id={document.GoogleDriveId}";
+                var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={document.GoogleDriveId}";
 
                 <div class="col-sm-6 col-lg-4 col-xl-4 d-flex justify-content-center">
                     <div class="single-home-blog text-center">
@@ -98,7 +68,7 @@
                                     <h5 class="card-title mt-3">@document.Title</h5>
                                 </a>
                                 <p>@document.DocumentType?.Name</p>
-                                <a href="@downloadLink" class="btn_4">Tải về</a>
+                                @* <a href="@downloadLink" class="btn_4">Tải về</a> *@
                             </div>
                         </div>
                     </div>
@@ -131,7 +101,7 @@
             {
                 var downloadLink = $"https://drive.google.com/uc?export=download&id={document.GoogleDriveId}";
                 var viewLink = $"https://drive.google.com/file/d/{document.GoogleDriveId}/view";
-                var thumbnailLink = $"https://drive.google.com/thumbnail?id={document.GoogleDriveId}";
+                var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={document.GoogleDriveId}";
 
                 <div class="col-sm-6 col-lg-4 col-xl-4 d-flex justify-content-center">
                     <div class="single-home-blog text-center">
@@ -142,7 +112,7 @@
                                     <h5 class="card-title mt-3">@document.Title</h5>
                                 </a>
                                 <p>@document.DocumentType?.Name</p>
-                                <a href="@downloadLink" class="btn_4">Tải về</a>
+                                @* <a href="@downloadLink" class="btn_4">Tải về</a> *@
                             </div>
                         </div>
                     </div>
@@ -175,7 +145,7 @@
             {
                 var downloadLink = $"https://drive.google.com/uc?export=download&id={document.GoogleDriveId}";
                 var viewLink = $"https://drive.google.com/file/d/{document.GoogleDriveId}/view";
-                var thumbnailLink = $"https://drive.google.com/thumbnail?id={document.GoogleDriveId}";
+                var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={document.GoogleDriveId}";
 
                 <div class="col-sm-6 col-lg-4 col-xl-4 d-flex justify-content-center">
                     <div class="single-home-blog text-center">
@@ -186,7 +156,7 @@
                                     <h5 class="card-title mt-3">@document.Title</h5>
                                 </a>
                                 <p>@document.DocumentType?.Name</p>
-                                <a href="@downloadLink" class="btn_4">Tải về</a>
+                                @* <a href="@downloadLink" class="btn_4">Tải về</a> *@
                             </div>
                         </div>
                     </div>

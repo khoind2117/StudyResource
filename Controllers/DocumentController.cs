@@ -14,87 +14,45 @@ namespace StudyResource.Controllers
             _context = context;
         }
 
-        public IActionResult Index(int? grade, int documentType = 1, int page = 1)
+        public IActionResult Index(string searchString, int? gradeId, int? setId)
         {
-            int pageSize = 6;
-
-            // Filter documents based on the grade and document type
-            var query = _context.Documents
-                .Include(d => d.GradeSubject)
+            var documents = _context.Documents
+                .Include(d => d.GradeSubject.Grade)
+                .Include(d => d.Set)
                 .Include(d => d.DocumentType)
                 .AsQueryable();
 
-            if (grade.HasValue)
+            if (!string.IsNullOrEmpty(searchString))
             {
-                query = query.Where(d => d.GradeSubjectId == grade.Value);
+                documents = documents.Where(d => d.Title.Contains(searchString));
             }
 
-            query = query.Where(d => d.DocumentTypeId == documentType);
-
-            // Pagination
-            var totalDocuments = query.Count();
-            var documents = query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            // Prepare the view model
-            var viewModel = new DocumentViewModel
+            if (gradeId.HasValue)
             {
-                Documents = documents,
-                Grades = _context.GradeSubjects.ToList(),
-                SelectedGrade = grade,
-                SelectedDocumentType = documentType,
-                CurrentPage = page,
-                TotalPages = (int)Math.Ceiling(totalDocuments / (double)pageSize)
-            };
-
-            return View(viewModel);
-        }
-
-        // Filter documents by grade
-        public IActionResult FilterByGrade(int? grade, int documentType = 1)
-        {
-            return RedirectToAction("Index", new { grade = grade, documentType = documentType });
-        }
-
-        // Search documents by query
-        public IActionResult Search(string query, int page = 1)
-        {
-            int pageSize = 6;
-
-            // Search documents based on the query
-            var queryable = _context.Documents
-                .Include(d => d.GradeSubject)
-                .Include(d => d.DocumentType)
-                .AsQueryable();
-
-            if (!string.IsNullOrEmpty(query))
+                documents = documents.Where(d => d.GradeSubject.GradeId == gradeId);
+                ViewBag.CurrentGradeId = gradeId;
+            }
+            else
             {
-                queryable = queryable.Where(d => d.Title.Contains(query) ||
-                         d.Description.Contains(query) ||
-                         d.GradeSubject.Name.Contains(query) ||
-                         d.DocumentType.Name.Contains(query));
+                ViewBag.CurrentGradeId = null;
             }
 
-            // Pagination
-            var totalDocuments = queryable.Count();
-            var documents = queryable
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            // Prepare the view model
-            var viewModel = new DocumentViewModel
+            if (setId.HasValue)
             {
-                Documents = documents,
-                Grades = _context.GradeSubjects.ToList(),
-                Query = query,
-                CurrentPage = page,
-                TotalPages = (int)Math.Ceiling(totalDocuments / (double)pageSize)
-            };
+                documents = documents.Where(d => d.SetId == setId);
+                ViewBag.CurrentSetId = setId;
+            }
+            else
+            {
+                ViewBag.CurrentSetId = null;
+            }
 
-            return View("Index", viewModel);
+            ViewBag.Grades = _context.Grades.ToList();
+            ViewBag.Sets = _context.Sets.ToList();
+
+            return View(documents.ToList());
         }
+
+
     }
 }

@@ -128,6 +128,10 @@ namespace StudyResource
                     new Subject { Name = "Hoạt động trải nghiệm", Slug = _slugService.GenerateSlug("Hoạt động trải nghiệm") },
                     new Subject { Name = "Tiếng việt", Slug = _slugService.GenerateSlug("Tiếng việt") },
                     new Subject { Name = "Khoa học tự nhiên", Slug = _slugService.GenerateSlug("Khoa học tự nhiên") },
+                    new Subject { Name = "Lịch sử và địa lý", Slug = _slugService.GenerateSlug("Lịch sử và địa lý") },
+                    new Subject { Name = "Giáo dục kinh tế pháp luật", Slug = _slugService.GenerateSlug("Giáo dục kinh tế pháp luật") },
+                    new Subject { Name = "Giáo dục quốc phòng", Slug = _slugService.GenerateSlug("Giáo dục quốc phòng") },
+                    new Subject { Name = "Tập viết", Slug = _slugService.GenerateSlug("Tập viết") },
                 };
 
                 _context.Subjects.AddRange(subjects);
