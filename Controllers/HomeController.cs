@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using StudyResource.Models;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Identity;
@@ -22,9 +22,8 @@ namespace StudyResource.Controllers
         public IActionResult Index()
         {
             var documents = _context.Documents
-                .Include(d => d.GradeSubject)         
-                .Include(d => d.DocumentType)  
-                .Take(6)                        
+                .Include(d => d.GradeSubject)
+                .Include(d => d.DocumentType)
                 .ToList();
 
             return View(documents);
