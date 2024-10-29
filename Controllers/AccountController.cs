@@ -38,7 +38,6 @@ namespace StudyResource.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel loginViewModel, string returnUrl)
         {
             if (ModelState.IsValid)
@@ -49,12 +48,15 @@ namespace StudyResource.Controllers
                     var result = await _signInManager.CheckPasswordSignInAsync(user, loginViewModel.Password, lockoutOnFailure: false);
                     if (result.Succeeded)
                     {
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+
                         if (await _userManager.IsInRoleAsync(user, "Admin"))
                         {
-                            await _signInManager.SignInAsync(user, isPersistent: false);
                             // Chuyển hướng đến trang quản trị
                             return RedirectToAction("Index", "Home", new { Area = "Admin" });
                         }
+
+
                         return RedirectToAction("Index", "Home");
                     }
                     else
@@ -120,6 +122,7 @@ namespace StudyResource.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
