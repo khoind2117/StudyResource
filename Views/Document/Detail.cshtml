@@ -1,0 +1,112 @@
+﻿@using StudyResource.ViewModels.Document
+@model DocumentDetailViewModel
+@{
+    ViewData["Title"] = "Detail";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - StudyResource</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="~/etrain-master/img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/style.css">
+</head>
+<body>
+    <section class="feature_part">
+        <div class="container my-5">
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    @{
+                        var downloadLink = $"https://drive.google.com/uc?export=download&id={Model.GoogleDriveId}";
+                        var viewLink = $"https://drive.google.com/file/d/{Model.GoogleDriveId}/view";
+                        var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={Model.GoogleDriveId}";
+                    }
+                    <a href="@thumbnailLink" target="_blank">
+                        <img referrerPolicy="no-referrer" src="@thumbnailLink" alt="Document" class="img-fluid mb-3" />
+                    </a>
+                    <h3>@Model.Title</h3>
+                    <p>@Model.DocumentType?.Name</p></br>
+                    <a href="@viewLink" target="_blank" class="btn_4">Đọc</a>
+                    <a href="@downloadLink" class="btn_4">Tải</a>
+                    <a href="#" class="btn_4">Lưu</a>
+                </div>
+                <div class="col-md-8">
+                    <div class="book-set-filter">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#tab-info"><h4>Thông tin</h4></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#tab-comments"><h4>Đánh giá</h4></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#tab-notes"><h4>Ghi chú</h4></a>
+                            </li>
+                        </ul>
+                        <div class="tab-content mt-4">
+                            <div id="tab-info" class="tab-pane fade show active">
+                                <p>@Model.Description</p>
+                            </div>
+                            <div id="tab-comments" class="tab-pane fade">
+                                <p>Đánh giá</p>
+                                <form id="commentForm" method="post" action="/YourCommentPostAction">
+                                    <div class="form-group">
+                                        <label for="username">Username:</label>
+                                        <input type="text" id="username" name="Username" class="form-control" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="comment">Comment:</label>
+                                        <textarea id="comment" name="Comment" class="form-control" required></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="rating">Rating:</label>
+                                        <select id="rating" name="Rating" class="form-control" required>
+                                            <option value="">Choose a rating</option>
+                                            <option value="1">1 Star</option>
+                                            <option value="2">2 Stars</option>
+                                            <option value="3">3 Stars</option>
+                                            <option value="4">4 Stars</option>
+                                            <option value="5">5 Stars</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Bình luận</button>
+                                </form>
+
+                                <ul class="list-unstyled mt-4">
+                                    @foreach (var comment in Model.UserComments)
+                                    {
+                                        <li class="media my-3">
+                                            <div class="media-body">
+                                                <h6>@comment.Username <small class="text-muted">(@comment.CommentDate.ToShortDateString())</small></h6>
+                                                <p>@comment.Comment</p>
+                                                <p>Rating: @comment.Rating/5</p>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                            <div id="tab-notes" class="tab-pane fade">
+                                <p>Ghi chú</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- jquery plugins here-->
+    <!-- jquery -->
+    <script src="~/etrain-master/js/jquery-1.12.1.min.js"></script>
+    <!-- popper js -->
+    <script src="~/etrain-master/js/popper.min.js"></script>
+    <!-- bootstrap js -->
+    <script src="~/etrain-master/js/bootstrap.min.js"></script>
+    <!-- custom js -->
+    <script src="~/etrain-master/js/custom.js"></script>
+</body>
+</html>
