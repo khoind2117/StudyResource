@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StudyResource.Data;
 using StudyResource.Models;
 using StudyResource.ViewModels.Document;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace StudyResource.Controllers
 {
@@ -10,9 +14,12 @@ namespace StudyResource.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        public DocumentController(ApplicationDbContext context)
+        private readonly UserManager<User> _userManager;
+
+        public DocumentController(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public IActionResult Index(string searchString, int? gradeId, int? setId)
@@ -54,60 +61,68 @@ namespace StudyResource.Controllers
             return View(documents.ToList());
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Detail(int id)
-        {
+        [HttpGet] public async Task<IActionResult> Detail(int id) 
+        { 
             var document = await _context.Documents
-        .Include(d => d.DocumentType)
-        .Include(d => d.Set)
-        .FirstOrDefaultAsync(d => d.Id == id);
-
-            if (document == null)
-            {
-                return NotFound();
-            }
-
-            var viewModel = new DocumentDetailViewModel
-            {
-                Id = document.Id,
-                Title = document.Title,
-                Description = document.Description,
-                GoogleDriveId = document.GoogleDriveId,
-                DocumentTypeId = document.DocumentTypeId,
-                DocumentType = document.DocumentType,
-                UserNotes = string.Empty,
-                UserComments = await _context.UserComments
-                    .Where(c => c.DocumentId == id)
-                    .Select(c => new DocumentDetailViewModel.UserComment
-                    {
-                        Username = c.Username,
-                        Comment = c.Comment,
-                        Rating = c.Rating,
-                        CommentDate = c.CommentDate
-                    })
-                    .ToListAsync()
-            };
-
-            return View(viewModel);
+                .Include(d => d.DocumentType)
+                .Include(d => d.Set)
+                .FirstOrDefaultAsync(d => d.Id == id); 
+            
+            if (document == null) 
+            { 
+                return NotFound(); 
+            } 
+            var comments = await _context.UserComments
+                .Where(c => c.DocumentId == id)
+                .Select(c => new DocumentDetailViewModel.UserComment 
+                {
+                    Username = c.User != null ? c.User.UserName : "Anonymous",
+                    Comment = c.Comment, Rating = c.Rating, CommentDate = c.CommentDate 
+                })
+                .ToListAsync(); var viewModel = new DocumentDetailViewModel 
+                { 
+                    Id = document.Id, 
+                    Title = document.Title, 
+                    Description = document.Description,
+                    GoogleDriveId = document.GoogleDriveId, 
+                    DocumentTypeId = document.DocumentTypeId, 
+                    DocumentType = document.DocumentType, 
+                    UserNotes = string.Empty, 
+                    UserComments = comments }; 
+            
+            return View(viewModel); 
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddComment(UserComment userComment, int documentId)
+        public async Task<IActionResult> SubmitComment(string Comment, string GoogleDriveId)
         {
             if (ModelState.IsValid)
             {
-                userComment.CommentDate = DateTime.Now;
-                userComment.DocumentId = documentId;
+                var document = await _context.Documents.FirstOrDefaultAsync(d => d.GoogleDriveId == GoogleDriveId); 
+                if (document == null) 
+                {
+                    return NotFound(); 
+                }
 
-                _context.UserComments.Add(userComment);
-                await _context.SaveChangesAsync();
+                var user = await _userManager.GetUserAsync(User); var userComment = new UserComment
+                {
+                    UserId = user?.Id,
+                    CommentDate = DateTime.Now,
+                    Comment = Comment,
+                    DocumentId = document.Id,
+                    Rating = 0  
+                };
 
-                return RedirectToAction("Detail", new { id = documentId });
+                _context.UserComments
+                    .Add(userComment); 
+                await _context.SaveChangesAsync(); 
+
+                return Json(new {
+                    username = user?.UserName ?? "Anonymous", 
+                    commentDate = userComment.CommentDate.ToShortDateString(),
+                    comment = userComment.Comment }); 
             }
-
-            return RedirectToAction("Detail", new { id = documentId });
+            
+            return BadRequest(); }
         }
-
-
-    }
 }

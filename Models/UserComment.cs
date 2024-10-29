@@ -11,5 +11,4 @@
         public int DocumentId { get; set; }
         public virtual Document? Document { get; set; }
     }
-
 }

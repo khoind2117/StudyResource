@@ -21,6 +21,7 @@ namespace StudyResource.Data
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Grade> Grades { get; set; }
         public DbSet<GradeSubject> GradeSubjects { get; set; }
+        public DbSet<UserComment> UserComments { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -129,7 +130,18 @@ namespace StudyResource.Data
                     .HasForeignKey(d => d.GradeSubjectId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
-        #endregion
+
+            // Configuration for UserComment
+            modelBuilder.Entity<UserComment>() 
+                .HasOne(uc => uc.Document) 
+                .WithMany(d => d.UserComments) 
+                .HasForeignKey(uc => uc.DocumentId); 
+
+            modelBuilder.Entity<UserComment>() 
+                .HasOne(uc => uc.User) 
+                .WithMany(u => u.UserComments) 
+                .HasForeignKey(uc => uc.UserId);
+            #endregion
         }
     }
 }

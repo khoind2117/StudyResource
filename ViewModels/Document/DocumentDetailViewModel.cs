@@ -15,9 +15,9 @@ namespace StudyResource.ViewModels.Document
 
         public class UserComment
         {
-            public string Username { get; set; } = string.Empty;
-            public string Comment { get; set; } = string.Empty;
-            public int Rating { get; set; }  
+            public string Username { get; set; } = string.Empty; 
+            public string Comment { get; set; } = string.Empty; 
+            public int Rating { get; set; }
             public DateTime CommentDate { get; set; } = DateTime.Now;
         }
     }
