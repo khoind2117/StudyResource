@@ -1,0 +1,165 @@
+﻿@using StudyResource.ViewModels.Document
+@model DocumentDetailViewModel
+
+@{
+    ViewData["Title"] = "Detail";
+}
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - StudyResource</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="~/etrain-master/img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/owl.carousel.min.css">
+    <!-- themify CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/themify-icons.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/flaticon.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/magnific-popup.css">
+    <!-- swiper CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/slick.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style> 
+        #comments-section 
+        { 
+            max-height: 400px; overflow-y: auto; 
+        }
+    </style> 
+
+</head>
+<body>
+    <section class="feature_part">
+        <div class="container my-5">
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    @{
+                        var downloadLink = $"https://drive.google.com/uc?export=download&id={Model.GoogleDriveId}";
+                        var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={Model.GoogleDriveId}";
+                    }
+                    <a href="@thumbnailLink" target="_blank">
+                        <img referrerPolicy="no-referrer" src="@thumbnailLink" alt="Document" class="img-fluid mb-3" />
+                    </a>
+                    <h3 class="" style="color: #0c2e60">@Model.Title</h3>
+                    <p>@Model.DocumentType?.Name</p></br>
+                    <a class="btn btn_4 btn-sm" target="_blank" href="@Url.Action("Ebook", "Document", new { area = "Admin", fileId = Model.GoogleDriveId })">Đọc</a>
+                    <a href="@downloadLink" class="btn btn_4 btn-sm">Tải</a>
+                    <a href="#" class="btn btn_4 btn-sm">Lưu</a>
+                </div>
+                <div class="col-md-8">
+                    <div class="book-set-filter">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#tab-info"><h4>Thông tin</h4></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#tab-comments"><h4>Đánh giá</h4></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#tab-notes"><h4>Ghi chú</h4></a>
+                            </li>
+                        </ul>
+                        <div class="tab-content mt-4">
+                            <div id="tab-info" class="tab-pane fade show active">
+                                <p>@Model.Description</p>
+                            </div>
+                            <div id="tab-comments" class="tab-pane fade">
+                                <form id="commentForm" method="post" action="@Url.Action("SubmitComment", "Document")">
+                                    <div class="form-group">
+                                        <label for="comment">Bình luận:</label>
+                                        <textarea id="comment" name="Comment" class="form-control" required></textarea>
+                                        <input type="hidden" name="GoogleDriveId" value="@Model.GoogleDriveId" />
+                                    </div>
+                                    <button type="submit" class="genric-btn success-border circle arrow">Gửi</button>
+                                </form>
+                                <div id="comments-section" class="mt-4">
+                                    <ul class="list-unstyled">
+                                        @foreach (var comment in Model.UserComments)
+                                        {
+                                            <li class="media my-3">
+                                                <div class="media-body">
+                                                    <h6>@comment.Username <small class="text-muted">(@comment.CommentDate.ToShortDateString())</small></h6>
+                                                    <p>@comment.Comment</p>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                            <div id="tab-notes" class="tab-pane fade">
+                                <p>Ghi chú</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#commentForm').on('submit', function (e) {
+                e.preventDefault();
+
+                var formData = $(this).serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("SubmitComment", "Document")',
+                    data: formData,
+                    success: function (response) {
+                        // Add new comment to the comment list
+                        $('#commentList').append(
+                            `<li class="media my-3">
+                                <div class="media-body">
+                                    <h6>${response.username} <small class="text-muted">(${response.commentDate})</small></h6>
+                                    <p>${response.comment}</p>
+                                </div>
+                            </li>`
+                        );
+
+                        // Clear the textarea after submitting
+                        $('#comment').val('');
+                    },
+                    error: function (response) {
+                        alert('Something went wrong. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+
+    <!-- jquery plugins here-->
+    <!-- jquery -->
+    <script src="~/etrain-master/js/jquery-1.12.1.min.js"></script>
+    <!-- popper js -->
+    <script src="~/etrain-master/js/popper.min.js"></script>
+    <!-- bootstrap js -->
+    <script src="~/etrain-master/js/bootstrap.min.js"></script>
+    <!-- easing js -->
+    <script src="~/etrain-master/js/jquery.magnific-popup.js"></script>
+    <!-- swiper js -->
+    <script src="~/etrain-master/js/swiper.min.js"></script>
+    <!-- masonry js -->
+    <script src="~/etrain-master/js/masonry.pkgd.js"></script>
+    <!-- particles js -->
+    <script src="~/etrain-master/js/owl.carousel.min.js"></script>
+    <script src="~/etrain-master/js/jquery.nice-select.min.js"></script>
+    <!-- slick js -->
+    <script src="~/etrain-master/js/slick.min.js"></script>
+    <script src="~/etrain-master/js/jquery.counterup.min.js"></script>
+    <script src="~/etrain-master/js/waypoints.min.js"></script>
+    <!-- custom js -->
+    <script src="~/etrain-master/js/custom.js"></script>
+</body>

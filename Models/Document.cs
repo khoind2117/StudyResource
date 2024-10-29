@@ -1,6 +1,4 @@
-﻿using CsvHelper.Configuration.Attributes;
-
-namespace StudyResource.Models
+﻿namespace StudyResource.Models
 {
     public class Document
     {
@@ -12,17 +10,14 @@ namespace StudyResource.Models
         public int Downloads { get; set; }
         public required string GoogleDriveId { get; set; }
         public DateTime UploadDate { get; set; }
-
         public int GradeSubjectId { get; set; }
         public virtual GradeSubject? GradeSubject { get; set; }
-
         public int DocumentTypeId { get; set; }
         public virtual DocumentType? DocumentType { get; set; }
-
         public int? SetId { get; set; }
         public virtual Set? Set { get; set; }
-
         public virtual ICollection<Favorite>? Favorite { get; set; }
         public virtual ICollection<DownloadHistory>? DownloadHistories { get; set; }
+        public virtual ICollection<UserComment> UserComments { get; set; } = new List<UserComment>();
     }
 }

@@ -1,97 +1,84 @@
 ﻿@model List<StudyResource.Models.Document>
 
 @{
-    ViewData["Title"] = "Document";
+ViewData["Title"] = "Document";
 }
 
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
     <title>@ViewData["Title"] - StudyResource</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" href="~/etrain-master/img/favicon.png">
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="~/etrain-master/css/bootstrap.min.css">
-    <!-- animate CSS -->
-    <link rel="stylesheet" href="~/etrain-master/css/animate.css">
-    <!-- owl carousel CSS -->
-    <link rel="stylesheet" href="~/etrain-master/css/owl.carousel.min.css">
-    <!-- themify CSS -->
-    <link rel="stylesheet" href="~/etrain-master/css/themify-icons.css">
-    <!-- flaticon CSS -->
-    <link rel="stylesheet" href="~/etrain-master/css/flaticon.css">
-    <!-- font awesome CSS -->
-    <link rel="stylesheet" href="~/etrain-master/css/magnific-popup.css">
-    <!-- swiper CSS -->
-    <link rel="stylesheet" href="~/etrain-master/css/slick.css">
-    <!-- style CSS -->
-    <link rel="stylesheet" href="~/etrain-master/css/style.css">
     <style>
-        body {
+        .ss-banner--not-bg {
+            height: auto;
+            padding: 60px 0 10px;
+        }
 
-            .ss-banner--not-bg {
-                height: auto;
-                padding: 60px 0 10px;
-            }
+        .book-set-filter .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
 
-            .book-set-filter .nav-tabs
-            {
-                display: flex;
-                justify-content: center;
-                margin-bottom: 20px;
-            }
+        .btn-class-filter {
+            border: none;
+            padding: 15px 20px;
+            color: dimgrey;
+            background-color: white;
+            margin: 5px;
+        }
 
-            .btn-class-filter
-            {
-                border: none;
-                padding-right: 65px;
-                color: dimgrey;
-                background-color: white;
-            }
+        .grade-heading {
+            color: dimgrey;
+            margin: 0;
+        }
 
-            .grade-heading 
-            {
-                color: dimgrey;
-            }
-
-            .grade-heading:hover
-            {
+            .grade-heading:hover {
                 color: #0c2e60;
             }
 
+        .container-center {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; 
+        }
+
+        .row-center {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
     </style>
 </head>
-
-<body>
-    <!-- breadcrumb start-->
-    <section class="breadcrumb breadcrumb_bg">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="breadcrumb_iner text-center">
-                        <div class="breadcrumb_iner_item">
-                            <h2>Tài liệu</h2>
-                            <p>Trang chủ<span>/</span>Tài liệu</p>
+    <body>
+        <!-- breadcrumb start-->
+        <section class="breadcrumb breadcrumb_bg">
+           <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="breadcrumb_iner text-center">
+                            <div class="breadcrumb_iner_item">
+                                <h2>Tài liệu</h2>
+                                <p>Trang chủ<span>/</span>Tài liệu</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
-    <!-- breadcrumb end-->
-
-    <!-- search start -->
-    <section class="footer-area" style="display: flex; justify-content: center; align-items: center; padding-top: 30px; border: none">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-3"></div>
+           </div>
+        </section>
+        <!-- breadcrumb end-->
+        <!-- search start -->
+        <section class="footer-area" style="display: flex; justify-content: center; align-items: center; padding-top: 30px; border: none">
+           <div class="container">
+                <div class="row">
+                    <div class="col-sm-3"></div>
                     <div class="col-sm-6">
                         <form asp-action="Index" method="get" class="search-form">
                             <div class="form-group">
                                 <div class="input-group mb-3" style="border: none">
                                     <input type="text" name="SearchString" class="form-control" placeholder='Nhập tên tài liệu'
-                                                onfocus="this.placeholder = ''"
-                                                onblur="this.placeholder = 'Nhập tên tài liệu'"
+                                           onfocus="this.placeholder = ''"
+                                           onblur="this.placeholder = 'Nhập tên tài liệu'"
                                     <div class="input-group-append">
                                         <button type="submit" class="btn btn_1" style="height: 38px"><i class="ti-angle-right"></i></button>
                                     </div>
@@ -99,161 +86,148 @@
                             </div>
                         </form>
                     </div>
-                <div class="col-sm-3"></div>
-            </div>
-        </div>
-    </section>
-    <!-- search end -->
-
-    <!-- select grade start -->
-    <section class="feature_part">
-        <div class="container" style=" display: flex; justify-content: center; align-items: center;">
-            <div class="row">
-                @for (int i = 1; i <= 12; i++)
-                {
-                    <button class="btn-class-filter"
-                            onclick="location.href='@Url.Action("Index", new { GradeId = i, SetId = ViewBag.CurrentSetId })'">
-                        <h2 class="grade-heading">@i</h2>
-                    </button>
-                }
-            </div>
-        </div>
-    </section>
-    <!-- select grade end -->
-
-    <!-- select set start -->
-    <section class="feature_part">
-        <div class="container">
-            <div class="book-set-filter">
-                <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                        <a class="nav-link"
-                            href="@Url.Action("Index", new { SetId = 1, GradeId = ViewBag.CurrentGradeId })">
-                            <h2 class="grade-heading">Cánh diều</h2>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                            href="@Url.Action("Index", new { SetId = 2, GradeId = ViewBag.CurrentGradeId })">
-                            <h2 class="grade-heading">Chân trời sáng tạo</h2>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                            href="@Url.Action("Index", new { SetId = 3, GradeId = ViewBag.CurrentGradeId })">
-                            <h2 class="grade-heading">Kết nối tri thức</h2>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </section>
-    <!-- select set end -->
-
-    <!-- documents start -->
-    <section class="feature_part" style="padding-bottom: 65px">
-        <div class="container">
-            <div class="box_content">
-                <h2>Sách giáo khoa</h2>
-                <div class="row">
-                    @foreach (var document in Model.Where(d => d.DocumentTypeId == 1).Take(6))
+                    <div class="col-sm-3"></div>
+                </div>
+           </div>
+        </section>
+        <!-- search end -->
+        <!-- select grade start -->
+        <section class="feature_part">
+            <div class="container container-center"> 
+                <div class="row-center"> 
+                    @for (int i = 1; i <= 12; i++)
                     {
-                        var downloadLink = $"https://drive.google.com/uc?export=download&id={document.GoogleDriveId}";
-                        var viewLink = $"https://drive.google.com/file/d/{document.GoogleDriveId}/view";
-                        var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={document.GoogleDriveId}";
+                        <button class="btn-class-filter" onclick="location.href='@Url.Action("Index", new { GradeId = i, SetId = ViewBag.CurrentSetId })'"> <h2 class="grade-heading">@i</h2> </button>
+                    } 
+                </div>
+            </div>
+        </section>
+        <!-- select grade end -->
+        <!-- select set start -->
+        <section class="feature_part">
+           <div class="container">
+                <div class="book-set-filter">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="@Url.Action("Index", new { SetId = 1, GradeId = ViewBag.CurrentGradeId })">
+                                <h2 class="grade-heading">Cánh diều</h2>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="@Url.Action("Index", new { SetId = 2, GradeId = ViewBag.CurrentGradeId })">
+                                <h2 class="grade-heading">Chân trời sáng tạo</h2>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="@Url.Action("Index", new { SetId = 3, GradeId = ViewBag.CurrentGradeId })">
+                                <h2 class="grade-heading">Kết nối tri thức</h2>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+           </div>
+        </section>
+        <!-- select set end -->
+        <!-- documents start -->
+        <section class="feature_part" style="padding-bottom: 65px">
+           <div class="container">
+                <div class="box_content">   
+                    <h2>Sách giáo khoa</h2>
+                    <div class="row">
+                        @foreach (var document in Model.Where(d => d.DocumentTypeId == 1).Take(6))
+                        {
+                            var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={document.GoogleDriveId}";
 
-                        <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 d-flex justify-content-center">
-                            <div class="single-home-blog text-center">
-                                <div class="card" style="border: none">
-                                    <div class="card-body">
-                                        <a href="@viewLink" target="_blank">
-                                            <img referrerPolicy="no-referrer" src="@thumbnailLink" alt="Document" class="img-fluid" />
-                                            <h5 class="card-title mt-3">@document.Title</h5>
-                                        </a>
-                                        <p>@document.DocumentType?.Name</p>
+                            <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 d-flex justify-content-center">
+                                <div class="single-home-blog text-center">
+                                    <div class="card" style="border: none">
+                                        <div class="card-body">
+                                            <a asp-controller="Document" asp-action="Detail" asp-route-id="@document.Id">
+                                                <img referrerPolicy="no-referrer" src="@thumbnailLink" alt="Document" class="img-fluid" />
+                                                <h5 class="card-title mt-3" style="color: #0c2e60">@document.Title</h5>
+                                            </a>
+                                            <p>@document.DocumentType?.Name</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
-            </div>
-            <hr>
-            <div class="box_content" style="padding-top: 20px">
-                <h2>Sách bài tập</h2>
-                <div class="row">
-                    @foreach (var document in Model.Where(d => d.DocumentTypeId == 5).Take(6))
-                    {
-                        var downloadLink = $"https://drive.google.com/uc?export=download&id={document.GoogleDriveId}";
-                        var viewLink = $"https://drive.google.com/file/d/{document.GoogleDriveId}/view";
-                        var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={document.GoogleDriveId}";
+                <hr>
+                <div class="box_content" style="padding-top: 20px">
+                    <h2>Sách bài tập</h2>
+                    <div class="row">
+                        @foreach (var document in Model.Where(d => d.DocumentTypeId == 5).Take(6))
+                        {
+                            var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={document.GoogleDriveId}";
 
-                        <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 d-flex justify-content-center">
-                            <div class="single-home-blog text-center">
-                                <div class="card" style="border: none">
-                                    <div class="card-body">
-                                        <a href="@viewLink" target="_blank">
-                                            <img referrerPolicy="no-referrer" src="@thumbnailLink" alt="Document" class="img-fluid" />
-                                            <h5 class="card-title mt-3">@document.Title</h5>
-                                        </a>
-                                        <p>@document.DocumentType?.Name</p>
+                            <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 d-flex justify-content-center">
+                                <div class="single-home-blog text-center">
+                                    <div class="card" style="border: none">
+                                        <div class="card-body">
+                                            <a asp-controller="Document" asp-action="Detail" asp-route-id="@document.Id">
+                                                <img referrerPolicy="no-referrer" src="@thumbnailLink" alt="Document" class="img-fluid" />
+                                                <h5 class="card-title mt-3" style="color: #0c2e60">@document.Title</h5>
+                                            </a>
+                                            <p>@document.DocumentType?.Name</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
-            </div>
-            <hr>
-            <div class="box_content" style="padding-top: 20px">
-                <h2>Sách giáo viên</h2>
-                <div class="row">
-                    @foreach (var document in Model.Where(d => d.DocumentTypeId == 6).Take(6))
-                    {
-                        var downloadLink = $"https://drive.google.com/uc?export=download&id={document.GoogleDriveId}";
-                        var viewLink = $"https://drive.google.com/file/d/{document.GoogleDriveId}/view";
-                        var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={document.GoogleDriveId}";
+                <hr>
+                <div class="box_content" style="padding-top: 20px">
+                    <h2>Sách giáo viên</h2>
+                    <div class="row">
+                        @foreach (var document in Model.Where(d => d.DocumentTypeId == 6).Take(6))
+                        {
+                            var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={document.GoogleDriveId}";
 
-                        <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 d-flex justify-content-center">
-                            <div class="single-home-blog text-center">
-                                <div class="card" style="border: none">
-                                    <div class="card-body">
-                                        <a href="@viewLink" target="_blank">
-                                            <img referrerPolicy="no-referrer" src="@thumbnailLink" alt="Document" class="img-fluid" />
-                                            <h5 class="card-title mt-3">@document.Title</h5>
-                                        </a>
-                                        <p>@document.DocumentType?.Name</p>
+                            <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 d-flex justify-content-center">
+                                <div class="single-home-blog text-center">
+                                    <div class="card" style="border: none">
+                                        <div class="card-body">
+                                            <a asp-controller="Document" asp-action="Detail" asp-route-id="@document.Id">
+                                                <img referrerPolicy="no-referrer" src="@thumbnailLink" alt="Document" class="img-fluid" />
+                                                <h5 class="card-title mt-3" style="color: #0c2e60">@document.Title</h5>
+                                            </a>
+                                            <p>@document.DocumentType?.Name</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
-            </div>
-        </div>
-    </section>
-    <!-- documents end -->
-
-    <!-- jquery plugins here-->
-    <!-- jquery -->
-    <script src="~/etrain-master/js/jquery-1.12.1.min.js"></script>
-    <!-- popper js -->
-    <script src="~/etrain-master/js/popper.min.js"></script>
-    <!-- bootstrap js -->
-    <script src="~/etrain-master/js/bootstrap.min.js"></script>
-    <!-- easing js -->
-    <script src="~/etrain-master/js/jquery.magnific-popup.js"></script>
-    <!-- swiper js -->
-    <script src="~/etrain-master/js/swiper.min.js"></script>
-    <!-- swiper js -->
-    <script src="~/etrain-master/js/masonry.pkgd.js"></script>
-    <!-- particles js -->
-    <script src="~/etrain-master/js/owl.carousel.min.js"></script>
-    <script src="~/etrain-master/js/jquery.nice-select.min.js"></script>
-    <!-- swiper js -->
-    <script src="~/etrain-master/js/slick.min.js"></script>
-    <script src="~/etrain-master/js/jquery.counterup.min.js"></script>
-    <script src="~/etrain-master/js/waypoints.min.js"></script>
-    <!-- custom js -->
-    <script src="~/etrain-master/js/custom.js"></script>
-</body>
+           </div>
+        </section>
+        <!-- documents end -->
+        <!-- jquery plugins here-->
+        <!-- jquery -->
+        <script src="~/etrain-master/js/jquery-1.12.1.min.js"></script>
+        <!-- popper js -->
+        <script src="~/etrain-master/js/popper.min.js"></script>
+        <!-- bootstrap js -->
+        <script src="~/etrain-master/js/bootstrap.min.js"></script>
+        <!-- easing js -->
+        <script src="~/etrain-master/js/jquery.magnific-popup.js"></script>
+        <!-- swiper js -->
+        <script src="~/etrain-master/js/swiper.min.js"></script>
+        <!-- swiper js -->
+        <script src="~/etrain-master/js/masonry.pkgd.js"></script>
+        <!-- particles js -->
+        <script src="~/etrain-master/js/owl.carousel.min.js"></script>
+        <script src="~/etrain-master/js/jquery.nice-select.min.js"></script>
+        <!-- swiper js -->
+        <script src="~/etrain-master/js/slick.min.js"></script>
+        <script src="~/etrain-master/js/jquery.counterup.min.js"></script>
+        <script src="~/etrain-master/js/waypoints.min.js"></script>
+        <!-- custom js -->
+        <script src="~/etrain-master/js/custom.js"></script>
+    </body>
