@@ -10,15 +10,19 @@
   <ItemGroup>
     <Compile Remove="Templates\**" />
     <Compile Remove="wwwroot\lib\pdfjs-4.7.76-dist\**" />
+    <Compile Remove="wwwroot\pdf-viewer\**" />
     <Compile Remove="wwwroot\turn.js-5\**" />
     <Content Remove="Templates\**" />
     <Content Remove="wwwroot\lib\pdfjs-4.7.76-dist\**" />
+    <Content Remove="wwwroot\pdf-viewer\**" />
     <Content Remove="wwwroot\turn.js-5\**" />
     <EmbeddedResource Remove="Templates\**" />
     <EmbeddedResource Remove="wwwroot\lib\pdfjs-4.7.76-dist\**" />
+    <EmbeddedResource Remove="wwwroot\pdf-viewer\**" />
     <EmbeddedResource Remove="wwwroot\turn.js-5\**" />
     <None Remove="Templates\**" />
     <None Remove="wwwroot\lib\pdfjs-4.7.76-dist\**" />
+    <None Remove="wwwroot\pdf-viewer\**" />
     <None Remove="wwwroot\turn.js-5\**" />
   </ItemGroup>
 
