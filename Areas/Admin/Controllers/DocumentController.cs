@@ -372,14 +372,11 @@ namespace StudyResource.Areas.Admin.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Ebook()
+        public async Task<IActionResult> Ebook(string fileId)
         {
-            return View();
-        }
+            string fileUrl = Url.Action("DownloadFile", "GoogleDrive", new { fileId = fileId });
+            ViewData["DefaultFileUrl"] = fileUrl;
 
-        [HttpGet]
-        public async Task<IActionResult> PDFViewer()
-        {
             return View();
         }
     }
