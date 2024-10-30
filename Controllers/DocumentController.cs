@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StudyResource.Data;
 using StudyResource.Models;
+using StudyResource.Services;
 using StudyResource.ViewModels.Document;
 using System;
 using System.Linq;
@@ -13,13 +14,26 @@ namespace StudyResource.Controllers
     public class DocumentController : Controller
     {
         private readonly ApplicationDbContext _context;
-
         private readonly UserManager<User> _userManager;
+        private readonly GoogleDriveService _googleDriveService;
 
-        public DocumentController(ApplicationDbContext context, UserManager<User> userManager)
+        public DocumentController(ApplicationDbContext context,
+            UserManager<User> userManager,
+            GoogleDriveService googleDriveService)
         {
             _context = context;
             _userManager = userManager;
+            _googleDriveService = googleDriveService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Ebook(int id)
+        {
+            var document = await _context.Documents.FindAsync(id);
+            string fileUrl = Url.Action("DownloadFile", "GoogleDrive", new { fileId = document.GoogleDriveId });
+            ViewData["DefaultFileUrl"] = fileUrl;
+
+            return View();
         }
 
         public IActionResult Index(string searchString, int? gradeId, int? setId)
@@ -82,7 +96,8 @@ namespace StudyResource.Controllers
                 .ToListAsync(); var viewModel = new DocumentDetailViewModel 
                 { 
                     Id = document.Id, 
-                    Title = document.Title, 
+                    Title = document.Title,
+                    Slug = document.Slug,
                     Description = document.Description,
                     GoogleDriveId = document.GoogleDriveId, 
                     DocumentTypeId = document.DocumentTypeId, 

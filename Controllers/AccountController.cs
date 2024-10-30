@@ -11,7 +11,7 @@ namespace StudyResource.Controllers
 {
     public class AccountController : Controller
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
 

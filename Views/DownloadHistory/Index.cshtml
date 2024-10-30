@@ -1,0 +1,41 @@
+﻿@model IEnumerable<DownloadHistory>
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Lịch sử tải xuống";
+}
+
+<div class="container" style="margin-top: 100px">
+    <h2>Lịch sử tải xuống</h2>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Ngày tải xuống</th>
+                <th>Tên tài liệu</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                int index = 1;
+                foreach (var history in Model)
+                {
+                    <tr>
+                        <td>@index</td>
+                        <td>@history.DownloadDate.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                        <td>@history.Document?.Title</td>
+                    </tr>
+                    index++;
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3" class="text-center">Không có lịch sử tải xuống</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
