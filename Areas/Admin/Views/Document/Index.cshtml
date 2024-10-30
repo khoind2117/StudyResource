@@ -37,7 +37,7 @@
                     <td>@doc.UploadDate.ToString("dd/MM/yyyy")</td>
                     <td>
                         <div class="d-flex flex-column align gap-3">
-                            <a class="btn btn-info btn-sm" href="@Url.Action("Ebook", "Document", new { fileId = doc.GoogleDriveId })">Chi tiết</a>
+                            <a target="_blank" class="btn btn-info btn-sm" href="@Url.Action("Ebook", "Document", new { area = "", id = doc.Id })">Chi tiết</a>
                             <a class="btn btn-warning btn-sm" href="@Url.Action("Update", "Document", new { id = doc.Id })">Cập nhật</a>
                             <a class="btn btn-danger btn-sm"
                                 href="javascript:void(0);"

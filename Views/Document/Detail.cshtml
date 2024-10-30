@@ -51,7 +51,7 @@
                     </a>
                     <h3 class="" style="color: #0c2e60">@Model.Title</h3>
                     <p>@Model.DocumentType?.Name</p></br>
-                    <a class="btn btn_4 btn-sm" target="_blank" href="@Url.Action("Ebook", "Document", new { area = "Admin", fileId = Model.GoogleDriveId })">Đọc</a>
+                    <a class="btn btn_4 btn-sm" target="_blank" href="@Url.Action("Ebook", "Document", new { area = "", id = Model.Id })">Đọc</a>
                     <a href="@downloadLink" class="btn btn_4 btn-sm">Tải</a>
                     <a href="#" class="btn btn_4 btn-sm">Lưu</a>
                 </div>

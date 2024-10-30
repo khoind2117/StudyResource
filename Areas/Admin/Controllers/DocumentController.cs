@@ -369,15 +369,5 @@ namespace StudyResource.Areas.Admin.Controllers
 
             return Ok();
         }
-
-
-        [HttpGet]
-        public async Task<IActionResult> Ebook(string fileId)
-        {
-            string fileUrl = Url.Action("DownloadFile", "GoogleDrive", new { fileId = fileId });
-            ViewData["DefaultFileUrl"] = fileUrl;
-
-            return View();
-        }
     }
 }

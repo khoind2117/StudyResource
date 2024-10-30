@@ -2,7 +2,9 @@
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Google.Apis.Upload;
+using Google.Apis.Download;
 using Google.Apis.Util.Store;
+using Newtonsoft.Json;
 
 namespace StudyResource.Services
 {
@@ -12,7 +14,7 @@ namespace StudyResource.Services
         private readonly string apiKey;
         public GoogleDriveService(IConfiguration configuration)
         {
-            string[] scopes = { DriveService.Scope.Drive, DriveService.Scope.DriveFile, DriveService.Scope.DriveReadonly };
+            string[] scopes = { DriveService.Scope.Drive, DriveService.Scope.DriveReadonly };
 
             var clientId = configuration["GoogleDrive:ClientId"];
             var clientSecret = configuration["GoogleDrive:ClientSecret"];
@@ -88,8 +90,26 @@ namespace StudyResource.Services
             {
                 var request = _driveService.Files.Get(fileId);
                 var stream = new MemoryStream();
+
+                request.MediaDownloader.ProgressChanged += progress =>
+                {
+                    switch (progress.Status)
+                    {
+                        case DownloadStatus.Downloading:
+                            Console.WriteLine($"Downloading: {progress.BytesDownloaded} bytes");
+                            break;
+                        case DownloadStatus.Completed:
+                            Console.WriteLine("Download completed.");
+                            break;
+                        case DownloadStatus.Failed:
+                            Console.WriteLine("Download failed.");
+                            break;
+                    }
+                };
+
                 await request.DownloadAsync(stream);
                 stream.Position = 0;
+
                 if (stream.Length == 0)
                 {
                     throw new Exception("File size is zero bytes.");
@@ -102,18 +122,40 @@ namespace StudyResource.Services
                 return null;
             }
         }
+        public async Task<string> GetFileNameAsync(string fileId)
+        {
+            try
+            {
+                var request = _driveService.Files.Get(fileId);
+                var file = await request.ExecuteAsync();
+                return file.Name;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting file name: {ex.Message}");
+                return null;
+            }
+        }
 
         // Use for uploading file manually
         // Using API Key
         public async Task<Stream> DownloadFileWithApiKeyAsync(string fileId)
         {
-            var requestUri = $"https://www.googleapis.com/drive/v3/files/{fileId}?alt=media&key={apiKey}";
+            var metadataRequestUri = $"https://www.googleapis.com/drive/v3/files/{fileId}?fields=id,name,mimeType,webContentLink&key={apiKey}";
 
             try
             {
                 using (var httpClient = new HttpClient())
                 {
-                    var response = await httpClient.GetAsync(requestUri);
+                    var metadataResponse = await httpClient.GetAsync(metadataRequestUri);
+                    metadataResponse.EnsureSuccessStatusCode();
+
+                    var metadataJson = await metadataResponse.Content.ReadAsStringAsync();
+                    var metadata = JsonConvert.DeserializeObject<Google.Apis.Drive.v3.Data.File>(metadataJson);
+
+                    var downloadUri = metadata.WebContentLink;
+
+                    var response = await httpClient.GetAsync(downloadUri);
                     response.EnsureSuccessStatusCode();
 
                     var stream = await response.Content.ReadAsStreamAsync();
@@ -126,6 +168,31 @@ namespace StudyResource.Services
                 return null;
             }
         }
+
+        public async Task<string> GetFileNameWithApiKeyAsync(string fileId)
+        {
+            var requestUri = $"https://www.googleapis.com/drive/v3/files/{fileId}?fields=name&key={apiKey}";
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var response = await httpClient.GetAsync(requestUri);
+                    response.EnsureSuccessStatusCode();
+
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    dynamic fileMetadata = JsonConvert.DeserializeObject(jsonResponse);
+
+                    return fileMetadata.name;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving file name: {ex.Message}");
+                return null;
+            }
+        }
+
 
         public string GetViewLink(string fileId)
         {
