@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Google.Apis.Drive.v3;
+using Microsoft.AspNetCore.Mvc;
 using StudyResource.Services;
 
-namespace StudyResource.Areas.Admin.Controllers
+namespace StudyResource.Controllers
 {
-    [Area("Admin")]
     public class GoogleDriveController : Controller
     {
         private readonly GoogleDriveService _googleDriveService;
@@ -23,14 +23,19 @@ namespace StudyResource.Areas.Admin.Controllers
 
             try
             {
-                var fileStream = await _googleDriveService.DownloadFileWithApiKeyAsync(fileId);
+                var fileDownloadName = await _googleDriveService.GetFileNameWithApiKeyAsync(fileId);
+                if (fileDownloadName == null)
+                {
+                    return NotFound("File not found");
+                }
 
+                var fileStream = await _googleDriveService.DownloadFileWithApiKeyAsync(fileId);
                 if (fileStream == null)
                 {
                     return NotFound("File not found");
                 }
 
-                return File(fileStream, "application/pdf", "downloaded_file.pdf");
+                return File(fileStream, "application/pdf", fileDownloadName, enableRangeProcessing: true);
             }
             catch (Exception ex)
             {

@@ -40,6 +40,13 @@
 <body>
     <section class="feature_part">
         <div class="container my-5">
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-info" role="alert">
+                    @TempData["Message"]
+                </div>
+            }
+
             <div class="row">
                 <div class="col-md-4 text-center">
                     @{
@@ -51,10 +58,13 @@
                     </a>
                     <h3 class="" style="color: #0c2e60">@Model.Title</h3>
                     <p>@Model.DocumentType?.Name</p></br>
-                    <a class="btn btn_4 btn-sm" target="_blank" href="@Url.Action("Ebook", "Document", new { area = "Admin", fileId = Model.GoogleDriveId })">Đọc</a>
+                    <a class="btn btn_4 btn-sm" target="_blank" href="@Url.Action("Ebook", "Document", new { area = "", id = Model.Id })">Đọc</a>
                     <a href="@downloadLink" class="btn btn_4 btn-sm">Tải</a>
-                    <a href="#" class="btn btn_4 btn-sm" id="add-to-favorite" data-document-id="@Model.Id">Lưu</a>
-@*                     <a href="#" class="btn btn_4 btn-sm">Lưu</a> *@
+                    <form method="post" action="@Url.Action("AddToFavorite", "Favorite")" style="display:inline;">
+                        <input type="hidden" name="documentId" value="@Model.Id" />
+                        <button type="submit" class="btn btn_4 btn-sm">Lưu</button>
+                    </form>
+                    @* <a href="@Url.Action("AddToFavorite", "Favorite")"" class="btn btn_4 btn-sm">Lưu</a> *@
                 </div>
                 <div class="col-md-8">
                     <div class="book-set-filter">
@@ -125,7 +135,7 @@
                                                 <h6>${response.username} <small class="text-muted">(${response.commentDate})</small></h6>
                                                 <p>${response.comment}</p>
                                             </div>
-                                        </li>`
+                                </li>`
                             );
 
                             // Clear the textarea after submitting
@@ -135,31 +145,7 @@
                             alert('Something went wrong. Please try again.');
                         }
                     });
-                });
-
-                const addToFavoriteUrl = '@Url.Action("AddToFavorite", "Favorite")';
-
-                $('#add-to-favorite').on('click', function (e) {
-                    e.preventDefault();
-
-                    var documentId = $(this).data('document-id');
-                    $.ajax({
-                        url: addToFavoriteUrl,
-                        type: 'POST',
-                        data: { documentId: documentId },
-                        success: function (response) {
-                            if (response.success) {
-                                alert(response.message);
-                            } else {
-                                alert("Error: " + response.message);
-                            }
-                        },
-                        error: function () {
-                            alert("An error occurred while adding the document to favorites.");
-                        }
-                    });
-                });
-            });
+             });
         </script>
     }
 

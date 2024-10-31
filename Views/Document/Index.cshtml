@@ -1,7 +1,7 @@
 ﻿@model List<StudyResource.Models.Document>
 
 @{
-ViewData["Title"] = "Document";
+    ViewData["Title"] = "Document";
 }
 
 <head>
@@ -146,7 +146,7 @@ ViewData["Title"] = "Document";
                                     <div class="card" style="border: none">
                                         <div class="card-body">
                                             <a asp-controller="Document" asp-action="Detail" asp-route-id="@document.Id">
-                                                <img referrerPolicy="no-referrer" src="@thumbnailLink" alt="Document" class="img-fluid" />
+                                                <img referrerPolicy="no-referrer" src="@thumbnailLink" alt="@document.Title" class="img-fluid" />
                                                 <h5 class="card-title mt-3" style="color: #0c2e60">@document.Title</h5>
                                             </a>
                                             <p>@document.DocumentType?.Name</p>

@@ -1,6 +1,8 @@
 ﻿@model IEnumerable<StudyResource.Models.Favorite>
 
-<h2>Danh Sách Tài Liệu Yêu Thích</h2>
+@{
+    ViewData["Title"] = "Favorite Documents";
+}
 
 @if (!Model.Any())
 {
@@ -8,25 +10,56 @@
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Tiêu Đề</th>
-                <th>Mô Tả</th>
-                <th>Hành Động</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var favorite in Model)
-            {
-                <tr>
-                    <td>@favorite.Document.Title</td>
-                    <td>@favorite.Document.Description</td>
-                    <td>
-                        <a href="@Url.Action("Detail", "Document", new { id = favorite.DocumentId })" class="btn btn-primary">Xem Chi Tiết</a>
-                    </td>
-                </tr>
+    <title>@ViewData["Title"] - StudyResource</title>
+
+    <section class="blog_part section_padding" style="padding: 160px 0px;">
+        <div class="container mt-5"> 
+            <h2>Tài liệu yêu thích</h2>
+            <div class="row"> 
+                @foreach (var favorite in Model)
+                {
+                    var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={favorite.Document.GoogleDriveId}";
+
+                    <div class="col-sm-6 col-lg-4 col-xl-4 d-flex justify-content-center">
+                        <div class="single-home-blog text-center">
+                            <div class="card" style="border: none">
+                                <div class="card-body">
+                                    <a asp-controller="Document" asp-action="Detail" asp-route-id="@favorite.Document.Id">
+                                        <img referrerPolicy="no-referrer" src="@thumbnailLink" alt="Document" class="img-fluid" />
+                                        <h5 class="card-title mt-3" style="color: #0c2e60">@favorite.Document.Title</h5>
+                                    </a>
+                                    <a href="@Url.Action("Detail", "Document", new { id = favorite.Document.Id })" class="genric-btn info-border circle" style="font-size: 15px; margin-right: 20px; color: black">Xem chi tiết</a>
+                                    @* <a href="@Url.Action("Remove", "Favorite", new { documentId = favorite.Document.Id })" class="genric-btn danger-border circle" style="font-size: 15px; text-decoration: none; color: black">Xóa</a> *@
+                                    <button class="genric-btn danger-border circle" style="font-size: 15px; text-decoration: none; color: black" onclick="removeFavorite(@favorite.Document.Id)">Xóa</button>
+                                </div> 
+                            </div> 
+                        </div>
+                    </div>
+                } 
+            </div> 
+        </div>
+    </section>
+}
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        function removeFavorite(documentId) {
+            if (confirm('Bạn có chắc chắn muốn xóa tài liệu này khỏi danh sách yêu thích không?')) {
+                $.ajax({
+                    url: '@Url.Action("Remove", "Favorite")', 
+                    type: 'POST',
+                    data: { documentId: documentId },
+                    success: function (result) {
+                        // Remove the favorite document card from the page
+                        $('#favorite-' + documentId).remove();
+                        alert('Đã xóa tài liệu khỏi danh sách yêu thích');
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Có lỗi xảy ra khi xóa tài liệu khỏi danh sách yêu thích.');
+                    }
+                });
             }
-        </tbody>
-    </table>
+        }
+    </script>
 }

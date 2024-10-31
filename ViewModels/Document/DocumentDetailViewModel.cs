@@ -6,6 +6,7 @@ namespace StudyResource.ViewModels.Document
     {
         public int Id { get; set; }
         public required string Title { get; set; }
+        public required string Slug { get; set; }
         public required string Description { get; set; }
         public int DocumentTypeId { get; set; }
         public virtual Models.DocumentType? DocumentType { get; set; }
