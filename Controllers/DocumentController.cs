@@ -104,7 +104,9 @@ namespace StudyResource.Controllers
                     return NotFound(); 
                 }
 
-                var user = await _userManager.GetUserAsync(User); var userComment = new UserComment
+                var user = await _userManager.GetUserAsync(User); 
+                
+                var userComment = new UserComment
                 {
                     UserId = user?.Id,
                     CommentDate = DateTime.Now,
