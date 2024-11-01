@@ -75,37 +75,44 @@ namespace StudyResource.Controllers
             return View(documents.ToList());
         }
 
-        [HttpGet] public async Task<IActionResult> Detail(int id) 
-        { 
+        [HttpGet] public async Task<IActionResult> Detail(int id)
+        {
             var document = await _context.Documents
                 .Include(d => d.DocumentType)
                 .Include(d => d.Set)
-                .FirstOrDefaultAsync(d => d.Id == id); 
-            
-            if (document == null) 
-            { 
-                return NotFound(); 
-            } 
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            if (document == null)
+            {
+                return NotFound();
+            }
+
             var comments = await _context.UserComments
                 .Where(c => c.DocumentId == id)
-                .Select(c => new DocumentDetailViewModel.UserComment 
+                .Select(c => new DocumentDetailViewModel.UserComment
                 {
+                    Id = c.Id, 
                     Username = c.User != null ? c.User.UserName : "Anonymous",
-                    Comment = c.Comment, Rating = c.Rating, CommentDate = c.CommentDate 
+                    Comment = c.Comment,
+                    Rating = c.Rating,
+                    CommentDate = c.CommentDate
                 })
-                .ToListAsync(); var viewModel = new DocumentDetailViewModel 
-                { 
-                    Id = document.Id, 
-                    Title = document.Title,
-                    Slug = document.Slug,
-                    Description = document.Description,
-                    GoogleDriveId = document.GoogleDriveId, 
-                    DocumentTypeId = document.DocumentTypeId, 
-                    DocumentType = document.DocumentType, 
-                    UserNotes = string.Empty, 
-                    UserComments = comments }; 
-            
-            return View(viewModel); 
+                .ToListAsync();
+
+            var viewModel = new DocumentDetailViewModel
+            {
+                Id = document.Id,
+                Title = document.Title,
+                Slug = document.Slug,
+                Description = document.Description,
+                GoogleDriveId = document.GoogleDriveId,
+                DocumentTypeId = document.DocumentTypeId,
+                DocumentType = document.DocumentType,
+                UserNotes = string.Empty,
+                UserComments = comments
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -113,33 +120,52 @@ namespace StudyResource.Controllers
         {
             if (ModelState.IsValid)
             {
-                var document = await _context.Documents.FirstOrDefaultAsync(d => d.GoogleDriveId == GoogleDriveId); 
-                if (document == null) 
+                var document = await _context.Documents.FirstOrDefaultAsync(d => d.GoogleDriveId == GoogleDriveId);
+                if (document == null)
                 {
-                    return NotFound(); 
+                    return NotFound();
                 }
 
-                var user = await _userManager.GetUserAsync(User); 
-                
+                var user = await _userManager.GetUserAsync(User);
+
                 var userComment = new UserComment
                 {
                     UserId = user?.Id,
                     CommentDate = DateTime.Now,
                     Comment = Comment,
                     DocumentId = document.Id,
-                    Rating = 0  
+                    Rating = 0
                 };
 
-                _context.UserComments
-                    .Add(userComment); 
-                await _context.SaveChangesAsync(); 
+                _context.UserComments.Add(userComment);
+                await _context.SaveChangesAsync();
 
-                return Json(new {
-                    username = user?.UserName ?? "Anonymous", 
-                    commentDate = userComment.CommentDate.ToShortDateString(),
-                    comment = userComment.Comment }); 
+                return RedirectToAction("Detail", new { id = document.Id });
             }
-            
-            return BadRequest(); }
+
+            return BadRequest();
         }
+
+        [HttpPost]
+        public IActionResult DeleteComment(int id)
+        {
+            try
+            {
+                var comment = _context.UserComments.Find(id);
+                if (comment != null)
+                {
+                    _context.UserComments.Remove(comment);
+                    _context.SaveChanges();
+
+                    return RedirectToAction("Detail", new { id = comment.DocumentId });
+                }
+                return NotFound("Không tìm thấy bình luận để xóa.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Có lỗi xảy ra: " + ex.Message);
+            }
+        }
+
+    }
 }
