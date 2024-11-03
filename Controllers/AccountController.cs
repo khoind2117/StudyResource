@@ -1,11 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using StudyResource.Data;
 using StudyResource.Models;
 using StudyResource.ViewModels.Account;
 using System.Text;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Web.Helpers;
 
 namespace StudyResource.Controllers
 {
@@ -14,14 +20,17 @@ namespace StudyResource.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly ILogger<AccountController> _logger;
 
         public AccountController(ApplicationDbContext context,
             UserManager<User> userManager,
-            SignInManager<User> signInManager)
+            SignInManager<User> signInManager,
+            ILogger<AccountController> logger)
         {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
+            _logger = logger;
         }
 
         public IActionResult Index()
@@ -128,5 +137,99 @@ namespace StudyResource.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpGet]
+        public ActionResult Manage()
+        {
+            var user = _context.Users.SingleOrDefault(u => u.UserName == User.Identity.Name);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var viewModel = new ManageViewModel
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Manage(ManageViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("Manage", model);
+            }
+
+            var user = _context.Users.SingleOrDefault(u => u.UserName == User.Identity.Name);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            user.Email = model.Email;
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.PhoneNumber = model.PhoneNumber;
+
+            _context.SaveChanges();
+
+            TempData["SuccessMessage"] = "Cập nhật thông tin cá nhân thành công!";
+            return RedirectToAction("Manage", "Account");
+        }
+
+        // Change password ================================================================================================
+
+       /* [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View(new ChangePasswordViewModel());
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("Manage", model);
+            }
+
+            var user = _context.Users.SingleOrDefault(u => u.UserName == User.Identity.Name);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Kiểm tra mật khẩu hiện tại
+            var result = _userManager.CheckPasswordAsync(user, model.OldPassword).Result;
+            if (!result)
+            {
+                ModelState.AddModelError(string.Empty, "Mật khẩu hiện tại không đúng.");
+                return View(model);
+            }
+
+            // Thay đổi mật khẩu
+            var changePasswordResult = _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword).Result;
+            if (!changePasswordResult.Succeeded)
+            {
+                foreach (var error in changePasswordResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(model);
+            }
+
+            TempData["SuccessMessage"] = "Đổi mật khẩu thành công!";
+            return RedirectToAction("Manage", "Account");
+        }*/
     }
 }
