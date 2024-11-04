@@ -63,7 +63,6 @@
             <div class="row">
                 <div class="col-md-4 text-center">
                     @{
-                        var downloadLink = $"https://drive.google.com/uc?export=download&id={Model.GoogleDriveId}";
                         var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={Model.GoogleDriveId}";
                     }
                     <a href="@thumbnailLink" target="_blank">
@@ -72,12 +71,12 @@
                     <h3 class="" style="color: #0c2e60">@Model.Title</h3>
                     <p>@Model.DocumentType?.Name</p></br>
                     <a class="btn btn_4 btn-sm" target="_blank" href="@Url.Action("Ebook", "Document", new { area = "", id = Model.Id })">Đọc</a>
-                    <a href="@downloadLink" class="btn btn_4 btn-sm">Tải</a>
+                    <a class="btn btn_4 btn-sm" id="downloadButton" href="javascript:void(0);">Tải</a>
                     <form method="post" action="@Url.Action("AddToFavorite", "Favorite")" style="display:inline;">
                         <input type="hidden" name="documentId" value="@Model.Id" />
                         <button type="submit" class="btn btn_4 btn-sm">Lưu</button>
                     </form>
-                    @* <a href="@Url.Action("AddToFavorite", "Favorite")"" class="btn btn_4 btn-sm">Lưu</a> *@
+                    @* <a href="@Url.Action("AddToFavorite", "Favorite")"" class="btn btn_4 btn-sm">Lưu</a> *@                
                 </div>
                 <div class="col-md-8">
                     <div class="book-set-filter">
@@ -141,7 +140,6 @@
         </div>
     </section>
 
-
     <!-- jquery plugins here-->
     <!-- jquery -->
     <script src="~/etrain-master/js/jquery-1.12.1.min.js"></script>
@@ -164,5 +162,80 @@
     <script src="~/etrain-master/js/waypoints.min.js"></script>
     <!-- custom js -->
     <script src="~/etrain-master/js/custom.js"></script>
- 
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#commentForm').on('submit', function (e) {
+                e.preventDefault();
+
+                var formData = $(this).serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("SubmitComment", "Document")',
+                    data: formData,
+                    success: function (response) {
+                        // Add new comment to the comment list
+                        $('#commentList').append(
+                            `<li class="media my-3">
+                                        <div class="media-body">
+                                            <h6>${response.username} <small class="text-muted">(${response.commentDate})</small></h6>
+                                            <p>${response.comment}</p>
+                                        </div>
+                                    </li>`
+                        );
+
+                        // Clear the textarea after submitting
+                        $('#comment').val('');
+                    },
+                    error: function (response) {
+                        alert('Something went wrong. Please try again.');
+                    }
+                });
+            });
+
+            // Download Btn
+            $('#downloadButton').click(function () {
+                const fileId = '@Model.GoogleDriveId';
+
+                window.location.href = `/GoogleDrive/DownloadFile?fileId=${fileId}`;
+
+                const userId = '@User.Identity.Name';
+                const documentId = @Model.Id
+                $.ajax({
+                    url: `/DownloadHistory/SaveHistory?userId=${encodeURIComponent(userId)}&documentId=${documentId}`,
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: "json",
+                    success: function (response) {
+                        console.log("Đã lưu lịch sử tải xuống thành công:", response);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: 'Tải xuống thành công.',
+                            toast: true,
+                            position: 'bottom-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Lưu lịch sử tải xuống thất bại:', xhr.responseText);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: 'Không thể tải xuống.',
+                            toast: true,
+                            position: 'bottom-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 </body>
