@@ -32,7 +32,7 @@ namespace StudyResource.Controllers
             var document = await _context.Documents.FindAsync(id);
             string fileUrl = Url.Action("DownloadFile", "GoogleDrive", new { fileId = document.GoogleDriveId });
             ViewData["DefaultFileUrl"] = fileUrl;
-
+            ViewData["DocId"] = document.Id;
             return View();
         }
 
