@@ -28,21 +28,85 @@
     <script src="~/pdf-viewer-master/external/turn.min.js"></script>
     <link rel="stylesheet" href="~/pdf-viewer-master/pdf-turn/pdf-turn.css">
     <script src="~/pdf-viewer-master/pdf-turn/pdf-turn.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const defaultUrl = "@ViewData["DefaultFileUrl"]";
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Load PDF
+        document.addEventListener("DOMContentLoaded", function () {
+            const defaultUrl = "@Html.Raw(ViewData["DefaultFileUrl"])";
+            const mainBody = document.getElementById('mainBody');
+
+            Swal.fire({
+                title: 'Đang tải PDF...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            mainBody.setAttribute('inert', 'true');
+            
             if (window.PDFViewerApplicationOptions) {
                 PDFViewerApplicationOptions.set('defaultUrl', defaultUrl);
                 PDFViewerApplication.open(defaultUrl);
             }
         });
+
+        document.addEventListener("pagesloaded", function () {
+            Swal.close();
+            console.log("PDF đã tải xong.");
+            mainBody.removeAttribute('inert');
+        });
+    </script>
+    <script>
+        // Track Download
+        $(document).ready(function () {
+            const userId_Val = '@User.Identity.Name';
+            const documentId_Val = @ViewData["DocId"];
+
+            const url = `/DownloadHistory/SaveHistory?userId=${encodeURIComponent(userId_Val)}&documentId=${documentId_Val}`;
+            $('#download').click(function () {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: "json",
+                    success: function (response) {
+                        console.log("Đã lưu lịch sử tải xuống thành công:", response);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: 'Tải xuống thành công.',
+                            toast: true,
+                            position: 'bottom-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Lưu lịch sử tải xuống thất bại:', xhr.responseText);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: 'Không thể tải xuống.',
+                            toast: true,
+                            position: 'bottom-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+                    }
+                });
+            });
+        });
     </script>
 </head>
 
-<body tabindex="1" class="loadingInProgress">
+<body tabindex="1" class="loadingInProgress" id="mainBody">
     <div id="outerContainer">
-
         <div id="sidebarContainer">
             <div id="toolbarSidebar">
                 <div class="splitToolbarButton toggled">

@@ -25,5 +25,26 @@ namespace StudyResource.Controllers
             return View(downloadHistories);
         }
 
+        [HttpPost]
+        public async Task<ActionResult> SaveHistory(string? userId, int documentId)
+        {
+            if (documentId <= 0)
+            {
+                return BadRequest("Invalid data.");
+            }
+
+            var downloadHistory = new DownloadHistory
+            {
+                UserId = userId,
+                DocumentId = documentId,
+                DownloadDate = DateTime.Now
+            };
+
+            _context.DownloadHistories.Add(downloadHistory);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Lưu lịch sử tải xuống thành công." });    
+        }
+
     }
 }
