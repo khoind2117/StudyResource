@@ -63,10 +63,10 @@
     <script>
         // Track Download
         $(document).ready(function () {
-            const userId_Val = '@User.Identity.Name';
+            const userName_Val = '@User.Identity.Name';
             const documentId_Val = @ViewData["DocId"];
 
-            const url = `/DownloadHistory/SaveHistory?userId=${encodeURIComponent(userId_Val)}&documentId=${documentId_Val}`;
+            const url = `/DownloadHistory/SaveHistory?userName=${encodeURIComponent(userName_Val)}&documentId=${documentId_Val}`;
             $('#download').click(function () {
                 $.ajax({
                     url: url,
