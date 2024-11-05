@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using StudyResource.Data;
 using StudyResource.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace StudyResource.Controllers
 {
@@ -26,11 +27,23 @@ namespace StudyResource.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> SaveHistory(string? userId, int documentId)
+        public async Task<ActionResult> SaveHistory(string? userName, int documentId)
         {
             if (documentId <= 0)
             {
                 return BadRequest("Invalid data.");
+            }
+
+            string? userId = null;
+
+            if (!string.IsNullOrEmpty(userName))
+            {
+                var user = await _context.Users.SingleOrDefaultAsync(u => u.UserName == userName);
+                if (user == null)
+                {
+                    return NotFound("User not found.");
+                }
+                userId = user.Id;
             }
 
             var downloadHistory = new DownloadHistory
@@ -45,6 +58,5 @@ namespace StudyResource.Controllers
 
             return Ok(new { message = "Lưu lịch sử tải xuống thành công." });    
         }
-
     }
 }

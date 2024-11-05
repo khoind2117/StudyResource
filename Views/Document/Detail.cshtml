@@ -201,10 +201,10 @@
 
                 window.location.href = `/GoogleDrive/DownloadFile?fileId=${fileId}`;
 
-                const userId = '@User.Identity.Name';
+                const userName = '@User.Identity.Name';
                 const documentId = @Model.Id
                 $.ajax({
-                    url: `/DownloadHistory/SaveHistory?userId=${encodeURIComponent(userId)}&documentId=${documentId}`,
+                    url: `/DownloadHistory/SaveHistory?userName=${encodeURIComponent(userName)}&documentId=${documentId}`,
                     type: 'POST',
                     contentType: 'application/json; charset=utf-8',
                     dataType: "json",
