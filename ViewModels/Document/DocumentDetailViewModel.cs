@@ -9,10 +9,11 @@ namespace StudyResource.ViewModels.Document
         public required string Slug { get; set; }
         public required string Description { get; set; }
         public int DocumentTypeId { get; set; }
+        public virtual GradeSubject? GradeSubject { get; set; }
         public virtual Models.DocumentType? DocumentType { get; set; }
         public string? GoogleDriveId { get; set; }
-        public string? UserNotes { get; set; }  
         public List<UserComment> UserComments { get; set; } = new List<UserComment>();
+        public List<Models.Document> RelatedBooks { get; set; } = new List<Models.Document>(); 
 
         public class UserComment
         {

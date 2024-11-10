@@ -31,11 +31,12 @@
         .grade-heading {
             color: dimgrey;
             margin: 0;
+            margin-right: 10px;
         }
 
-            .grade-heading:hover {
-                color: #0c2e60;
-            }
+        .grade-heading:hover {
+            color: #0c2e60;
+        }
 
         .container-center {
             display: flex;
@@ -47,6 +48,10 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
+        }
+
+        .selected-text {
+            color: #0c2e60;
         }
     </style>
 </head>
@@ -92,15 +97,17 @@
         </section>
         <!-- search end -->
         <!-- select grade start -->
-        <section class="feature_part">
-            <div class="container container-center"> 
-                <div class="row-center"> 
-                    @for (int i = 1; i <= 12; i++)
-                    {
-                        <button class="btn-class-filter" onclick="location.href='@Url.Action("Index", new { GradeId = i, SetId = ViewBag.CurrentSetId })'"> <h2 class="grade-heading">@i</h2> </button>
-                    } 
-                </div>
-            </div>
+    <section class="feature_part">
+        <div class="container container-center"> 
+            <div class="row-center">
+                @for (int i = 1; i <= 12; i++)
+                {
+                    <button class="btn-class-filter" onclick="location.href='@Url.Action("Index", new { GradeId = i, SetId = ViewBag.CurrentSetId })'">
+                        <h2 class="grade-heading @(ViewBag.CurrentGradeId == i ? "selected-text" : "")">@i</h2> 
+                    </button>
+                }
+            </div> 
+        </div>
         </section>
         <!-- select grade end -->
         <!-- select set start -->
@@ -109,21 +116,21 @@
                 <div class="book-set-filter">
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
-                            <a class="nav-link"
-                               href="@Url.Action("Index", new { SetId = 1, GradeId = ViewBag.CurrentGradeId })">
-                                <h2 class="grade-heading">Cánh diều</h2>
+                            <a class="nav-link" 
+                                href="@Url.Action("Index", new { SetId = 1, GradeId = ViewBag.CurrentGradeId })">
+                                <h2 class="grade-heading @(ViewBag.CurrentSetId == 1 ? "selected-text" : "")">Cánh diều</h2>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link"
-                               href="@Url.Action("Index", new { SetId = 2, GradeId = ViewBag.CurrentGradeId })">
-                                <h2 class="grade-heading">Chân trời sáng tạo</h2>
+                            <a class="nav-link" 
+                                href="@Url.Action("Index", new { SetId = 2, GradeId = ViewBag.CurrentGradeId })">
+                                <h2 class="grade-heading @(ViewBag.CurrentSetId == 2 ? "selected-text" : "")">Chân trời sáng tạo</h2>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link"
-                               href="@Url.Action("Index", new { SetId = 3, GradeId = ViewBag.CurrentGradeId })">
-                                <h2 class="grade-heading">Kết nối tri thức</h2>
+                            <a class="nav-link" 
+                                href="@Url.Action("Index", new { SetId = 3, GradeId = ViewBag.CurrentGradeId })">
+                                <h2 class="grade-heading @(ViewBag.CurrentSetId == 3 ? "selected-text" : "")">Kết nối tri thức</h2>
                             </a>
                         </li>
                     </ul>
@@ -147,7 +154,7 @@
                                         <div class="card-body">
                                             <a asp-controller="Document" asp-action="Detail" asp-route-id="@document.Id">
                                                 <img referrerPolicy="no-referrer" src="@thumbnailLink" alt="@document.Title" class="img-fluid" />
-                                                <h5 class="card-title mt-3" style="color: #0c2e60">@document.Title</h5>
+                                            <h5 class="card-title mt-3" style="color: #0c2e60; font-size: 19px; font-weight: 600;">@document.Title</h5>
                                             </a>
                                             <p>@document.DocumentType?.Name</p>
                                         </div>
@@ -171,7 +178,7 @@
                                         <div class="card-body">
                                             <a asp-controller="Document" asp-action="Detail" asp-route-id="@document.Id">
                                                 <img referrerPolicy="no-referrer" src="@thumbnailLink" alt="Document" class="img-fluid" />
-                                                <h5 class="card-title mt-3" style="color: #0c2e60">@document.Title</h5>
+                                                <h5 class="card-title mt-3" style="color: #0c2e60; font-size: 19px; font-weight: 600;">@document.Title</h5>
                                             </a>
                                             <p>@document.DocumentType?.Name</p>
                                         </div>
@@ -195,7 +202,7 @@
                                         <div class="card-body">
                                             <a asp-controller="Document" asp-action="Detail" asp-route-id="@document.Id">
                                                 <img referrerPolicy="no-referrer" src="@thumbnailLink" alt="Document" class="img-fluid" />
-                                                <h5 class="card-title mt-3" style="color: #0c2e60">@document.Title</h5>
+                                            <h5 class="card-title mt-3" style="color: #0c2e60; font-size: 19px; font-weight: 600;">@document.Title</h5>
                                             </a>
                                             <p>@document.DocumentType?.Name</p>
                                         </div>
