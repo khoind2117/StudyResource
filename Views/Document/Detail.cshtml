@@ -103,20 +103,14 @@
 
     <section class="feature_part">
         <div class="container my-5">
-@*             @if (TempData["Message"] != null)
-            {
-                <div class="alert alert-info" role="alert">
-                    @TempData["Message"]
-                </div>
-            } *@
 
-            <!-- Breadcrumb --> 
+            <!-- breadcrumb --> 
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Document")">Tài liệu</a></li>
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Document", new { SetId = Model.DocumentTypeId, GradeId = Model.GradeSubject.GradeId })">@Model.DocumentType?.Name</a></li>
                     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Document", new { GradeId = Model.GradeSubject.GradeId, SetId = Model.DocumentTypeId })">@Model.GradeSubject.Grade.Name</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+                    <li class="breadcrumb-item active" style="font-size: 16px" aria-current="page">@Model.Title</li>
                 </ol>
             </nav>
             </br>
@@ -148,7 +142,7 @@
                                 <a class="nav-link" data-toggle="tab" href="#tab-comments"><h4>Đánh giá</h4></a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#tab-notes"><h4>Ghi chú</h4></a>
+                                <a class="nav-link" data-toggle="tab" href="#tab-notes"><h4>Sách liên quan</h4></a>
                             </li>
                         </ul>
                         <div class="tab-content mt-4">
@@ -191,7 +185,9 @@
                             </div>
 
                             <div id="tab-notes" class="tab-pane fade">
-                                <p>Ghi chú</p>
+                                <div id="related-books">
+
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -200,7 +196,7 @@
         </div>
     </section>
     @section Scripts {
-        <script>$(document).ready(function () { var documentId = '@Model.Id'; $('#related-books').load('/Document/RelatedBooks/' + documentId); });</script>
+        <script>$(document).ready(function () { var gradeSubjectId = '@Model.GradeSubject.Id'; var documentTypeId = '@Model.DocumentTypeId'; $('#related-books').load('/Document/RelatedBooks?gradeSubjectId=' + gradeSubjectId + '&documentTypeId=' + documentTypeId); });</script>
     }
 
     <!-- jquery plugins here-->

@@ -47,23 +47,20 @@
 </style>
 
 
-<div class="related-books d-flex flex-wrap">
-    @foreach (var book in Model.Take(6))
+<div class="related-books d-flex flex-wrap"> @foreach (var book in Model)
     {
         string thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={book.GoogleDriveId}";
-
-        <div class="col-md-4 d-flex justify-content-center mb-4">
-            <div class="single-home-blog text-center">
-                <div class="card" style="border: none">
-                    <div class="card-body">
-                        <a asp-controller="Document" asp-action="Detail" asp-route-id="@book.Id">
-                            <img referrerpolicy="no-referrer" src="@thumbnailLink" alt="Document" class="img-fluid" />
-                            <h5 class="card-title mt-3" style="color: #0c2e60; font-size: 19px; font-weight: 600;">@book.Title</h5>
-                        </a>
-                        <p>@book.DocumentType?.Name</p>
-                    </div>
-                </div>
-            </div>
+        <div class="col-md-4 d-flex justify-content-center mb-4"> 
+            <div class="single-home-blog text-center"> 
+                <div class="card" style="border: none"> 
+                    <div class="card-body"> 
+                        <a asp-controller="Document" asp-action="Detail" asp-route-id="@book.Id"> 
+                            <img referrerpolicy="no-referrer" src="@thumbnailLink" alt="Document" class="img-fluid" /> 
+                            <h5 class="card-title mt-3" style="color: #0c2e60; font-size: 19px; font-weight: 600;">@book.Title</h5> 
+                        </a> 
+                        <p>@book.DocumentType?.Name</p> 
+                    </div> 
+                </div> 
+            </div> 
         </div>
-    }
-</div>
+    } </div>

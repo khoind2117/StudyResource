@@ -75,7 +75,8 @@ namespace StudyResource.Controllers
             return View(documents.ToList());
         }
 
-        [HttpGet] public async Task<IActionResult> Detail(int id)
+        [HttpGet] 
+        public async Task<IActionResult> Detail(int id)
         {
             var document = await _context.Documents
                 .Include(d => d.DocumentType)
@@ -110,27 +111,39 @@ namespace StudyResource.Controllers
                 DocumentTypeId = document.DocumentTypeId,
                 DocumentType = document.DocumentType,
                 GradeSubject = document.GradeSubject,
-                UserComments = comments
+                UserComments = comments,
+                RelatedBooks = new List<Models.Document>() 
             };
 
             return View(viewModel);
         }
 
+        /* [HttpGet]
+         public async Task<IActionResult> RelatedBooks(int id)
+         {
+             var document = await _context.Documents
+                 .Include(d => d.DocumentType)
+                 .Include(d => d.Set)
+                 .FirstOrDefaultAsync(d => d.Id == id);
+
+             if (document == null)
+             {
+                 return NotFound();
+             }
+
+             var relatedBooks = await _context.Documents
+                 .Where(d => d.Id != id && (d.GradeSubjectId == document.GradeSubjectId || d.SetId == document.SetId))
+                 .ToListAsync();
+
+             return PartialView("_RelatedBooksPartial", relatedBooks);
+         }*/
         [HttpGet]
-        public async Task<IActionResult> RelatedBooks(int id)
+        public async Task<IActionResult> RelatedBooks(int gradeSubjectId, int documentTypeId)
         {
-            var document = await _context.Documents
-                .Include(d => d.DocumentType)
-                .Include(d => d.Set)
-                .FirstOrDefaultAsync(d => d.Id == id);
-
-            if (document == null)
-            {
-                return NotFound();
-            }
-
             var relatedBooks = await _context.Documents
-                .Where(d => d.Id != id && (d.GradeSubjectId == document.GradeSubjectId || d.SetId == document.SetId))
+                .Include(d => d.DocumentType)
+                .Where(d => d.GradeSubjectId == gradeSubjectId || d.DocumentTypeId == documentTypeId)
+                .Take(6)
                 .ToListAsync();
 
             return PartialView("_RelatedBooksPartial", relatedBooks);
