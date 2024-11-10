@@ -35,31 +35,85 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <style> 
-        #comments-section 
-        { 
-            max-height: 400px; overflow-y: auto; 
+    <style>
+        .breadcrumb:after {
+            background-color: #f3f6fb;
+        }
+
+        .breadcrumb-item a {
+            font-size: 16px;
+            color: #000000;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item a:hover{
+            color: #0c2e60;
+            text-decoration: none;
+        }
+
+        #comments-section {
+            max-height: 400px;
+            overflow-y: auto;
         }
 
         .delete-comment {
             cursor: pointer;
-            font-size: 1.2em; 
+            font-size: 1.2em;
             margin-left: 10px;
         }
 
-    </style> 
+        .nav-tabs .nav-link {
+            color: gray; 
+            font-weight: bold; 
+            border: 1px solid transparent;
+            border-radius: .25rem;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            background-color: #f8f9fa;
+            color: #0c2e60; 
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #0c2e60;
+            background-color: #fff;
+            border-color: #dee2e6 #dee2e6 #fff;
+            font-weight: bold; 
+        }
+
+        .nav-tabs .nav-link h4 {
+            color: gray;
+            margin-bottom: 0;
+            font-weight: bold;
+        }
+
+        .nav-tabs .nav-link:hover h4 {
+            color: #0c2e60;
+        }
+
+        .nav-tabs .nav-link.active h4 {
+            color: #0c2e60; 
+        }
+    </style>
+
 
 </head>
 <body>
+
     <section class="feature_part">
         <div class="container my-5">
-            @if (TempData["Message"] != null)
-            {
-                <div class="alert alert-info" role="alert">
-                    @TempData["Message"]
-                </div>
-            }
 
+            <!-- breadcrumb --> 
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Document")">Tài liệu</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Document", new { SetId = Model.DocumentTypeId, GradeId = Model.GradeSubject.GradeId })">@Model.DocumentType?.Name</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Document", new { GradeId = Model.GradeSubject.GradeId, SetId = Model.DocumentTypeId })">@Model.GradeSubject.Grade.Name</a></li>
+                    <li class="breadcrumb-item active" style="font-size: 16px" aria-current="page">@Model.Title</li>
+                </ol>
+            </nav>
+            </br>
             <div class="row">
                 <div class="col-md-4 text-center">
                     @{
@@ -76,7 +130,7 @@
                         <input type="hidden" name="documentId" value="@Model.Id" />
                         <button type="submit" class="btn btn_4 btn-sm">Lưu</button>
                     </form>
-                    @* <a href="@Url.Action("AddToFavorite", "Favorite")"" class="btn btn_4 btn-sm">Lưu</a> *@                
+                    @* <a href="@Url.Action("AddToFavorite", "Favorite")"" class="btn btn_4 btn-sm">Lưu</a> *@
                 </div>
                 <div class="col-md-8">
                     <div class="book-set-filter">
@@ -88,7 +142,7 @@
                                 <a class="nav-link" data-toggle="tab" href="#tab-comments"><h4>Đánh giá</h4></a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#tab-notes"><h4>Ghi chú</h4></a>
+                                <a class="nav-link" data-toggle="tab" href="#tab-notes"><h4>Sách liên quan</h4></a>
                             </li>
                         </ul>
                         <div class="tab-content mt-4">
@@ -131,7 +185,9 @@
                             </div>
 
                             <div id="tab-notes" class="tab-pane fade">
-                                <p>Ghi chú</p>
+                                <div id="related-books">
+
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -139,6 +195,9 @@
             </div>
         </div>
     </section>
+    @section Scripts {
+        <script>$(document).ready(function () { var gradeSubjectId = '@Model.GradeSubject.Id'; var documentTypeId = '@Model.DocumentTypeId'; $('#related-books').load('/Document/RelatedBooks?gradeSubjectId=' + gradeSubjectId + '&documentTypeId=' + documentTypeId); });</script>
+    }
 
     <!-- jquery plugins here-->
     <!-- jquery -->

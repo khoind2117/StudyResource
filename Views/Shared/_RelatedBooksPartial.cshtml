@@ -1,0 +1,66 @@
+﻿@model List<StudyResource.Models.Document>
+
+<style>
+    .related-books {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .related-books > div {
+        flex: 1 0 30%; 
+        max-width: 30%;
+        box-sizing: border-box;
+        padding: 15px; 
+        justify-content: space-around
+    }
+
+    .related-books .card {
+        width: 100%;
+        border: 1px solid #dee2e6;
+        border-radius: .25rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+    }
+
+    .related-books .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .related-books .card-img-top {
+        max-height: 200px;
+        object-fit: cover;
+    }
+
+    .related-books .card-body {
+        padding: 1rem;
+    }
+
+    .related-books .card-title {
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .related-books .card-text {
+        font-size: 1rem;
+        color: #6c757d;
+    }
+</style>
+
+
+<div class="related-books d-flex flex-wrap"> @foreach (var book in Model)
+    {
+        string thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={book.GoogleDriveId}";
+        <div class="col-md-4 d-flex justify-content-center mb-4"> 
+            <div class="single-home-blog text-center"> 
+                <div class="card" style="border: none"> 
+                    <div class="card-body"> 
+                        <a asp-controller="Document" asp-action="Detail" asp-route-id="@book.Id"> 
+                            <img referrerpolicy="no-referrer" src="@thumbnailLink" alt="Document" class="img-fluid" /> 
+                            <h5 class="card-title mt-3" style="color: #0c2e60; font-size: 19px; font-weight: 600;">@book.Title</h5> 
+                        </a> 
+                        <p>@book.DocumentType?.Name</p> 
+                    </div> 
+                </div> 
+            </div> 
+        </div>
+    } </div>

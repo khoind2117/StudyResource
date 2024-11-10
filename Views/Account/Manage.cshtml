@@ -21,41 +21,41 @@
             }
             <div class="row">
                 <br />
-                <div class="col-md-3 nav d-flex flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                    <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="true">Thông tin cá nhân</a>
+                <div class="col-lg-3 col-md-4 nav d-flex flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <a class="nav-link active" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="true">Thông tin cá nhân</a>
                     <a class="nav-link" id=" v-pills-password-tab" data-toggle="pill" href="#v-pills-password" role="tab" aria-controls="v-pills-password" aria-selected="false">Đổi mật khẩu</a>
                 </div>
 
-                <div class="col-md-9 tab-content" id="v-pills-tabContent">
+                <div class="col-lg-9 col-md-8 tab-content" id="v-pills-tabContent">
                     <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
                         <form asp-controller="Account" asp-action="Manage" method="post">
                             @Html.AntiForgeryToken()
                             <div class="form-group">
-                                <label asp-for="UserName" class="control-label">Tên đăng nhập</label>
-                                <input asp-for="UserName" class="form-control" />
-                                <span asp-validation-for="UserName" class="text-danger"></span>
+                                <label asp-for="Manage.UserName" class="control-label">Tên đăng nhập</label>
+                                <input asp-for="Manage.UserName" name="UserName" class="form-control" />
+                                <span asp-validation-for="Manage.UserName" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="Email" class="control-label">Email</label>
-                                <input asp-for="Email" class="form-control" />
-                                <span asp-validation-for="Email" class="text-danger"></span>
+                                <label asp-for="Manage.Email" class="control-label">Email</label>
+                                <input asp-for="Manage.Email" name="Email" class="form-control" />
+                                <span asp-validation-for="Manage.Email" class="text-danger"></span>
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label asp-for="FirstName" class="control-label">Tên</label>
-                                    <input asp-for="FirstName" class="form-control" />
-                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                    <label asp-for="Manage.FirstName" class="control-label">Tên</label>
+                                    <input asp-for="Manage.FirstName" name="FirstName" class="form-control" />
+                                    <span asp-validation-for="Manage.FirstName" class="text-danger"></span>
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label asp-for="LastName" class="control-label">Họ</label>
-                                    <input asp-for="LastName" class="form-control" />
-                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                    <label asp-for="Manage.LastName" class="control-label">Họ</label>
+                                    <input asp-for="Manage.LastName" name="LastName" class="form-control" />
+                                    <span asp-validation-for="Manage.LastName" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label asp-for="PhoneNumber" class="control-label">Số điện thoại</label>
-                                <input asp-for="PhoneNumber" class="form-control" />
-                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                <label asp-for="Manage.PhoneNumber" class="control-label">Số điện thoại</label>
+                                <input asp-for="Manage.PhoneNumber" name="PhoneNumber" class="form-control" />
+                                <span asp-validation-for="Manage.PhoneNumber" class="text-danger"></span>
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="genric-btn info-border circle" style="font-size: 15px; margin-right: 20px">Cập nhật</button>
@@ -64,28 +64,28 @@
                         </form> 
                     </div>
                     <div class="tab-pane fade" id="v-pills-password" role="tabpanel" aria-labelledby="v-pills-password-tab">
-                        @* <form asp-controller="Account" asp-action="ChangePassword" method="post">
+                        <form asp-controller="Account" asp-action="ChangePassword" method="post">
                             @Html.AntiForgeryToken()
                             <div class="form-group">
                                 <label asp-for="ChangePassword.OldPassword" class="control-label">Mật khẩu hiện tại</label>
-                                <input asp-for="ChangePassword.OldPassword" type="password" class="form-control" autocomplete="new-password" />
+                                <input asp-for="ChangePassword.OldPassword" name="OldPassword" type="password" class="form-control" autocomplete="new-password" />
                                 <span asp-validation-for="ChangePassword.OldPassword" class="text-danger"></span>
                             </div>
                             <div class="form-group">
                                 <label asp-for="ChangePassword.NewPassword" class="control-label">Mật khẩu mới</label>
-                                <input asp-for="ChangePassword.NewPassword" type="password" class="form-control" autocomplete="new-password" />
+                                <input asp-for="ChangePassword.NewPassword" name="NewPassword" type="password" class="form-control" autocomplete="new-password" />
                                 <span asp-validation-for="ChangePassword.NewPassword" class="text-danger"></span>
                             </div>
                             <div class="form-group">
                                 <label asp-for="ChangePassword.ConfirmPassword" class="control-label">Xác nhận mật khẩu mới</label>
-                                <input asp-for="ChangePassword.ConfirmPassword" type="password" class="form-control" autocomplete="new-password" />
+                                <input asp-for="ChangePassword.ConfirmPassword" name="ConfirmPassword" type="password" class="form-control" autocomplete="new-password" />
                                 <span asp-validation-for="ChangePassword.ConfirmPassword" class="text-danger"></span>
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="genric-btn info-border circle" style="font-size: 15px; margin-right: 20px">Đổi mật khẩu</button>
                                 <a asp-action="Manage" class="genric-btn danger-border circle" style="font-size: 15px; text-decoration: none;">Hủy</a>
                             </div>
-                        </form> *@
+                        </form>
                     </div>
                 </div>
             </div>

@@ -75,10 +75,13 @@ namespace StudyResource.Controllers
             return View(documents.ToList());
         }
 
-        [HttpGet] public async Task<IActionResult> Detail(int id)
+        [HttpGet] 
+        public async Task<IActionResult> Detail(int id)
         {
             var document = await _context.Documents
                 .Include(d => d.DocumentType)
+                .Include(d => d.GradeSubject)
+                .ThenInclude(gs => gs.Grade)
                 .Include(d => d.Set)
                 .FirstOrDefaultAsync(d => d.Id == id);
 
@@ -94,7 +97,6 @@ namespace StudyResource.Controllers
                     Id = c.Id, 
                     Username = c.User != null ? c.User.UserName : "Anonymous",
                     Comment = c.Comment,
-                    Rating = c.Rating,
                     CommentDate = c.CommentDate
                 })
                 .ToListAsync();
@@ -108,12 +110,46 @@ namespace StudyResource.Controllers
                 GoogleDriveId = document.GoogleDriveId,
                 DocumentTypeId = document.DocumentTypeId,
                 DocumentType = document.DocumentType,
-                UserNotes = string.Empty,
-                UserComments = comments
+                GradeSubject = document.GradeSubject,
+                UserComments = comments,
+                RelatedBooks = new List<Models.Document>() 
             };
 
             return View(viewModel);
         }
+
+        /* [HttpGet]
+         public async Task<IActionResult> RelatedBooks(int id)
+         {
+             var document = await _context.Documents
+                 .Include(d => d.DocumentType)
+                 .Include(d => d.Set)
+                 .FirstOrDefaultAsync(d => d.Id == id);
+
+             if (document == null)
+             {
+                 return NotFound();
+             }
+
+             var relatedBooks = await _context.Documents
+                 .Where(d => d.Id != id && (d.GradeSubjectId == document.GradeSubjectId || d.SetId == document.SetId))
+                 .ToListAsync();
+
+             return PartialView("_RelatedBooksPartial", relatedBooks);
+         }*/
+        [HttpGet]
+        public async Task<IActionResult> RelatedBooks(int gradeSubjectId, int documentTypeId)
+        {
+            var relatedBooks = await _context.Documents
+                .Include(d => d.DocumentType)
+                .Where(d => d.GradeSubjectId == gradeSubjectId || d.DocumentTypeId == documentTypeId)
+                .Take(6)
+                .ToListAsync();
+
+            return PartialView("_RelatedBooksPartial", relatedBooks);
+        }
+
+
 
         [HttpPost]
         public async Task<IActionResult> SubmitComment(string Comment, string GoogleDriveId)

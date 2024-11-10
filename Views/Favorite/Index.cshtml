@@ -6,15 +6,19 @@
 
 @if (!Model.Any())
 {
-    <p>Bạn chưa có tài liệu yêu thích nào.</p>
+    <section class="blog_part section_padding" style="padding: 160px 0px;">
+        <div class="container mt-5">
+            <h2 style="text-align: center; justify-content: center">Bạn chưa có tài liệu yêu thích nào</h2>
+        </div>
+    </section>
 }
 else
 {
     <title>@ViewData["Title"] - StudyResource</title>
 
     <section class="blog_part section_padding" style="padding: 160px 0px;">
-        <div class="container mt-5"> 
-            <h2>Tài liệu yêu thích</h2>
+        <div class="container mt-5">
+            <h2 style="text-align: center; justify-content: center">Tài liệu đã lưu</h2>
             <div class="row"> 
                 @foreach (var favorite in Model)
                 {
