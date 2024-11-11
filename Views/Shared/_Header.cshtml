@@ -34,6 +34,12 @@
                             <li class="nav-item">
                                 <a asp-controller="Contact" asp-action="Index" class="nav-link">Liên hệ</a>
                             </li>
+                            <li class="nav-item">
+                                <a asp-controller="Document" asp-action="Create" class="nav-link">Tải lên tài liệu</a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-controller="Document" asp-action="UserDocument" class="nav-link">Tài liệu của tôi</a>
+                            </li>
                             @if (User.Identity.IsAuthenticated) // Nếu người dùng đã đăng nhập
                             {
                             <li class="nav-item dropdown">

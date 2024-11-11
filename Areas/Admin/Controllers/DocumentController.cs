@@ -7,6 +7,7 @@ using StudyResource.Models;
 using StudyResource.Services;
 using StudyResource.ViewModels.Document;
 using System.Globalization;
+using System.Security.Claims;
 
 namespace StudyResource.Areas.Admin.Controllers
 {
@@ -93,10 +94,11 @@ namespace StudyResource.Areas.Admin.Controllers
                     Downloads = 0,
                     GoogleDriveId = fileId,
                     UploadDate = DateTime.Now,
+                    IsApproved = User.IsInRole("Admin"),
                     GradeSubjectId = model.GradeSubjectId,
                     DocumentTypeId = model.DocumentTypeId,
                     SetId = model.SetId,
-                    Set = model.Set,
+                    UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                 };
 
                 _context.Documents.Add(document);
@@ -189,9 +191,11 @@ namespace StudyResource.Areas.Admin.Controllers
                                     Description = record.Description,
                                     GoogleDriveId = record.GoogleDriveId,
                                     UploadDate = DateTime.Now,
+                                    IsApproved = User.IsInRole("Admin"),
                                     GradeSubjectId = gradeSubject.Id,
                                     DocumentTypeId = documentType.Id,
-                                    SetId = set?.Id
+                                    SetId = set?.Id,
+                                    UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                                 };
 
                                 _context.Documents.Add(document);
@@ -329,7 +333,7 @@ namespace StudyResource.Areas.Admin.Controllers
                 await _googleDriveService.DeleteFileAsync(fileId);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("UserDocument");
         }
 
         [HttpDelete]
