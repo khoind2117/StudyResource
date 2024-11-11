@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using CsvHelper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StudyResource.Data;
 using StudyResource.Models;
 using StudyResource.Services;
 using StudyResource.ViewModels.Document;
 using System;
+using System.Globalization;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace StudyResource.Controllers
@@ -16,14 +20,17 @@ namespace StudyResource.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly GoogleDriveService _googleDriveService;
+        private readonly SlugService _slugService;
 
         public DocumentController(ApplicationDbContext context,
             UserManager<User> userManager,
-            GoogleDriveService googleDriveService)
+            GoogleDriveService googleDriveService,
+            SlugService slugService)
         {
             _context = context;
             _userManager = userManager;
             _googleDriveService = googleDriveService;
+            _slugService = slugService;
         }
 
         [HttpGet]
@@ -149,8 +156,6 @@ namespace StudyResource.Controllers
             return PartialView("_RelatedBooksPartial", relatedBooks);
         }
 
-
-
         [HttpPost]
         public async Task<IActionResult> SubmitComment(string Comment, string GoogleDriveId)
         {
@@ -203,5 +208,158 @@ namespace StudyResource.Controllers
             }
         }
 
+        private async Task PopulateSelectLists(int? gradeId = null)
+        {
+            var grades = await _context.Grades.ToListAsync();
+            var documentTypes = await _context.DocumentTypes.ToListAsync();
+            var gradeSubjects = gradeId.HasValue
+                ? await _context.GradeSubjects.Where(gs => gs.GradeId == gradeId.Value).ToListAsync()
+                : new List<GradeSubject>();
+            var sets = await _context.Sets.ToListAsync();
+
+            ViewBag.Grades = new SelectList(grades, "Id", "Name");
+            ViewBag.GradeSubjects = new SelectList(gradeSubjects, "Id", "Name");
+            ViewBag.DocumentTypes = new SelectList(documentTypes, "Id", "Name");
+            ViewBag.GradeSubjectsJson = await _context.GradeSubjects.ToListAsync();
+            ViewBag.Sets = new SelectList(sets, "Id", "Name");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> UserDocument()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(); // Nếu người dùng chưa đăng nhập, trả về 401 Unauthorized
+            }
+
+            var documents = await _context.Documents
+                .Where(d => d.UserId == userId)
+                .Include(d => d.GradeSubject)
+                .Include(d => d.DocumentType)
+                .ToListAsync();
+
+            return View(documents);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            await PopulateSelectLists();
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateDocumentViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var slug = string.Empty;
+                var fileId = string.Empty;
+
+                if (model.FileUpload != null && model.FileUpload.Length > 0)
+                {
+                    slug = _slugService.GenerateSlug(model.Title);
+                    var fileExtension = Path.GetExtension(model.FileUpload.FileName);
+
+                    var tempFileName = $"{slug}{fileExtension}";
+                    var tempPath = Path.Combine(Path.GetTempPath(), tempFileName);
+                    using (var stream = new FileStream(tempPath, FileMode.Create))
+                    {
+                        await model.FileUpload.CopyToAsync(stream);
+                    }
+
+                    fileId = await _googleDriveService.UploadFileAsync(tempPath);
+                }
+
+                var document = new Document
+                {
+                    Title = model.Title,
+                    Slug = slug,
+                    Description = model.Description,
+                    Views = 0,
+                    Downloads = 0,
+                    GoogleDriveId = fileId,
+                    UploadDate = DateTime.Now,
+                    IsApproved = User.IsInRole("Admin"),
+                    GradeSubjectId = model.GradeSubjectId,
+                    DocumentTypeId = model.DocumentTypeId,
+                    SetId = model.SetId,
+                    UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                };
+
+                _context.Documents.Add(document);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Tài liệu đã được tạo thành công!";
+                return RedirectToAction("Create");
+            }
+
+            await PopulateSelectLists();
+
+            return View(model);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var document = await _context.Documents.FindAsync(id);
+
+            if (document == null)
+            {
+                return NotFound(); // TODO: Implement custom error response handling later
+            }
+
+            var fileId = document.GoogleDriveId;
+
+            _context.Documents.Remove(document);
+            await _context.SaveChangesAsync();
+
+            if (!string.IsNullOrEmpty(fileId))
+            {
+                await _googleDriveService.DeleteFileAsync(fileId);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteMultiple([FromBody] List<int> ids)
+        {
+            if (ids == null || !ids.Any())
+            {
+                return BadRequest("Không có tài liệu nào được chọn để xóa.");
+            }
+
+            var documentsToDelete = await _context.Documents
+                .Where(d => ids.Contains(d.Id))
+                .ToListAsync();
+
+            if (documentsToDelete == null || !documentsToDelete.Any())
+            {
+                return NotFound("Không tìm thấy tài liệu nào để xóa.");
+            }
+
+            foreach (var document in documentsToDelete)
+            {
+                if (!string.IsNullOrEmpty(document.GoogleDriveId))
+                {
+                    try
+                    {
+                        await _googleDriveService.DeleteFileAsync(document.GoogleDriveId);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Lỗi khi xóa file trên Google Drive với ID {document.GoogleDriveId}: {ex.Message}");
+                    }
+                }
+            }
+
+            _context.Documents.RemoveRange(documentsToDelete);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
     }
 }

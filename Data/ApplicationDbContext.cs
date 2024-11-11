@@ -69,6 +69,11 @@ namespace StudyResource.Data
             {
                 entity.ToTable("Document").HasKey(d => d.Id);
 
+                // Many-to-One relationship with User
+                entity.HasOne(d => d.User)
+                    .WithMany(u => u.Documents)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // DocumentType
