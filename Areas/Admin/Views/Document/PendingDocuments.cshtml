@@ -5,10 +5,9 @@
 }
 
 <div class="container-fluid">
-    <h3>Quản lý tài liệu</h3>
-    <a asp-area="Admin" asp-controller="Document" asp-action="Create" class="btn btn-primary mb-3">Tạo tài liệu</a>
-    <a asp-area="Admin" asp-controller="Document" asp-action="UploadCsv" class="btn btn-primary mb-3 mx-3">Tải lên bằng tệp csv/excel</a>
-    <button class="btn btn-danger mb-3" onclick="deleteSelectedDocuments()">Xóa tài liệu đã chọn</button>
+    <h3>Tài liệu chưa duyệt</h3>
+    <button class="btn btn-success mb-3" onclick="approveSelectedDocuments()">Duyệt tài liệu đã chọn</button>
+    <button class="btn btn-danger mb-3 mx-3" onclick="rejectSelectedDocuments()">Từ chối/Xóa tài liệu đã chọn</button>
     <table id="documentTable" class="table table-striped table-bordered">
         <thead class="bg-primary text-white">
             <tr>
@@ -49,10 +48,12 @@
                     <td>
                         <div class="d-flex flex-column align gap-3">
                             <a target="_blank" class="btn btn-info btn-sm" href="@Url.Action("Ebook", "Document", new { area = "", id = doc.Id })">Chi tiết</a>
-                            <a class="btn btn-warning btn-sm" href="@Url.Action("Update", "Document", new { id = doc.Id })">Cập nhật</a>
+                            <a class="btn btn-success btn-sm"
+                               href="javascript:void(0);"
+                               onclick="approveDocument('@Url.Action("ApproveDocument", "Document", new { id = doc.Id })');">Duyệt</a>
                             <a class="btn btn-danger btn-sm"
-                                href="javascript:void(0);"
-                                onclick="confirmDelete('@Url.Action("Delete", "Document", new { id = doc.Id })');">Xóa</a>
+                               href="javascript:void(0);"
+                               onclick="confirmDelete('@Url.Action("Delete", "Document", new { id = doc.Id })');">Từ chối</a>
                         </div>
                     </td>
                 </tr>
@@ -69,7 +70,7 @@
                 paging: true,
                 searching: true,
                 ordering: true,
-                responsive: true, 
+                responsive: true,
                 pageLength: 10,
                 lengthMenu: [5, 10, 25, 50],
                 language: {
@@ -100,7 +101,138 @@
             }
         });
 
-        // Delete
+        // Approve
+        function approveDocument(url) {
+            Swal.fire({
+                title: 'Xác nhận duyệt tài liệu?',
+                text: "Bạn chắc chắn muốn duyệt tài liệu này?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Duyệt',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Tài liệu đang được duyệt...',
+                        text: 'Vui lòng chờ trong giây lát.',
+                        icon: 'info',
+                        toast: true,
+                        position: 'bottom-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+
+                    $.ajax({
+                        type: 'Post',
+                        url: url,
+                        success: function (response) {
+                            Swal.fire({
+                                title: 'Đã duyệt!',
+                                text: 'Tài liệu đã được duyệt.',
+                                icon: 'success',
+                                toast: true,
+                                position: 'bottom-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            }).then(() => {
+                                location.reload();
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Có lỗi xảy ra khi duyệt tài liệu.',
+                                icon: 'error',
+                                toast: true,
+                                position: 'bottom-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        // Approve Selected Documents
+        function approveSelectedDocuments() {
+            var selectedIds = [];
+            var checkboxes = document.querySelectorAll('.documentCheckbox:checked');
+            for (var checkbox of checkboxes) {
+                selectedIds.push(checkbox.value);
+            }
+
+            if (selectedIds.length > 0) {
+                Swal.fire({
+                    title: 'Bạn có chắc chắn?',
+                    text: `Bạn có chắc chắn muốn duyệt ${selectedIds.length} tài liệu đã chọn?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Có, duyệt chúng!',
+                    cancelButtonText: 'Không, giữ lại!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Tài liệu đang được duyệt...',
+                            text: 'Vui lòng chờ trong giây lát.',
+                            icon: 'info',
+                            toast: true,
+                            position: 'bottom-end',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+
+                        $.ajax({
+                            type: 'Post',
+                            url: '@Url.Action("ApproveSelectedDocuments", "Document")',
+                            data: JSON.stringify(selectedIds),
+                            contentType: 'application/json; charset=utf-8',
+                            success: function () {
+                                Swal.fire({
+                                    title: 'Đã duyệt!',
+                                    text: 'Các tài liệu đã được duyệt.',
+                                    icon: 'success',
+                                    toast: true,
+                                    position: 'bottom-end',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            },
+                            error: function () {
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: 'Có lỗi xảy ra khi duyệt tài liệu.',
+                                    icon: 'error',
+                                    toast: true,
+                                    position: 'bottom-end',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                });
+                            }
+                        });
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Chưa chọn tài liệu',
+                    text: 'Vui lòng chọn ít nhất một tài liệu để duyệt.',
+                    icon: 'warning',
+                    toast: true,
+                    position: 'bottom-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            }
+        }
+
+
+        // Delete/Reject
         function confirmDelete(url) {
             Swal.fire({
                 title: 'Bạn có chắc chắn?',
@@ -155,7 +287,7 @@
             });
         }
 
-        // Delete Selected Documents
+        // Delete/Reject Selected Documents
         function deleteSelectedDocuments() {
             var selectedIds = [];
             var checkboxes = document.querySelectorAll('.documentCheckbox:checked');

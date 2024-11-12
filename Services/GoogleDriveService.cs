@@ -14,7 +14,7 @@ namespace StudyResource.Services
         private readonly string apiKey;
         public GoogleDriveService(IConfiguration configuration)
         {
-            string[] scopes = { DriveService.Scope.Drive, DriveService.Scope.DriveReadonly };
+            string[] scopes = { DriveService.Scope.Drive, DriveService.Scope.DriveFile, DriveService.Scope.DriveReadonly };
 
             var clientId = configuration["GoogleDrive:ClientId"];
             var clientSecret = configuration["GoogleDrive:ClientSecret"];
