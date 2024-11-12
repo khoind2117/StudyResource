@@ -38,6 +38,22 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
+                    <a class="sidebar-link" aria-expanded="false" asp-area="Admin" asp-controller="Document" asp-action="PendingDocuments">
+                        <span>
+                            <i class="ti ti-article"></i>
+                        </span>
+                        <span class="hide-menu">Tài liệu chưa duyệt</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" aria-expanded="false" asp-area="Admin" asp-controller="Document" asp-action="ApprovedDocuments">
+                        <span>
+                            <i class="ti ti-article"></i>
+                        </span>
+                        <span class="hide-menu">Tài liệu đã duyệt</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
                     <a class="sidebar-link" aria-expanded="false" asp-area="Admin" asp-controller="DocumentType" asp-action="Index">
                         <span>
                             <i class="ti ti-alert-circle"></i>

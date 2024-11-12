@@ -34,7 +34,16 @@
                     <td>@doc.GradeSubject?.Name</td>
                     <td>@doc.DocumentType?.Name</td>
                     <td>@doc.UploadDate.ToString("dd/MM/yyyy")</td>
-                    <td>@(doc.IsApproved ? "Đã duyệt" : "Chưa duyệt")</td>
+                    <td>
+                        @if (doc.IsApproved)
+                        {
+                            <span class="badge badge-success">Đã duyệt</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-danger">Chưa duyệt</span>
+                        }
+                    </td>
                     <td>
                         <div class="d-flex flex-column align gap-3">
                             <a target="_blank" class="btn btn-info btn-sm" href="@Url.Action("Ebook", "Document", new { area = "", id = doc.Id })">Chi tiết</a>

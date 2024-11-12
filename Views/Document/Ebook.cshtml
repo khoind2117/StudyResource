@@ -36,28 +36,11 @@
         document.addEventListener("DOMContentLoaded", function () {
             const defaultUrl = "@Html.Raw(ViewData["DefaultFileUrl"])";
             const mainBody = document.getElementById('mainBody');
-            mainBody.setAttribute('inert', 'true');
-
-            Swal.fire({
-                title: 'Đang tải PDF...',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                willOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
             
             if (window.PDFViewerApplicationOptions) {
                 PDFViewerApplicationOptions.set('defaultUrl', defaultUrl);
                 PDFViewerApplication.open(defaultUrl);
             }
-
-            document.addEventListener("pagesloaded", function () {
-                Swal.close();
-                console.log("PDF đã tải xong.");
-                mainBody.removeAttribute('inert');
-            });
         });
 
     </script>

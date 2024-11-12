@@ -32,7 +32,7 @@ namespace StudyResource.Areas.Admin.Controllers
             var documents = await _context.Documents
               .Include(d => d.GradeSubject)
               .Include(d => d.DocumentType)
-              .Include(d => d.Set)
+              .Include(d => d.User)
               .OrderByDescending(d => d.UploadDate)
               .ToListAsync();
 
@@ -333,11 +333,11 @@ namespace StudyResource.Areas.Admin.Controllers
                 await _googleDriveService.DeleteFileAsync(fileId);
             }
 
-            return RedirectToAction("UserDocument");
+            return Ok();
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteMultiple([FromBody] List<int> ids)
+        public async Task<IActionResult> DeleteSelectedDocuments([FromBody] List<int> ids)
         {
             if (ids == null || !ids.Any())
             {
@@ -372,6 +372,93 @@ namespace StudyResource.Areas.Admin.Controllers
             await _context.SaveChangesAsync();
 
             return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PendingDocuments()
+        {
+            var pendingDocuments = await _context.Documents
+                .Where(d => !d.IsApproved)
+                .Include(d => d.User)
+                .Include(d => d.GradeSubject)
+                .Include(d => d.DocumentType)
+                .Include(d => d.Set)
+                .ToListAsync();
+
+            return View(pendingDocuments);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PendingDocuments(int id)
+        {
+            var document = await _context.Documents.FindAsync(id);
+            if (document == null)
+            {
+                return NotFound();
+            }
+
+            document.IsApproved = true;
+            _context.Documents.Update(document);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Tài liệu đã được duyệt thành công.";
+            return RedirectToAction("PendingDocuments");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ApproveDocument(int id)
+        {
+            var document = await _context.Documents.FindAsync(id);
+            if (document == null)
+            {
+                return NotFound();
+            }
+
+            document.IsApproved = true;
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ApproveSelectedDocuments([FromBody] List<int> documentIds)
+        {
+            if (documentIds == null || !documentIds.Any())
+            {
+                return BadRequest("Không có tài liệu nào được chọn để duyệt.");
+            }
+
+            var documentsToApprove = await _context.Documents
+                .Where(d => documentIds.Contains(d.Id) && !d.IsApproved)
+                .ToListAsync();
+
+            if (documentsToApprove == null || !documentsToApprove.Any())
+            {
+                return NotFound("Không tìm thấy tài liệu nào cần duyệt.");
+            }
+
+            foreach (var document in documentsToApprove)
+            {
+                document.IsApproved = true;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ApprovedDocuments()
+        {
+            var pendingDocuments = await _context.Documents
+                .Where(d => d.IsApproved)
+                .Include(d => d.User)
+                .Include(d => d.GradeSubject)
+                .Include(d => d.DocumentType)
+                .Include(d => d.Set)
+                .ToListAsync();
+
+            return View(pendingDocuments);
         }
     }
 }
