@@ -125,25 +125,6 @@ namespace StudyResource.Controllers
             return View(viewModel);
         }
 
-        /* [HttpGet]
-         public async Task<IActionResult> RelatedBooks(int id)
-         {
-             var document = await _context.Documents
-                 .Include(d => d.DocumentType)
-                 .Include(d => d.Set)
-                 .FirstOrDefaultAsync(d => d.Id == id);
-
-             if (document == null)
-             {
-                 return NotFound();
-             }
-
-             var relatedBooks = await _context.Documents
-                 .Where(d => d.Id != id && (d.GradeSubjectId == document.GradeSubjectId || d.SetId == document.SetId))
-                 .ToListAsync();
-
-             return PartialView("_RelatedBooksPartial", relatedBooks);
-         }*/
         [HttpGet]
         public async Task<IActionResult> RelatedBooks(int gradeSubjectId, int documentTypeId)
         {

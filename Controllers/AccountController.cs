@@ -225,5 +225,25 @@ namespace StudyResource.Controllers
             TempData["SuccessMessage"] = "Đổi mật khẩu thành công!";
             return RedirectToAction("Manage");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ValidateCurrentPassword(string currentPassword)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Json(new { isValid = false, message = "Người dùng không tồn tại." });
+            }
+
+            var isValid = await _userManager.CheckPasswordAsync(user, currentPassword);
+            if (!isValid)
+            {
+                return Json(new { isValid = false, message = "Mật khẩu hiện tại không đúng." });
+            }
+
+            return Json(new { isValid = true });
+        }
+
+
     }
 }

@@ -19,31 +19,35 @@ namespace StudyResource.Controllers
             _userManager = userManager;
         }
 
-        // Add document to favorite
         [HttpPost]
         public async Task<IActionResult> AddToFavorite(int documentId)
         {
             var user = await _userManager.GetUserAsync(User);
+
             if (user == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
             var isAlreadyFavorite = await _context.Favorites
-                .AnyAsync(f => f.UserId == user.Id && f.DocumentId == documentId); if (isAlreadyFavorite)
-            {
-                TempData["Message"] = "Đã lưu tài liệu";
-                return RedirectToAction("Detail", "Document", new { id = documentId });
-            }
+                .AnyAsync(f => f.UserId == user.Id && f.DocumentId == documentId);
 
-                var favorite = new Favorite
+            var favorite = new Favorite
             {
                 UserId = user.Id,
                 DocumentId = documentId
             };
 
-            _context.Favorites.Add(favorite);
-            await _context.SaveChangesAsync();
+            if (isAlreadyFavorite)
+            {
+                TempData["Message"] = "Tài liệu đã được lưu trong danh sách!";
+            }
+            else
+            {
+                _context.Favorites.Add(favorite);
+                await _context.SaveChangesAsync();
+                TempData["Message"] = "Đã lưu thành công!";
+            }
 
             return RedirectToAction("Detail", "Document", new { id = documentId });
         }
@@ -63,7 +67,6 @@ namespace StudyResource.Controllers
             {
                 _context.Favorites.Remove(favorite);
                 await _context.SaveChangesAsync();
-                TempData["Message"] = "Đã xóa tài liệu khỏi danh sách yêu thích"; 
             }
 
             return RedirectToAction("Index");
