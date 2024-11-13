@@ -19,12 +19,12 @@ else
     <section class="blog_part section_padding" style="padding: 160px 0px;">
         <div class="container mt-5">
             <h2 style="text-align: center; justify-content: center">Tài liệu đã lưu</h2>
-            <div class="row"> 
+            <div class="row">
                 @foreach (var favorite in Model)
                 {
                     var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={favorite.Document.GoogleDriveId}";
 
-                    <div class="col-sm-6 col-lg-4 col-xl-4 d-flex justify-content-center">
+                    <div id="favorite-@favorite.Document.Id" class="col-sm-6 col-lg-4 col-xl-4 d-flex justify-content-center">
                         <div class="single-home-blog text-center">
                             <div class="card" style="border: none">
                                 <div class="card-body">
@@ -33,14 +33,13 @@ else
                                         <h5 class="card-title mt-3" style="color: #0c2e60">@favorite.Document.Title</h5>
                                     </a>
                                     <a href="@Url.Action("Detail", "Document", new { id = favorite.Document.Id })" class="genric-btn info-border circle" style="font-size: 15px; margin-right: 20px; color: black">Xem chi tiết</a>
-                                    @* <a href="@Url.Action("Remove", "Favorite", new { documentId = favorite.Document.Id })" class="genric-btn danger-border circle" style="font-size: 15px; text-decoration: none; color: black">Xóa</a> *@
                                     <button class="genric-btn danger-border circle" style="font-size: 15px; text-decoration: none; color: black" onclick="removeFavorite(@favorite.Document.Id)">Xóa</button>
-                                </div> 
-                            </div> 
+                                </div>
+                            </div>
                         </div>
                     </div>
-                } 
-            </div> 
+                }
+            </div>
         </div>
     </section>
 }
@@ -51,7 +50,7 @@ else
         function removeFavorite(documentId) {
             if (confirm('Bạn có chắc chắn muốn xóa tài liệu này khỏi danh sách yêu thích không?')) {
                 $.ajax({
-                    url: '@Url.Action("Remove", "Favorite")', 
+                    url: '@Url.Action("Remove", "Favorite")',
                     type: 'POST',
                     data: { documentId: documentId },
                     success: function (result) {
