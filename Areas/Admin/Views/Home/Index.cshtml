@@ -1,4 +1,7 @@
-﻿@{
+﻿@using StudyResource.ViewModels.Home
+@model AdminDashboardViewModel
+
+@{
     Layout = "_AdminLayout";
 }
     
@@ -10,16 +13,16 @@
                 <div class="card-body">
                     <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
                         <div class="mb-3 mb-sm-0">
-                            <h5 class="card-title fw-semibold">Sales Overview</h5>
+                            <h5 class="card-title fw-semibold">Thống kê lượt đăng / tải</h5>
                         </div>
-                        <div>
+                        @* <div>
                             <select class="form-select">
                                 <option value="1">March 2023</option>
                                 <option value="2">April 2023</option>
                                 <option value="3">May 2023</option>
                                 <option value="4">June 2023</option>
                             </select>
-                        </div>
+                        </div> *@
                     </div>
                     <div id="chart"></div>
                 </div>
@@ -349,7 +352,100 @@
             </div>
         </div>
     </div>
-    <div class="py-6 px-6 text-center">
-        <p class="mb-0 fs-4">Design and Developed by <a href="https://adminmart.com/" target="_blank" class="pe-1 text-primary text-decoration-underline">AdminMart.com</a> Distributed by <a href="https://themewagon.com">ThemeWagon</a></p>
-    </div>
 </div>
+
+@section Scripts {
+    <script>
+    $(document).ready(function () {
+        var uploadCount = @Html.Raw(Json.Serialize(Model.UploadCount));
+        var downloadCount = @Html.Raw(Json.Serialize(Model.DownloadCount));
+        var last7Days = [];
+        var currentDate = new Date();
+        for (var i = 6; i >= 0; i--) {
+            var date = new Date(currentDate);
+            date.setDate(currentDate.getDate() - i);
+            var formattedDate = date.toLocaleDateString('vi-VN');
+
+            last7Days.push(formattedDate);
+        }
+
+        var chartOptions = {
+            series: [
+                { name: "Lượt đăng", data: uploadCount },
+                { name: "Lượt tải", data: downloadCount }
+            ],
+            chart: {
+                type: "bar",
+                height: 345,
+                offsetX: -15,
+                toolbar: { show: true },
+                foreColor: "#adb0bb",
+                fontFamily: 'inherit',
+                sparkline: { enabled: false },
+            },
+            colors: ["#5D87FF", "#49BEFF"],
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: "35%",
+                    borderRadius: [6],
+                    borderRadiusApplication: 'end',
+                    borderRadiusWhenStacked: 'all'
+                },
+            },
+            markers: { size: 0 },
+            dataLabels: {
+                enabled: false,
+            },
+            legend: {
+            show: true,
+            },
+             grid: {
+               borderColor: "rgba(0,0,0,0.1)",
+               strokeDashArray: 3,
+               xaxis: {
+                 lines: {
+                   show: false,
+                 },
+               },
+             },
+            xaxis: {
+                categories: last7Days,
+                labels: {
+                    style: { cssClass: "grey--text lighten-2--text fill-color" },
+                },
+            },
+            yaxis: {
+                min: 0,
+                max: Math.max(Math.max(...uploadCount), Math.max(...downloadCount)) + 10,
+                tickAmount: 4,
+                labels: {
+                    style: { cssClass: "grey--text lighten-2--text fill-color" },
+                },
+            },
+            stroke: {
+                show: true,
+                width: 3,
+                lineCap: "butt",
+                colors: ["transparent"],
+            },
+            tooltip: { theme: "light" },
+            responsive: [
+                {
+                breakpoint: 600,
+                options: {
+                    plotOptions: {
+                    bar: {
+                        borderRadius: 3,
+                    }
+                    },
+                }
+                }
+            ]
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), chartOptions);
+        chart.render();
+    })
+    </script>
+}

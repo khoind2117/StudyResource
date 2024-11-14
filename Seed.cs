@@ -3,6 +3,7 @@ using StudyResource.Data;
 using StudyResource.Dictionaries;
 using StudyResource.Models;
 using StudyResource.Services;
+using System.Net.WebSockets;
 
 namespace StudyResource
 {
@@ -98,7 +99,7 @@ namespace StudyResource
                     new Grade { Name = "Lớp 11", Slug = _slugService.GenerateSlug("Lớp 11") },
                     new Grade { Name = "Lớp 12", Slug = _slugService.GenerateSlug("Lớp 12") }
                 };
-                
+
                 _context.Grades.AddRange(grades);
                 await _context.SaveChangesAsync();
             };
@@ -181,8 +182,8 @@ namespace StudyResource
                     },
                     new DocumentType
                     {
-                        Name = "Sách bổ trợ",
-                        Slug = _slugService.GenerateSlug("Sách bổ trợ"),
+                        Name = "Sách bài tập",
+                        Slug = _slugService.GenerateSlug("Sách bài tập"),
                     },
                     new DocumentType
                     {
@@ -229,78 +230,108 @@ namespace StudyResource
             #endregion
 
             #region Document
-            if (!_context.Documents.Any())
-            {
-                var documents = new List<Document>
-                {
-                    new Document
-                    {
-                        Title = "Sách giáo khoa Vật Lý 11 Cánh Diều",
-                        Slug = _slugService.GenerateSlug("Sách giáo khoa Vật Lý 11 Cánh Diều"),
-                        Description = "Sách giáo khoa Vật Lý 11 Cánh Diều",
-                        Views = 10,
-                        Downloads = 10,
-                        GoogleDriveId = "1jMFlkFeVAs0z8Cdapt3vQ3uE2T0tP9Hd",
-                        UploadDate = DateTime.Now,
-                        GradeSubjectId = 107,
-                        DocumentTypeId = 1,
-                        SetId = 1
-                    },
-                    new Document
-                    {
-                        Title = "Ngữ Văn Lớp 12 Tập Một",
-                        Slug = _slugService.GenerateSlug("Ngữ Văn Lớp 12 Tập Một"),
-                        Description = "Ngữ Văn Lớp 12 Tập Một",
-                        Views = 20,
-                        Downloads = 20,
-                        GoogleDriveId = "18FAkSFzbOuh9W1vl5H9qJyL4Rlunv3tF",
-                        UploadDate = DateTime.Now,
-                        GradeSubjectId = 718,
-                        DocumentTypeId = 1,
-                        SetId = 2
-                    },
-                    new Document
-                    {
-                        Title = "Ngữ Văn Lớp 12 Tập Hai",
-                        Slug = _slugService.GenerateSlug("Ngữ Văn Lớp 12 Tập Hai"),
-                        Description = "Ngữ Văn Lớp 12 Tập Hai",
-                        Views = 30,
-                        Downloads = 30,
-                        GoogleDriveId = "1B7r44HkqgemeRaC2VIO9XhJLSTvjDe2H",
-                        UploadDate = DateTime.Now,
-                        GradeSubjectId = 118,
-                        DocumentTypeId = 1,
-                        SetId = 3
-                    },
-                    new Document
-                    {
-                        Title = "Sách giáo khoa Giải tích Lớp 12",
-                        Slug = _slugService.GenerateSlug("Sách giáo khoa Giải tích Lớp 12"),
-                        Description = "Sách giáo khoa Giải tích Lớp 12",
-                        Views = 40,
-                        Downloads = 40,
-                        GoogleDriveId = "1tOEv8fNWQwwxtzfLua13papq-8OQ_Q30",
-                        UploadDate = DateTime.Now,
-                        GradeSubjectId = 117,
-                        DocumentTypeId = 1,
-                        SetId = 1
-                    },
-                    new Document
-                    {
-                        Title = "Công nghệ Lớp 12",
-                        Slug = _slugService.GenerateSlug("Công nghệ Lớp 12"),
-                        Description = "Công nghệ Lớp 12",
-                        Views = 50,
-                        Downloads = 50,
-                        GoogleDriveId = "1Zy2RHRuQOH_kt8fLhuGlclP00xBNSxVe",
-                        UploadDate = DateTime.Now,
-                        GradeSubjectId = 127,
-                        DocumentTypeId = 1,
-                        SetId = 1
-                    },
-                };
+            //if (!_context.Documents.Any())
+            //{
+            //    var documents = new List<Document>
+            //    {
+            //        new Document
+            //        {
+            //            Title = "Sách giáo khoa Vật Lý 11 Cánh Diều",
+            //            Slug = _slugService.GenerateSlug("Sách giáo khoa Vật Lý 11 Cánh Diều"),
+            //            Description = "Sách giáo khoa Vật Lý 11 Cánh Diều",
+            //            Views = 10,
+            //            Downloads = 10,
+            //            GoogleDriveId = "1jMFlkFeVAs0z8Cdapt3vQ3uE2T0tP9Hd",
+            //            UploadDate = DateTime.Now,
+            //            GradeSubjectId = 107,
+            //            DocumentTypeId = 1,
+            //            SetId = 1
+            //        },
+            //        new Document
+            //        {
+            //            Title = "Ngữ Văn Lớp 12 Tập Một",
+            //            Slug = _slugService.GenerateSlug("Ngữ Văn Lớp 12 Tập Một"),
+            //            Description = "Ngữ Văn Lớp 12 Tập Một",
+            //            Views = 20,
+            //            Downloads = 20,
+            //            GoogleDriveId = "18FAkSFzbOuh9W1vl5H9qJyL4Rlunv3tF",
+            //            UploadDate = DateTime.Now,
+            //            GradeSubjectId = 718,
+            //            DocumentTypeId = 1,
+            //            SetId = 2
+            //        },
+            //        new Document
+            //        {
+            //            Title = "Ngữ Văn Lớp 12 Tập Hai",
+            //            Slug = _slugService.GenerateSlug("Ngữ Văn Lớp 12 Tập Hai"),
+            //            Description = "Ngữ Văn Lớp 12 Tập Hai",
+            //            Views = 30,
+            //            Downloads = 30,
+            //            GoogleDriveId = "1B7r44HkqgemeRaC2VIO9XhJLSTvjDe2H",
+            //            UploadDate = DateTime.Now,
+            //            GradeSubjectId = 118,
+            //            DocumentTypeId = 1,
+            //            SetId = 3
+            //        },
+            //        new Document
+            //        {
+            //            Title = "Sách giáo khoa Giải tích Lớp 12",
+            //            Slug = _slugService.GenerateSlug("Sách giáo khoa Giải tích Lớp 12"),
+            //            Description = "Sách giáo khoa Giải tích Lớp 12",
+            //            Views = 40,
+            //            Downloads = 40,
+            //            GoogleDriveId = "1tOEv8fNWQwwxtzfLua13papq-8OQ_Q30",
+            //            UploadDate = DateTime.Now,
+            //            GradeSubjectId = 117,
+            //            DocumentTypeId = 1,
+            //            SetId = 1
+            //        },
+            //        new Document
+            //        {
+            //            Title = "Công nghệ Lớp 12",
+            //            Slug = _slugService.GenerateSlug("Công nghệ Lớp 12"),
+            //            Description = "Công nghệ Lớp 12",
+            //            Views = 50,
+            //            Downloads = 50,
+            //            GoogleDriveId = "1Zy2RHRuQOH_kt8fLhuGlclP00xBNSxVe",
+            //            UploadDate = DateTime.Now,
+            //            GradeSubjectId = 127,
+            //            DocumentTypeId = 1,
+            //            SetId = 1
+            //        },
+            //    };
 
-                _context.Documents.AddRange(documents);
+            //    _context.Documents.AddRange(documents);
+            //    await _context.SaveChangesAsync();
+            //}
+            #endregion
+
+            #region DownloadHistory
+            if (!_context.DownloadHistories.Any())
+            {
+                var random = new Random();
+                var downloadHistory = new List<DownloadHistory>();
+                var startDate = new DateTime(2024, 11, 7);
+                var endDate = new DateTime(2024, 11, 14);
+                var totalMinutes = (int)(endDate - startDate).TotalMinutes;
+
+                for (int i = 0; i < 100; i++)
+                {
+                    var randomMinutes = random.Next(0, totalMinutes);
+                    var randomDate = startDate.AddMinutes(randomMinutes);
+
+                    var documentId = random.Next(1, 51);
+                    var userId = "c11527ac-24a4-4595-8372-c392fde740d8";
+
+                    downloadHistory.Add(new DownloadHistory
+                    {
+                        DownloadDate = randomDate,
+                        UserId = userId,
+                        DocumentId = documentId
+                    });
+                }
+
+                _context.DownloadHistories.AddRange(downloadHistory);
                 await _context.SaveChangesAsync();
             }
             #endregion
