@@ -43,6 +43,7 @@ namespace StudyResource.Controllers
             return View();
         }
 
+        [HttpGet]
         public IActionResult Index(string searchString, int? gradeId, int? setId)
         {
             var documents = _context.Documents
@@ -212,7 +213,7 @@ namespace StudyResource.Controllers
 
             if (string.IsNullOrEmpty(userId))
             {
-                return Unauthorized(); // Nếu người dùng chưa đăng nhập, trả về 401 Unauthorized
+                return Unauthorized();
             }
 
             var documents = await _context.Documents

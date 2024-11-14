@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using StudyResource.Data;
 using StudyResource.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace StudyResource.Controllers
 {
@@ -15,10 +16,18 @@ namespace StudyResource.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string userId)
+        public async Task<IActionResult> Index()
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
             var downloadHistories = await _context.DownloadHistories
                 .Include(dh => dh.Document)
+                    .ThenInclude(d => d.GradeSubject)
                 .Where(dh => dh.UserId == userId )
                 .OrderByDescending(dh => dh.DownloadDate)
                 .ToListAsync();
