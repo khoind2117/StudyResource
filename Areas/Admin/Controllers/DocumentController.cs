@@ -8,6 +8,7 @@ using StudyResource.Services;
 using StudyResource.ViewModels.Document;
 using System.Globalization;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace StudyResource.Areas.Admin.Controllers
 {
@@ -102,6 +103,53 @@ namespace StudyResource.Areas.Admin.Controllers
                 };
 
                 _context.Documents.Add(document);
+
+                if (!string.IsNullOrEmpty(model.Keywords))
+                {
+                    var keywords = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(model.Keywords);
+
+                    foreach (var keywordDict in keywords)
+                    {
+                        var keywordValue = keywordDict.ContainsKey("value") ? keywordDict["value"] : string.Empty;
+
+                        if (string.IsNullOrEmpty(keywordValue))
+                        {
+                            continue; 
+                        }
+
+                        var existingKeyword = await _context.Keyword
+                            .FirstOrDefaultAsync(k => k.Value == keywordValue);
+
+                        Keyword keywordEntity;
+
+                        if (existingKeyword != null)
+                        {
+                            keywordEntity = existingKeyword;
+                            keywordEntity.UsageCount += 1;
+                        }
+                        else
+                        {
+                            keywordEntity = new Keyword
+                            {
+                                Value = keywordValue,
+                                UsageCount = 1,
+                                CreatedDate = DateTime.Now,
+                            };
+
+                            _context.Keyword.Add(keywordEntity);
+                            await _context.SaveChangesAsync();
+                        }
+
+                        var documentKeyword = new DocumentKeyword
+                        {
+                            DocumentId = document.Id,
+                            KeywordId = keywordEntity.Id
+                        };
+
+                        _context.DocumentKeywords.Add(documentKeyword);
+                    }
+                }
+
                 await _context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Tài liệu đã được tạo thành công!";
@@ -234,12 +282,19 @@ namespace StudyResource.Areas.Admin.Controllers
                     .ThenInclude(gs => gs.Grade)
                 .Include(d => d.DocumentType)
                 .Include(d => d.Set)
+                .Include(d => d.DocumentKeywords)
+                    .ThenInclude(dk => dk.Keyword)
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (document == null)
             {
                 return NotFound(); // TODO: Implement custom error response handling later
             }
+
+            var keywords = document.DocumentKeywords
+               .Select(dk => new { value = dk.Keyword.Value })
+               .ToList();
+            ViewBag.KeywordsJson = JsonSerializer.Serialize(keywords);
 
             var viewModel = new UpdateDocumentViewModel
             {
@@ -305,10 +360,73 @@ namespace StudyResource.Areas.Admin.Controllers
                 {
                     await _googleDriveService.DeleteFileAsync(oldFileId);
                 }
-
-                _context.Documents.Update(document);
-                await _context.SaveChangesAsync();
             }
+
+            if (!string.IsNullOrEmpty(model.Keywords))
+            {
+                var keywords = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(model.Keywords);
+
+                var newKeywordValues = keywords
+                    .Where(k => k.ContainsKey("value") && !string.IsNullOrEmpty(k["value"]))
+                    .Select(k => k["value"])
+                    .ToList();
+
+                var currentKeywords = await _context.DocumentKeywords
+                    .Where(dk => dk.DocumentId == document.Id)
+                    .Include(dk => dk.Keyword)
+                    .ToListAsync();
+
+                var keywordsToRemove = currentKeywords
+                    .Where(dk => !newKeywordValues.Contains(dk.Keyword.Value))
+                    .ToList();
+
+                var keywordsToAdd = newKeywordValues
+                    .Where(k => !currentKeywords.Any(dk => dk.Keyword.Value == k))
+                    .ToList();
+
+                foreach (var dk in keywordsToRemove)
+                {
+                    dk.Keyword.UsageCount = Math.Max(0, dk.Keyword.UsageCount - 1);
+                    _context.DocumentKeywords.Remove(dk);
+                }
+
+                foreach (var keywordValue in keywordsToAdd)
+                {
+                    var existingKeyword = await _context.Keyword
+                        .FirstOrDefaultAsync(k => k.Value == keywordValue);
+
+                    Keyword keywordEntity;
+
+                    if (existingKeyword != null)
+                    {
+                        keywordEntity = existingKeyword;
+                        keywordEntity.UsageCount += 1;
+                    }
+                    else
+                    {
+                        keywordEntity = new Keyword
+                        {
+                            Value = keywordValue,
+                            UsageCount = 1,
+                            CreatedDate = DateTime.Now,
+                        };
+
+                        _context.Keyword.Add(keywordEntity);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    var documentKeyword = new DocumentKeyword
+                    {
+                        DocumentId = document.Id,
+                        KeywordId = keywordEntity.Id
+                    };
+
+                    _context.DocumentKeywords.Add(documentKeyword);
+                }
+            }
+
+            _context.Documents.Update(document);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction("Update", new { id = id });
         }

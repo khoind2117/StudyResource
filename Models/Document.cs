@@ -22,5 +22,6 @@
         public virtual ICollection<Favorite>? Favorite { get; set; }
         public virtual ICollection<DownloadHistory>? DownloadHistories { get; set; }
         public virtual ICollection<UserComment> UserComments { get; set; } = new List<UserComment>();
+        public virtual ICollection<DocumentKeyword>? DocumentKeywords { get; set; }
     }
 }

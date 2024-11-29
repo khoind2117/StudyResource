@@ -152,6 +152,18 @@
                         </ul>
                         <div class="tab-content mt-4">
                             <div id="tab-info" class="tab-pane fade show active">
+                                <strong>Từ khóa:</strong>
+                                @if (ViewBag.Keywords != null && ((List<string>)ViewBag.Keywords).Count > 0)
+                                {
+                                    foreach (var keyword in (List<string>)ViewBag.Keywords)
+                                    {
+                                        <span class="badge badge-primary d-inline mx-1">@keyword</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span>Không có từ khóa</span>
+                                }
                                 <p>@Model.Description</p>
                             </div>
                             <div id="tab-comments" class="tab-pane fade">
