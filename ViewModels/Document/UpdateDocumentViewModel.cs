@@ -20,5 +20,7 @@ namespace StudyResource.ViewModels.Document
 
         public int? SetId { get; set; }
         public virtual Set? Set { get; set; }
+
+        public string? Keywords { get; set; }
     }
 }

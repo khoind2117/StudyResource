@@ -70,12 +70,31 @@
             <span asp-validation-for="SetId" class="text-danger"></span>
         </div>
 
+        <div class="mb-3">
+            <label for="keywords" class="form-label">Từ khóa</label>
+            <input id="keywords" name="keywords" placeholder="Nhập từ khóa..." />
+            <small class="form-text text-muted">Nhấn dấu phẩy hay Enter để thêm từ khóa.</small>
+        </div>
+
         <button type="submit" class="btn btn-primary">Tạo</button>
         <a asp-area="Admin" asp-controller="Document" asp-action="Index" class="btn btn-secondary mx-3">Quay lại</a>
     </form>
 </div>
 
 @section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Khởi tạo Tagify cho input mà không có gợi ý
+            const input = document.querySelector("#keywords");
+            const tagify = new Tagify(input);
+
+            // Sự kiện khi thêm từ khóa
+            tagify.on("add", e => console.log("Thêm từ khóa:", e.detail.data.value));
+
+            // Sự kiện khi xóa từ khóa
+            tagify.on("remove", e => console.log("Xóa từ khóa:", e.detail.data.value));
+        });
+    </script>
     <script>
         const gradeSubjects = @Html.Raw(Json.Serialize(ViewBag.GradeSubjectsJson));
 

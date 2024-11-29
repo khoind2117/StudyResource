@@ -22,6 +22,8 @@ namespace StudyResource.Data
         public DbSet<Grade> Grades { get; set; }
         public DbSet<GradeSubject> GradeSubjects { get; set; }
         public DbSet<UserComment> UserComments { get; set; }
+        public DbSet<Keyword> Keyword { get; set; }
+        public DbSet<DocumentKeyword> DocumentKeywords { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -146,6 +148,30 @@ namespace StudyResource.Data
                 .HasOne(uc => uc.User) 
                 .WithMany(u => u.UserComments) 
                 .HasForeignKey(uc => uc.UserId);
+
+            // Keyword
+            modelBuilder.Entity<Keyword>(entity =>
+            {
+                entity.ToTable("Keyword").HasKey(k => k.Id);
+            });
+
+            // DocumentKeyword (Pivot Table: Document-Keyword) N-N Relationship
+            modelBuilder.Entity<DocumentKeyword>(entity =>
+            {
+                entity.ToTable("DocumentKeyword").HasKey(dk => dk.Id);
+
+                // Many-to-One relationship with Grade
+                entity.HasOne(d => d.Document)
+                    .WithMany(dk => dk.DocumentKeywords)
+                    .HasForeignKey(dk => dk.DocumentId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Many-to-One relationship with Subject
+                entity.HasOne(k => k.Keyword)
+                    .WithMany(dk => dk.DocumentKeywords)
+                    .HasForeignKey(dk => dk.KeywordId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
             #endregion
         }
     }
