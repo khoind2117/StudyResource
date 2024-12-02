@@ -12,6 +12,7 @@ namespace StudyResource.ViewModels.Document
         public virtual GradeSubject? GradeSubject { get; set; }
         public virtual Models.DocumentType? DocumentType { get; set; }
         public string? GoogleDriveId { get; set; }
+        public List<DocumentKeyword>? DocumentKeywords { get; set; }
         public List<UserComment> UserComments { get; set; } = new List<UserComment>();
         public List<Models.Document> RelatedBooks { get; set; } = new List<Models.Document>(); 
 

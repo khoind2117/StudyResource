@@ -113,10 +113,6 @@ namespace StudyResource.Controllers
                 })
                 .ToListAsync();
 
-            var keywords = document.DocumentKeywords.Select(dk => dk.Keyword.Value).ToList();
-
-            ViewBag.Keywords = keywords;
-
             var viewModel = new DocumentDetailViewModel
             {
                 Id = document.Id,
@@ -128,7 +124,8 @@ namespace StudyResource.Controllers
                 DocumentType = document.DocumentType,
                 GradeSubject = document.GradeSubject,
                 UserComments = comments,
-                RelatedBooks = new List<Models.Document>() 
+                RelatedBooks = new List<Models.Document>() ,
+                DocumentKeywords = document.DocumentKeywords.ToList(),
             };
 
             return View(viewModel);
@@ -309,6 +306,7 @@ namespace StudyResource.Controllers
                             keywordEntity = new Keyword
                             {
                                 Value = keywordValue,
+                                UnsignValue = _slugService.GenerateSlug(keywordValue),
                                 UsageCount = 1,
                                 CreatedDate = DateTime.Now,
                             };
@@ -471,6 +469,7 @@ namespace StudyResource.Controllers
                         keywordEntity = new Keyword
                         {
                             Value = keywordValue,
+                            UnsignValue = _slugService.GenerateSlug(keywordValue),
                             UsageCount = 1,
                             CreatedDate = DateTime.Now,
                         };
