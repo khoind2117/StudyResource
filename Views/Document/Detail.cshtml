@@ -124,10 +124,15 @@
                     }
                     @{
                         var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={Model.GoogleDriveId}";
+                        var defaultImage = "/pdf-image.png";
                     }
-                    <a href="@thumbnailLink" target="_blank">
-                        <img referrerPolicy="no-referrer" src="@thumbnailLink" alt="Document" class="img-fluid mb-3" />
-                    </a>
+                    <img 
+                        referrerPolicy="no-referrer" 
+                        src="@thumbnailLink" alt="Document" 
+                        class="img-fluid mb-3"
+                        alt="@Model.Title"
+                        onerror="this.onerror=null; this.src='@defaultImage';"
+                    />
                     <h3 class="" style="color: #0c2e60">@Model.Title</h3>
                     <p>@Model.DocumentType?.Name</p></br>
                     <a class="btn btn_4 btn-sm" target="_blank" href="@Url.Action("Ebook", "Document", new { area = "", id = Model.Id })">Đọc</a>
@@ -153,17 +158,20 @@
                         <div class="tab-content mt-4">
                             <div id="tab-info" class="tab-pane fade show active">
                                 <strong>Từ khóa:</strong>
-                                @if (ViewBag.Keywords != null && ((List<string>)ViewBag.Keywords).Count > 0)
+                                @if (Model.DocumentKeywords != null && Model.DocumentKeywords.Count > 0)
                                 {
-                                    foreach (var keyword in (List<string>)ViewBag.Keywords)
+                                    foreach (var documentKeyword in Model.DocumentKeywords)
                                     {
-                                        <span class="badge badge-primary d-inline mx-1">@keyword</span>
+                                        <a href="@Url.Action("Index", "Keyword", new { keyword = documentKeyword.Keyword.UnsignValue })" class="btn btn-sm btn-outline-info">
+                                            @documentKeyword.Keyword.Value
+                                        </a>
                                     }
                                 }
                                 else
                                 {
-                                    <span>Không có từ khóa</span>
+                                    <p>Không có từ khóa.</p>
                                 }
+                                <hr />
                                 <p>@Model.Description</p>
                             </div>
                             <div id="tab-comments" class="tab-pane fade">

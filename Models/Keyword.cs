@@ -7,6 +7,7 @@ namespace StudyResource.Models
         public int Id { get; set; }
         [JsonProperty("value")]
         public string? Value { get; set; }
+        public string? UnsignValue { get; set; }
         public int UsageCount { get; set; } = 0;
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 

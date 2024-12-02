@@ -132,6 +132,7 @@ namespace StudyResource.Areas.Admin.Controllers
                             keywordEntity = new Keyword
                             {
                                 Value = keywordValue,
+                                UnsignValue = _slugService.GenerateSlug(keywordValue),
                                 UsageCount = 1,
                                 CreatedDate = DateTime.Now,
                             };
@@ -232,6 +233,39 @@ namespace StudyResource.Areas.Admin.Controllers
                                     }
                                 }
 
+                                var documentKeywords = new List<DocumentKeyword>();
+                                if (!string.IsNullOrWhiteSpace(record.Keyword))
+                                {
+                                    var keywords = record.Keyword.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                                    foreach (var keyword in keywords)
+                                    {
+                                        var trimmedKeyword = keyword.Trim();
+                                        var existingKeyword = await _context.Keyword
+                                            .FirstOrDefaultAsync(k => k.Value.ToLower() == trimmedKeyword.ToLower());
+
+                                        if (existingKeyword == null)
+                                        {
+                                            existingKeyword = new Keyword 
+                                            { 
+                                                Value = trimmedKeyword,
+                                                UnsignValue = _slugService.GenerateSlug(trimmedKeyword),
+                                                UsageCount = 1,
+                                                CreatedDate = DateTime.Now,
+                                            };
+                                            _context.Keyword.Add(existingKeyword);
+                                            await _context.SaveChangesAsync();
+                                        }
+                                        else
+                                        {
+                                            existingKeyword.UsageCount += 1;
+                                            _context.Keyword.Update(existingKeyword);
+                                            await _context.SaveChangesAsync();
+                                        }
+
+                                        documentKeywords.Add(new DocumentKeyword { KeywordId = existingKeyword.Id });
+                                    }
+                                }
+
                                 var document = new Document
                                 {
                                     Title = record.Title,
@@ -243,7 +277,8 @@ namespace StudyResource.Areas.Admin.Controllers
                                     GradeSubjectId = gradeSubject.Id,
                                     DocumentTypeId = documentType.Id,
                                     SetId = set?.Id,
-                                    UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                                    UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                                    DocumentKeywords = documentKeywords
                                 };
 
                                 _context.Documents.Add(document);
@@ -407,6 +442,7 @@ namespace StudyResource.Areas.Admin.Controllers
                         keywordEntity = new Keyword
                         {
                             Value = keywordValue,
+                            UnsignValue = _slugService.GenerateSlug(keywordValue),
                             UsageCount = 1,
                             CreatedDate = DateTime.Now,
                         };

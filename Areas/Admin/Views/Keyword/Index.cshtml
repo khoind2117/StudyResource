@@ -1,0 +1,212 @@
+﻿@model List<Keyword>
+
+@{
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <h3>Quản lý từ khóa</h3>
+    <table id="keywordTable" class="table table-striped table-bordered">
+        <thead class="bg-primary text-white">
+            <tr>
+                @* <th><input type="checkbox" id="selectAll" /></th> *@
+                <th>Từ khóa</th>
+                <th>Từ khóa không dấu</th>
+                <th>Số lần sử dụng</th>
+                <th>Ngày tạo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var keyword in Model)
+            {
+                <tr>
+                    @* <td><input type="checkbox" class="documentCheckbox" value="@doc.Id" /></td> *@
+                    <td>@keyword.Value</td>
+                    <td>@keyword.UnsignValue</td>
+                    <td>@keyword.UsageCount</td>
+                    <td>@keyword.CreatedDate</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#keywordTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                responsive: true, 
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                language: {
+                    lengthMenu: "Hiển thị _MENU_ mục mỗi trang",
+                    zeroRecords: "Không tìm thấy kết quả nào",
+                    info: "Hiển thị từ _START_ đến _END_ trong tổng số _TOTAL_ mục",
+                    infoEmpty: "Không có dữ liệu",
+                    infoFiltered: "(Được lọc từ _MAX_ tổng số mục)",
+                    search: "Tìm kiếm:",
+                    paginate: {
+                        first: "Đầu tiên",
+                        last: "Cuối cùng",
+                        next: "Tiếp theo",
+                        previous: "Trước"
+                    },
+                    emptyTable: "Không có dữ liệu trong bảng",
+                },
+
+                order: [[1, 'asc'], [0, 'desc']],
+            });
+        });
+
+        // Select All Checkbox
+        document.getElementById('selectAll').addEventListener('click', function () {
+            var checkboxes = document.querySelectorAll('.documentCheckbox');
+            for (var checkbox of checkboxes) {
+                checkbox.checked = this.checked;
+            }
+        });
+
+        // Delete
+        function confirmDelete(url) {
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Tài liệu này sẽ bị xóa vĩnh viễn!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Có, xóa nó!',
+                cancelButtonText: 'Không, giữ nó!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Tài liệu đang được xóa...',
+                        text: 'Vui lòng chờ trong giây lát.',
+                        icon: 'info',
+                        toast: true,
+                        position: 'bottom-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+
+                    $.ajax({
+                        type: 'Delete',
+                        url: url,
+                        success: function (response) {
+                            Swal.fire({
+                                title: 'Đã xóa!',
+                                text: 'Tài liệu đã được xóa.',
+                                icon: 'success',
+                                toast: true,
+                                position: 'bottom-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            }).then(() => {
+                                location.reload();
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Có lỗi xảy ra khi xóa tài liệu.',
+                                icon: 'error',
+                                toast: true,
+                                position: 'bottom-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        // Delete Selected Documents
+        function deleteSelectedDocuments() {
+            var selectedIds = [];
+            var checkboxes = document.querySelectorAll('.documentCheckbox:checked');
+            for (var checkbox of checkboxes) {
+                selectedIds.push(checkbox.value);
+            }
+
+            if (selectedIds.length > 0) {
+                Swal.fire({
+                    title: 'Bạn có chắc chắn?',
+                    text: `Bạn có chắc chắn muốn xóa ${selectedIds.length} tài liệu đã chọn?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Có, xóa chúng!',
+                    cancelButtonText: 'Không, giữ lại!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Tài liệu đang được xóa...',
+                            text: 'Vui lòng chờ trong giây lát.',
+                            icon: 'info',
+                            toast: true,
+                            position: 'bottom-end',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+
+                        $.ajax({
+                            type: 'Delete',
+                            url: '@Url.Action("DeleteSelectedDocuments", "Document")',
+                            data: JSON.stringify(selectedIds),
+                            contentType: 'application/json; charset=utf-8',
+                            success: function () {
+                                Swal.fire({
+                                    title: 'Đã xóa!',
+                                    text: 'Các tài liệu đã được xóa.',
+                                    icon: 'success',
+                                    toast: true,
+                                    position: 'bottom-end',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            },
+                            error: function () {
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: 'Có lỗi xảy ra khi xóa tài liệu.',
+                                    icon: 'error',
+                                    toast: true,
+                                    position: 'bottom-end',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                });
+                            }
+                        });
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Chưa chọn tài liệu',
+                    text: 'Vui lòng chọn ít nhất một tài liệu để xóa.',
+                    icon: 'warning',
+                    toast: true,
+                    position: 'bottom-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            }
+        }
+    </script>
+}
+
+<style>
+    td {
+        overflow: hidden;
+        white-space: normal;
+        text-overflow: ellipsis;
+        max-width: 150px;
+    }
+</style>

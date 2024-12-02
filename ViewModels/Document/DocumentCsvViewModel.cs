@@ -16,5 +16,7 @@ namespace StudyResource.ViewModels.Document
         public string? DocumentTypeName { get; set; }
         [Name("Bộ sách")]
         public string? SetName { get; set; }
+        [Name("Từ khóa")]
+        public string? Keyword { get; set; }
     }
 }
