@@ -1,0 +1,94 @@
+﻿@using StudyResource.ViewModels.Home
+@using System.Web.Helpers
+@model TotalDocumentViewModel
+
+<div class="card">
+    <div class="card-body">
+        <div class="row alig n-items-start">
+            <div class="col-8">
+                <h5 class="card-title mb-9 fw-semibold">
+                    Tổng tài liệu
+                </h5>
+
+                <h4 class="fw-semibold mb-3">
+                    @Model.DocumentCount
+                    <small>tài liệu</small>
+                </h4>
+                @if (Model.ChangePercentage > 0)
+                {
+                    <div class="d-flex align-items-center pb-1">
+                        <span class="me-2 rounded-circle bg-light-success round-20 d-flex align-items-center justify-content-center">
+                            <i class="ti ti-arrow-up-right text-success"></i>
+                        </span>
+                        <p class="text-dark me-1 fs-3 mb-0">@Model.ChangePercentage%</p>
+                        <p class="fs-3 mb-0">trong 7 ngày qua</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center pb-1">
+                        <span class="me-2 rounded-circle bg-light-danger round-20 d-flex align-items-center justify-content-center">
+                            <i class="ti ti-arrow-down-right text-danger"></i>
+                        </span>
+                        <p class="text-dark me-1 fs-3 mb-0">@Model.ChangePercentage%</p>
+                        <p class="fs-3 mb-0">trong 7 ngày qua</p>
+                    </div>
+                }
+            </div>
+            <div class="col-4">
+                <div class="d-flex justify-content-end card-title mb-9 fw-semibold">
+                    <i class="ti ti-reload" id="total-documents-reload-icon" style="cursor: pointer"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="total-documents-chart"></div>
+</div>
+
+<script>
+    var totalDocument = {
+        chart: {
+            id: "sparkline3",
+            type: "area",
+            height: 60,
+            sparkline: {
+                enabled: true,
+            },
+            group: "sparklines",
+            fontFamily: "Plus Jakarta Sans', sans-serif",
+            foreColor: "#adb0bb",
+        },
+        series: [
+            {
+                name: "Tổng tài liệu đã duyệt",
+                color: "#49BEFF",
+                data: @Html.Raw(Json.Serialize(Model.DocumentsPerDay)),
+            },
+        ],
+        labels: @Html.Raw(Json.Serialize(Model.Dates)),
+        stroke: {
+            curve: "smooth",
+            width: 2,
+        },
+        fill: {
+            colors: ["#f3feff"],
+            type: "solid",
+            opacity: 0.05,
+        },
+        markers: {
+            size: 3,
+        },
+        tooltip: {
+            theme: "dark",
+            fillSeriesColor: false,
+        },
+    };
+
+    new ApexCharts(document.querySelector("#total-documents-chart"), totalDocument).render();
+</script>
+
+<script>
+    $("#total-documents-reload-icon").click(function () {
+        $("#total-documents").load('/Admin/Home/GetTotalDocuments');
+    });
+</script>

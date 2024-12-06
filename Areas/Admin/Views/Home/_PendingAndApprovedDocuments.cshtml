@@ -1,0 +1,101 @@
+﻿@using StudyResource.ViewModels.Home
+@model PendingAndApprovedDocuments
+
+<div class="card overflow-hidden">
+    <div class="card-body p-4">
+        <h5 class="card-title mb-9 fw-semibold d-flex justify-content-between align-items-center">
+            <span>Thống kê phê duyệt</span>
+            <i class="ti ti-reload" id="pending-and-approved-documents-reload-icon" style="cursor: pointer"></i>
+        </h5>
+        
+        <div class="row align-items-center">
+            <div class="col-8">
+                <h4 class="fw-semibold mb-3">
+                    +@Model.ApprovedCountToday 
+                    <small>tài liệu</small>
+                    <p class="fs-3 mb-0">trong hôm nay</p>
+                </h4>
+                <div class="d-flex align-items-center mb-3">
+                    <span class="me-1 rounded-circle bg-light-info round-20 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-percentage text-info"></i>
+                    </span>
+                    <p class="text-dark me-1 fs-3 mb-0">@Model.ApprovalPercentage %</p>
+                    <p class="fs-3 mb-0">tài liệu đã duyệt</p>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="me-4">
+                        <span class="round-8 bg-success rounded-circle me-2 d-inline-block"></span>
+                        <span class="fs-2">Đã duyệt</span>
+                    </div>
+                    <div>
+                        <span class="round-8 bg-danger rounded-circle me-2 d-inline-block"></span>
+                        <span class="fs-2">Chờ duyệt</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="d-flex justify-content-center">
+                    <div id="pending-and-approved-documents-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var pendingCount = @Model.PendingCount;
+    var approvedCount = @Model.ApprovedCount;
+
+    var documentBreakup = {
+        series: [approvedCount, pendingCount],
+        labels: ["Đã duyệt", "Chờ duyệt"],
+        chart: {
+            width: 200,
+            type: "donut",
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            foreColor: "#adb0bb",
+        },
+        plotOptions: {
+            pie: {
+                startAngle: 0,
+                endAngle: 360,
+                donut: {
+                    size: '75%',
+                },
+            },
+        },
+        stroke: {
+            show: false,
+        },
+        dataLabels: {
+            enabled: false,
+        },
+        legend: {
+            show: false,
+        },
+        colors: ["#13DEB9", "#FA896B"],
+        responsive: [
+            {
+                breakpoint: 991,
+                options: {
+                    chart: {
+                        width: 150,
+                    },
+                },
+            },
+        ],
+        tooltip: {
+            theme: "dark",
+            fillSeriesColor: false,
+        }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#pending-and-approved-documents-chart"), documentBreakup);
+    chart.render();
+</script>
+
+<script>
+    $("#pending-and-approved-documents-reload-icon").click(function () {
+        $("#pending-and-approved-documents").load('/Admin/Home/GetPendingAndApprovedDocuments');
+    });
+</script>

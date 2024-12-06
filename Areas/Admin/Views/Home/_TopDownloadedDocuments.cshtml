@@ -1,0 +1,51 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model List<Document>
+@inject UserManager<User> UserManager
+
+<h5 class="fw-semibold mb-4">Tài liệu được tải nhiều nhất</h5>
+@foreach ( var doc in Model)
+{
+    <div class="col-sm-6 col-xl-3">
+        <div class="card overflow-hidden rounded-2">
+            <div class="position-relative">
+                @{
+                    var thumbnailLink = $"https://drive.google.com/thumbnail?id={doc.GoogleDriveId}";
+                    var defaultImage = "/pdf-image.png";
+                }
+                <a href="/admin/document/update/@doc.Id" target=_blank>
+                    <img referrerPolicy="no-referrer"
+                         src="@thumbnailLink"
+                         alt="@doc.Title"
+                         onerror="this.onerror=null; this.src='@defaultImage';"
+                         class="card-img-top rounded-0"
+                         style="height:300px"/>
+                </a>
+                <a href="/admin/document/update/@doc.Id" target=_blank class="bg-primary rounded-circle p-2 text-white d-inline-flex position-absolute bottom-0 end-0 mb-n3 me-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Add To Cart">
+                    <i class="ti ti-edit fs-4"></i>
+                </a>
+            </div>
+            <div class="card-body pt-3 p-4">
+                <h6 class="fw-semibold fs-4 text-truncate">@doc.Title</h6>
+                <span class="fw-semibold fs-4 text-truncate">
+                    Người đăng:
+                    @if (await UserManager.IsInRoleAsync(doc.User, "Admin"))
+                    {
+                        <span class="text-danger">
+                            Admin
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="text-primary">
+                            @($"{doc.User.LastName} {doc.User.FirstName}")
+                        </span>
+                    }
+                </span>
+                <div class="d-flex align-items-center justify-content-between">
+                    <h6 class="fw-semibold fs-4 mb-0">Lượt tải: @doc.Downloads</h6>
+                    <h6 class="fw-semibold fs-4 mb-0">Lượt xem: @doc.Views</h6>
+                </div>
+            </div>
+        </div>
+    </div>    
+}

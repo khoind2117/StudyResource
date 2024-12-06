@@ -28,8 +28,18 @@
             {
                 <tr>
                     <td><input type="checkbox" class="documentCheckbox" value="@doc.Id" /></td>
+                    @{
+                        var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w100-h100&id={@doc.GoogleDriveId}";
+                        var defaultImage = "/pdf-image.png";
+                    }
                     <td>
-                        <img referrerPolicy="no-referrer" src="https://drive.google.com/thumbnail?id=@doc.GoogleDriveId&sz=w100-h100" alt="@doc.Title" style="width: 100px; height: auto;" />
+                        <img 
+                            referrerPolicy="no-referrer" 
+                            src=@thumbnailLink 
+                            alt="@doc.Title" 
+                            style="width: 100px; height: auto;"
+                            onerror="this.onerror=null; this.src='@defaultImage';" 
+                        />
                     </td>
                     <td>@doc.Title</td>
                     <td>@doc.GradeSubject?.Name</td>

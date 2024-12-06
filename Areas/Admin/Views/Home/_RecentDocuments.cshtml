@@ -1,0 +1,70 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using StudyResource.ViewModels.Home
+@model List<RecentDocumentViewModel>
+@inject UserManager<User> UserManager
+
+<div class="card w-100">
+    <div class="card-body p-4">
+        <h5 class="card-title fw-semibold mb-4 d-flex justify-content-between align-items-center">
+            <span>Tài liệu hôm nay</span>
+            <i class="ti ti-reload" id="reload-icon" style="cursor: pointer"></i>
+        </h5>
+        <ul class="timeline-widget mb-0 position-relative mb-n5">
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var doc in Model)
+                {
+                    <li class="timeline-item d-flex position-relative overflow-hidden">
+                        <div class="timeline-time text-dark flex-shrink-0 text-end">
+                            @doc.UploadDate.ToString("HH:mm")
+                        </div>
+                        <div class="timeline-badge-wrap d-flex flex-column align-items-center">
+                            @if (doc.IsApproved)
+                            {
+                                <span class="timeline-badge border-2 border border-success flex-shrink-0 my-8"></span>
+                            }
+                            else
+                            {
+                                <span class="timeline-badge border-2 border border-danger flex-shrink-0 my-8"></span>
+                            }
+                            @if (doc != Model.Last())
+                            {
+                                <span class="timeline-badge-border d-block flex-shrink-0"></span>
+                            }
+                        </div>
+                        <div class="timeline-desc fs-3 text-dark mt-n1 fw-semibold">
+                            @doc.Title
+                            @if (await UserManager.IsInRoleAsync(doc.User, "Admin"))
+                            {
+                                <a href="javascript:void(0)" class="text-danger d-block">Admin</a>
+                            }
+                            else
+                            {
+                                <a href="javascript:void(0)" class="text-primary d-block fw-normal">@($"{doc.User.LastName} {doc.User.FirstName}")</a>
+                            }
+                        </div>
+                    </li>
+                }
+            }
+            else
+            {
+                <li class="timeline-item d-flex position-relative overflow-hidden">
+                <div class="timeline-time text-dark flex-shrink-0 text-end">@DateTime.Now.ToString("hh:mm")</div>
+                    <div class="timeline-badge-wrap d-flex flex-column align-items-center">
+                        <span class="timeline-badge border-2 border border-warning flex-shrink-0 my-8"></span>
+                    </div>
+                    <div class="timeline-desc fs-3 text-dark mt-n1 fw-semibold">
+                        Hiện tại chưa có tài liệu mới
+                        <a href="javascript:void(0)" class="text-warning d-block">Thử lại sau ít phút</a>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
+<script>
+    $("#reload-icon").click(function () {
+        $("#recent-documents").load('/Admin/Home/GetRecentDocuments');
+    });
+</script>

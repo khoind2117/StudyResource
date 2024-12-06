@@ -1,8 +1,7 @@
 ﻿namespace StudyResource.ViewModels.Home
 {
-    public class AdminDashboardViewModel
+    public class UploadAndDownloadDocumentViewModel
     {
-        public int PendingDocuments { get; set; }
         public List<int>? DownloadCount { get; set; }
         public List<int>? UploadCount { get; set; }
     }
