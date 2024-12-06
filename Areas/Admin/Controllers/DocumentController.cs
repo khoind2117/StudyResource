@@ -103,6 +103,7 @@ namespace StudyResource.Areas.Admin.Controllers
                 };
 
                 _context.Documents.Add(document);
+                await _context.SaveChangesAsync();
 
                 if (!string.IsNullOrEmpty(model.Keywords))
                 {
