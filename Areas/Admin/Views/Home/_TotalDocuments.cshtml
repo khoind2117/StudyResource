@@ -1,4 +1,4 @@
-﻿@using StudyResource.ViewModels.Home
+﻿@using StudyResource.ViewModels.Dashboard
 @using System.Web.Helpers
 @model TotalDocumentViewModel
 
@@ -46,6 +46,9 @@
 </div>
 
 <script>
+    var documentsPerDay = @Html.Raw(Json.Serialize(Model.DocumentsPerDay));
+    var dates = @Html.Raw(Json.Serialize(Model.Dates));
+
     var totalDocument = {
         chart: {
             id: "sparkline3",
@@ -60,12 +63,12 @@
         },
         series: [
             {
-                name: "Tổng tài liệu đã duyệt",
+                name: "Tổng tài liệu",
                 color: "#49BEFF",
-                data: @Html.Raw(Json.Serialize(Model.DocumentsPerDay)),
+                data: documentsPerDay,
             },
         ],
-        labels: @Html.Raw(Json.Serialize(Model.Dates)),
+        labels: dates,
         stroke: {
             curve: "smooth",
             width: 2,
@@ -82,6 +85,13 @@
             theme: "dark",
             fillSeriesColor: false,
         },
+        yaxis: {
+            labels: {
+                formatter: function (value) {
+                    return Math.round(value);
+                }
+            }
+        }
     };
 
     new ApexCharts(document.querySelector("#total-documents-chart"), totalDocument).render();

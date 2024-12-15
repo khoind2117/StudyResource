@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using StudyResource.Data;
 using StudyResource.Models;
 using StudyResource.Services;
+using X.PagedList.Extensions;
 
 namespace StudyResource.Controllers
 {
@@ -19,21 +20,22 @@ namespace StudyResource.Controllers
             _slugService = slugService;
         }
 
-        [Route("{keyword}")]
-        public async Task<IActionResult> Index(string keyword)
+        [Route("{keyword}/{page:int?}")]
+        public async Task<IActionResult> Index(string keyword, int page = 1, int pageSize = 10)
         {
             if (string.IsNullOrEmpty(keyword))
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            var documents = await _context.Documents
-               .Where(d => d.DocumentKeywords
-                   .Any(dt => dt.Keyword.UnsignValue.Contains(_slugService.GenerateSlug(keyword))))
-               .Include(d => d.User)
-               .Include(d => d.DocumentKeywords)
-                   .ThenInclude(dk => dk.Keyword)
-               .ToListAsync();
+            var documentsQuery = _context.Documents
+                .Where(d => d.DocumentKeywords
+                    .Any(dt => dt.Keyword.UnsignValue.Contains(_slugService.GenerateSlug(keyword))))
+                .Include(d => d.User)
+                .Include(d => d.DocumentKeywords)
+                    .ThenInclude(dk => dk.Keyword);
+
+            var documents = documentsQuery.ToPagedList(page, pageSize);
 
             if (!documents.Any())
             {
@@ -41,8 +43,9 @@ namespace StudyResource.Controllers
             }
 
             ViewBag.Keyword = keyword;
+            ViewBag.Page = page;
+
             return View(documents);
         }
-
     }
 }

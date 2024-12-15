@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StudyResource.Data;
-using StudyResource.ViewModels.Document;
-using StudyResource.ViewModels.Home;
+using StudyResource.ViewModels.Dashboard;
 
 namespace StudyResource.Areas.Admin.Controllers
 {
@@ -123,7 +122,7 @@ namespace StudyResource.Areas.Admin.Controllers
                 DocumentsPerDay = documentsPerDay,
                 Dates = dates,
                 DocumentCount = documentCount,
-                ChangePercentage = changePercentage
+                ChangePercentage = (int)Math.Round(changePercentage)
             };
 
             return PartialView("_TotalDocuments", model);

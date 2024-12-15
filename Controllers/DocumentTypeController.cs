@@ -13,19 +13,17 @@ namespace StudyResource.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string? slug)
+        public async Task<IActionResult> Index()
         {
-            var grades = await _context.Grades.ToListAsync();
-            ViewBag.Grades = grades;
-            var sets = await _context.Sets.ToListAsync();
-            ViewBag.Sets = sets;
+            return View();
+        }
 
-            var documents = await _context.Documents
-                .Include(d => d.DocumentType)
-                .Include(d => d.Set)
-                .Where(d => d.DocumentType.Slug == slug).ToListAsync();
+        [HttpGet]        
+        public async Task<IActionResult> ReferenceBook()
+        {
 
-            return View(documents);
+
+            return View();
         }
     }
 }

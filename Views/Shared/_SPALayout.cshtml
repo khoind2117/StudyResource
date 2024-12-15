@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - StudyResource</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="~/etrain-master/img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/owl.carousel.min.css">
+    <!-- themify CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/themify-icons.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/flaticon.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/magnific-popup.css">
+    <!-- swiper CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/slick.css">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- style CSS -->
+    <link rel="stylesheet" href="~/etrain-master/css/style.css">
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tagify/4.32.1/tagify.css" />
+</head>
+
+<body>
+    @await Html.PartialAsync("_SPAHeader")
+
+    @RenderBody()
+
+    @await Html.PartialAsync("_Footer")
+
+    <!-- jquery plugins here-->
+    <!-- jquery -->
+    <script src="~/etrain-master/js/jquery-1.12.1.min.js"></script>
+    <!-- popper js -->
+    <script src="~/etrain-master/js/popper.min.js"></script>
+    <!-- bootstrap js -->
+    <script src="~/etrain-master/js/bootstrap.min.js"></script>
+    <!-- easing js -->
+    <script src="~/etrain-master/js/jquery.magnific-popup.js"></script>
+    <!-- swiper js -->
+    <script src="~/etrain-master/js/swiper.min.js"></script>
+    <!-- swiper js -->
+    <script src="~/etrain-master/js/masonry.pkgd.js"></script>
+    <!-- particles js -->
+    <script src="~/etrain-master/js/owl.carousel.min.js"></script>
+    <script src="~/etrain-master/js/jquery.nice-select.min.js"></script>
+    <!-- swiper js -->
+    <script src="~/etrain-master/js/slick.min.js"></script>
+    <script src="~/etrain-master/js/jquery.counterup.min.js"></script>
+    <script src="~/etrain-master/js/waypoints.min.js"></script>
+    <!-- custom js -->
+    <script src="~/etrain-master/js/custom.js"></script>
+
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.6.0.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tagify/4.32.1/tagify.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>

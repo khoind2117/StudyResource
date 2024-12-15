@@ -7,110 +7,37 @@
     ViewData["Title"] = "Đăng nhập";
     Layout = "_Layout";
 }
-<section class="login_section">
-    <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@Model.ReturnUrl" method="post" role="form">
-        <h1>Đăng nhập</h1>
-        <hr />
-        <div asp-validation-summary="All" class="text-danger"></div>
-        <div class="form-group mb-3">
-            <label asp-for="Email">Email</label>
-            <input asp-for="Email" class="form-control">
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
-        <div class="form-group mb-3">
-            <label asp-for="Password">Mật khẩu</label>
-            <input asp-for="Password" class="form-control">
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
-        </div>
-        <p>
-            Bạn chưa có tài khoản ? <a asp-action="Register">Tạo tài khoản ở đây</a>
-        </p>
-    </form>
-</section>
 
-<style>
-    section {
-        height: 880px;
-        position: relative;
-        overflow: hidden;
-        background-image: url(../img/banner_bg.png);
-        background-repeat: no-repeat;
-        background-size: 68%;
-        background-position: top right;
-        display: flex;
-        justify-content: center;
-    }
+<div class="container" style="margin-top:100px; margin-bottom:100px;">
+    <div class="login_section mx-auto my-5" style="max-width: 400px;">
+        <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@Model.ReturnUrl" method="post" role="form">
+            <h1 class="text-center mb-4">Đăng nhập</h1>
+            <hr />
+            <div asp-validation-summary="All" class="text-danger"></div>
 
-    /* Đặt các style chung cho form */
-    form {
-        max-width: 400px;
-        margin: auto;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-    }
+            <!-- Email Input -->
+            <div class="form-group mb-3">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" placeholder="Nhập email">
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
 
-        /* Đặt style cho tiêu đề */
-        form h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
-        }
+            <!-- Password Input -->
+            <div class="form-group mb-3">
+                <label asp-for="Password" class="form-label">Mật khẩu</label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Nhập mật khẩu">
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
 
-        /* Style cho các nhãn */
-        form label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-        }
+            <!-- Submit Button -->
+            <div class="form-group mb-3">
+                <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+            </div>
 
-        /* Style cho các input */
-        form .form-control {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        /* Style cho các thông báo lỗi */
-        form .text-danger {
-            color: #e74c3c;
-            font-size: 0.9em;
-        }
-
-        /* Style cho nút submit */
-        form .btn {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-            form .btn:hover {
-                background-color: #0056b3;
-            }
-
-        /* Style cho đoạn văn dưới cùng */
-        form p {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-            form p a {
-                color: #007bff;
-                text-decoration: none;
-            }
-
-                form p a:hover {
-                    text-decoration: underline;
-                }
-</style>
+            <!-- Register Link -->
+            <p class="text-center">
+                Bạn chưa có tài khoản? <a asp-action="Register">Tạo tài khoản ở đây</a>
+            </p>
+        </form>
+    </div>
+</<div>

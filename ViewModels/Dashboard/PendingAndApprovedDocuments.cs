@@ -1,4 +1,4 @@
-﻿namespace StudyResource.ViewModels.Home
+﻿namespace StudyResource.ViewModels.Dashboard
 {
     public class PendingAndApprovedDocuments
     {

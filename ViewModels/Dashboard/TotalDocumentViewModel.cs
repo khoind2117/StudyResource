@@ -1,10 +1,10 @@
-﻿namespace StudyResource.ViewModels.Home
+﻿namespace StudyResource.ViewModels.Dashboard
 {
     public class TotalDocumentViewModel
     {
         public List<int>? DocumentsPerDay { get; set; }
         public List<string>? Dates { get; set; }
         public int DocumentCount { get; set; }
-        public double ChangePercentage { get; set; }
+        public int ChangePercentage { get; set; }
     }
 }
