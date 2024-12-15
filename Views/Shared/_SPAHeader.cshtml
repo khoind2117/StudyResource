@@ -7,7 +7,7 @@
 }
 
 <!--::header part start::-->
-<header class="main_menu home_menu">
+<header class="main_menu single_page_menu">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-12">
@@ -32,7 +32,7 @@
                             </li>
 
                             @* <li class="d-none d-lg-block">
-                                <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="btn_1">Admin</a>
+                            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="btn_1">Admin</a>
                             </li> *@
                             <li class="nav-item">
                                 <a asp-controller="Home" asp-action="Index" class="nav-link">Trang chủ</a>
@@ -41,26 +41,26 @@
                                 <a asp-controller="Document" asp-action="Index" class="nav-link">Thư viện</a>
                             </li>
                             <li class="nav-item">
-                                <a asp-controller="DocumentType" asp-action="ReferenceBook" class="nav-link">Tài liệu tham khảo</a>
+                                <a asp-controller="DocumentType" asp-action="ReferenceBook" class="nav-link">Tài liệu</a>
                             </li>
                             <li class="nav-item">
                                 <a asp-controller="Contact" asp-action="Index" class="nav-link">Liên hệ</a>
                             </li>
-                          
+
                             @if (User.Identity.IsAuthenticated) // Nếu người dùng đã đăng nhập
                             {
-                            <li class="nav-item">
-                                <a asp-controller="Document" asp-action="Create" class="nav-link">Tải lên tài liệu</a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-controller="Document" asp-action="UserDocument" class="nav-link">Tài liệu của tôi</a>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Tài khoản
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    
+                                <li class="nav-item">
+                                    <a asp-controller="Document" asp-action="Create" class="nav-link">Tải lên tài liệu</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Document" asp-action="UserDocument" class="nav-link">Tài liệu của tôi</a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Tài khoản
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+
                                         <a asp-controller="Account" asp-action="Manage" class="dropdown-item">Hồ sơ cá nhân</a>
                                         <a asp-controller="Favorite" asp-action="Index" class="dropdown-item">Tài liệu yêu thích</a>
                                         <a asp-controller="DownloadHistory" asp-action="Index" class="dropdown-item">Lịch sử tải</a>
@@ -69,8 +69,8 @@
                                         <form id="logout-form" asp-controller="Account" asp-action="Logout" method="post" class="d-none">
                                             @Html.AntiForgeryToken()
                                         </form>
-                                </div>
-                            </li>
+                                    </div>
+                                </li>
                             }
                             else
                             {

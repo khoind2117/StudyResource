@@ -31,7 +31,6 @@ namespace StudyResource.Controllers
 
         public IActionResult Privacy()
         {
-
             return View();
         }
 

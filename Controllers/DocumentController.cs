@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using StudyResource.Data;
 using StudyResource.Models;
 using StudyResource.Services;
+using StudyResource.ViewModels;
 using StudyResource.ViewModels.Document;
 using System;
 using System.Globalization;
@@ -13,6 +14,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
+using X.PagedList.Extensions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace StudyResource.Controllers
@@ -46,7 +49,7 @@ namespace StudyResource.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(string searchString, int? gradeId, int? setId)
+        public IActionResult Index(string searchString, int? gradeId = 1, int? setId = 1)
         {
             var documents = _context.Documents
                 .Include(d => d.GradeSubject.Grade)
@@ -554,6 +557,66 @@ namespace StudyResource.Controllers
             await _context.SaveChangesAsync();
 
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("/tim-kiem/{page:int?}")]
+        public async Task<IActionResult> Search(string query, int page = 1, int pageSize = 10)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                ViewBag.Message = "Vui lòng nhập từ khóa tìm kiếm.";
+                return View(Enumerable.Empty<Document>().ToPagedList(page, pageSize)); // Trả về danh sách trống được phân trang
+            }
+
+            // Tách query thành các từ khóa nhỏ
+            var keywords = query.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            // Tìm kiếm ưu tiên trong tiêu đề
+            var titleResults = await _context.Documents
+                .Include(d => d.DocumentKeywords)
+                    .ThenInclude(dk => dk.Keyword)
+                .Include(d => d.User)
+                .Where(d => d.Title.ToLower().Contains(query.ToLower())) // Tìm khớp nguyên cụm trong tiêu đề
+                .ToListAsync();
+
+            // Tìm kiếm mở rộng trong từ khóa
+            var keywordResults = await _context.Documents
+                .Include(d => d.DocumentKeywords)
+                    .ThenInclude(dk => dk.Keyword)
+                .Include(d => d.User)
+                .Where(d =>
+                    d.DocumentKeywords.Any(dk =>
+                        keywords.Any(k => dk.Keyword.Value.ToLower().Contains(k)))) // Tìm từng từ khóa trong danh sách
+                .ToListAsync();
+
+            // Tạo danh sách kết quả tạm thời để tính toán số lượng trùng khớp
+            var allResults = titleResults.Concat(keywordResults).Distinct().ToList();
+
+            // Tính toán số lượng từ khóa trùng trong tiêu đề và từ khóa của tài liệu
+            var resultsWithMatchCount = allResults.Select(doc => new
+            {
+                Document = doc,
+                TitleMatchCount = doc.Title.ToLower().Split(' ').Count(word => keywords.Contains(word)), // Số từ khóa trùng trong tiêu đề
+                KeywordMatchCount = doc.DocumentKeywords.Count(dk => keywords.Contains(dk.Keyword.Value.ToLower())) // Số từ khóa trùng trong từ khóa
+            }).ToList();
+
+            // Sắp xếp tài liệu theo tổng số từ khóa trùng (trong tiêu đề + từ khóa)
+            var sortedResults = resultsWithMatchCount
+                .OrderByDescending(x => x.TitleMatchCount + x.KeywordMatchCount) // Sắp xếp theo tổng số từ khóa trùng
+                .Select(x => x.Document) // Chọn lại tài liệu sau khi đã tính toán và sắp xếp
+                .ToList();
+
+            // Sử dụng X.PagedList để phân trang
+            var pagedResults = sortedResults.ToPagedList(page, pageSize);
+
+            ViewBag.Query = query;
+            if (!pagedResults.Any())
+            {
+                ViewBag.Message = "Không tìm thấy tài liệu nào.";
+            }
+
+            return View(pagedResults); // Trả về danh sách phân trang
         }
     }
 }
