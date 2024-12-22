@@ -1,0 +1,213 @@
+﻿@model List<StudyResource.Models.Document>
+
+@{
+    ViewData["Title"] = "Sách giáo viên";
+    Layout = "_SPALayout";
+}
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - StudyResource</title>
+    <style>
+        .ss-banner--not-bg {
+            height: auto;
+            padding: 60px 0 10px;
+        }
+
+        .book-set-filter .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-class-filter {
+            border: none;
+            padding: 15px 20px;
+            color: dimgrey;
+            background-color: white;
+            margin: 5px;
+        }
+
+        .grade-heading {
+            color: dimgrey;
+            margin: 0;
+            margin-right: 10px;
+        }
+
+            .grade-heading:hover {
+                color: #0c2e60;
+            }
+
+        .container-center {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .row-center {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .selected-text {
+            color: #0c2e60;
+        }
+    </style>
+</head>
+<body>
+    <!-- breadcrumb start-->
+    <section class="breadcrumb breadcrumb_bg">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb_iner text-center">
+                        <div class="breadcrumb_iner_item">
+                            <h2>@ViewData["Title"]</h2>
+                            <p>Thư viện<span>/</span>@ViewData["Title"]</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- breadcrumb end-->
+    @*         <!-- search start -->
+    <section class="footer-area" style="display: flex; justify-content: center; align-items: center; padding-top: 30px; border: none">
+    <div class="container">
+    <div class="row">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+    <form asp-action="Index" method="get" class="search-form">
+    <div class="form-group">
+    <div class="input-group mb-3" style="border: none">
+    <input type="text" name="SearchString" class="form-control" placeholder='Nhập tên tài liệu'
+    onfocus="this.placeholder = ''"
+    onblur="this.placeholder = 'Nhập tên tài liệu'"
+    <div class="input-group-append">
+    <button type="submit" class="btn btn_1" style="height: 38px"><i class="ti-angle-right"></i></button>
+    </div>
+    </div>
+    </div>
+    </form>
+    </div>
+    <div class="col-sm-3"></div>
+    </div>
+    </div>
+    </section>
+    <!-- search end --> *@
+    <!-- select grade start -->
+    <section class="feature_part">
+        <div class="container container-center">
+            <div class="row-center">
+                @for (int i = 1; i <= 12; i++)
+                {
+                    var gradeSlug = $"lop-{i}";
+                    <button class="btn-class-filter"
+                            onclick="location.href='@Url.Action("TeacherBook", new { gradeSlug = gradeSlug, setSlug = ViewBag.CurrentSetSlug })'">
+                        <h2 class="grade-heading @(ViewBag.CurrentGradeSlug == gradeSlug ? "selected-text" : "")">@i</h2>
+                    </button>
+                }
+            </div>
+        </div>
+    </section>
+    <!-- select grade end -->
+    <!-- select set start -->
+    <section class="feature_part">
+        <div class="container">
+            <div class="book-set-filter">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           href="@Url.Action("TeacherBook", new { setSlug = "canh-dieu", gradeSlug = ViewBag.CurrentGradeSlug })">
+                            <h2 class="grade-heading @(ViewBag.CurrentSetSlug == "canh-dieu" ? "selected-text" : "")">Cánh diều</h2>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           href="@Url.Action("TeacherBook", new { setSlug = "chan-troi-sang-tao", gradeSlug = ViewBag.CurrentGradeSlug })">
+                            <h2 class="grade-heading @(ViewBag.CurrentSetSlug == "chan-troi-sang-tao" ? "selected-text" : "")">Chân trời sáng tạo</h2>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           href="@Url.Action("TeacherBook", new { setSlug = "ket-noi-tri-thuc", gradeSlug = ViewBag.CurrentGradeSlug })">
+                            <h2 class="grade-heading @(ViewBag.CurrentSetSlug == "ket-noi-tri-thuc" ? "selected-text" : "")">Kết nối tri thức</h2>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    <!-- select set end -->
+    <!-- documents start -->
+    <section class="feature_part" style="padding-bottom: 65px">
+        <div class="container">
+            <!-- Hiển thị sách giáo khoa -->
+            <div class="box_content">
+                <h2>@ViewData["Title"]</h2>
+                <div class="row">
+                    @if (!Model.Any())
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            Hiện tại chưa có tài liệu, xin chờ cập nhật.
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var document in Model)
+                        {
+                            var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w320&id={document.GoogleDriveId}";
+                            var defaultImage = "/pdf-image.png";
+
+                            <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 d-flex justify-content-center">
+                                <div class="single-home-blog text-center">
+                                    <div class="card" style="border: none">
+                                        <div class="card-body">
+                                            <a asp-controller="Document" asp-action="Detail" asp-route-id="@document.Id">
+                                                <img referrerPolicy="no-referrer"
+                                                     src="@thumbnailLink"
+                                                     alt="@document.Title"
+                                                     class="img-fluid"
+                                                     onerror="this.onerror=null; this.src='@defaultImage';"
+                                                     style="height:300px" />
+                                                <h5 class="card-title mt-3" style="color: #0c2e60; font-size: 19px; font-weight: 600;">
+                                                    @document.Title
+                                                </h5>
+                                            </a>
+                                            <p>@document.DocumentType?.Name</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- documents end -->
+    <!-- jquery plugins here-->
+    <!-- jquery -->
+    <script src="~/etrain-master/js/jquery-1.12.1.min.js"></script>
+    <!-- popper js -->
+    <script src="~/etrain-master/js/popper.min.js"></script>
+    <!-- bootstrap js -->
+    <script src="~/etrain-master/js/bootstrap.min.js"></script>
+    <!-- easing js -->
+    <script src="~/etrain-master/js/jquery.magnific-popup.js"></script>
+    <!-- swiper js -->
+    <script src="~/etrain-master/js/swiper.min.js"></script>
+    <!-- swiper js -->
+    <script src="~/etrain-master/js/masonry.pkgd.js"></script>
+    <!-- particles js -->
+    <script src="~/etrain-master/js/owl.carousel.min.js"></script>
+    <script src="~/etrain-master/js/jquery.nice-select.min.js"></script>
+    <!-- swiper js -->
+    <script src="~/etrain-master/js/slick.min.js"></script>
+    <script src="~/etrain-master/js/jquery.counterup.min.js"></script>
+    <script src="~/etrain-master/js/waypoints.min.js"></script>
+    <!-- custom js -->
+    <script src="~/etrain-master/js/custom.js"></script>
+</body>

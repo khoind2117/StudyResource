@@ -1,4 +1,5 @@
 ﻿using CsvHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -20,6 +21,7 @@ using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace StudyResource.Controllers
 {
+    [Route("tai-lieu")]
     public class DocumentController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -39,6 +41,7 @@ namespace StudyResource.Controllers
         }
 
         [HttpGet]
+        [Route("ebook/{id}")]
         public async Task<IActionResult> Ebook(int id)
         {
             var document = await _context.Documents.FindAsync(id);
@@ -88,16 +91,19 @@ namespace StudyResource.Controllers
             return View(documents.ToList());
         }
 
-        [HttpGet] 
-        public async Task<IActionResult> Detail(int id)
+        [HttpGet]
+        [Route("chi-tiet/{id}")]
+        public async Task<IActionResult> Detail(int id, int offset = 0, int limit = 5)
         {
             var document = await _context.Documents
+                .Include(d => d.User)
                 .Include(d => d.DocumentType)
                 .Include(d => d.GradeSubject)
-                .ThenInclude(gs => gs.Grade)
+                    .ThenInclude(gs => gs.Grade)
                 .Include(d => d.Set)
                 .Include(d => d.DocumentKeywords)
                     .ThenInclude(dk => dk.Keyword)
+                .Include(d => d.UserComments)
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (document == null)
@@ -107,14 +113,29 @@ namespace StudyResource.Controllers
 
             var comments = await _context.UserComments
                 .Where(c => c.DocumentId == id)
+                .OrderByDescending(c => c.CommentDate)
+                .Skip(offset)
+                .Take(limit)
                 .Select(c => new DocumentDetailViewModel.UserComment
                 {
-                    Id = c.Id, 
+                    Id = c.Id,
                     Username = c.User != null ? c.User.UserName : "Anonymous",
+                    Rating = c.Rating,
                     Comment = c.Comment,
                     CommentDate = c.CommentDate
                 })
                 .ToListAsync();
+
+            var relatedBooks = await _context.Documents
+                .Where(d => d.Id != document.Id)
+                .OrderByDescending(d => d.GradeSubjectId == document.GradeSubjectId && d.DocumentTypeId == document.DocumentTypeId)
+                .ThenByDescending(d => d.GradeSubjectId == document.GradeSubjectId || d.DocumentTypeId == document.DocumentTypeId)
+                .ThenByDescending(d => d.Downloads)
+                .Take(10)
+                .ToListAsync();
+
+            var totalComments = await _context.UserComments.CountAsync(c => c.DocumentId == id);
+            var averageRating = totalComments > 0 ? (double)_context.UserComments.Where(c => c.DocumentId == id).Average(c => c.Rating) : 0;
 
             var viewModel = new DocumentDetailViewModel
             {
@@ -126,55 +147,82 @@ namespace StudyResource.Controllers
                 DocumentTypeId = document.DocumentTypeId,
                 DocumentType = document.DocumentType,
                 GradeSubject = document.GradeSubject,
+                Downloads = document.Downloads,
+                Views = document.Views,
+                User = document.User,
+                UploadDate = document.UploadDate,
                 UserComments = comments,
-                RelatedBooks = new List<Models.Document>() ,
+                RelatedBooks = relatedBooks,
                 DocumentKeywords = document.DocumentKeywords.ToList(),
+                TotalComments = totalComments,
+                AverageRating = averageRating,
             };
 
             return View(viewModel);
         }
 
         [HttpGet]
-        public async Task<IActionResult> RelatedBooks(int gradeSubjectId, int documentTypeId)
+        [Route("LoadComments")]
+        public async Task<IActionResult> LoadCommentsAsync(int documentId, int offset = 0, int limit = 5)
         {
-            var relatedBooks = await _context.Documents
-                .Include(d => d.DocumentType)
-                .Where(d => d.GradeSubjectId == gradeSubjectId || d.DocumentTypeId == documentTypeId)
-                .Take(6)
+            var comments = await _context.UserComments
+                .Where(c => c.DocumentId == documentId)
+                .OrderByDescending(c => c.CommentDate)
+                .Skip(offset)
+                .Take(limit)
+                .Select(c => new DocumentDetailViewModel.UserComment
+                {
+                    Id = c.Id,
+                    Username = c.User != null ? c.User.UserName : "Anonymous",
+                    Rating = c.Rating,
+                    Comment = c.Comment,
+                    CommentDate = c.CommentDate
+                })
                 .ToListAsync();
 
-            return PartialView("_RelatedBooksPartial", relatedBooks);
+            if (!comments.Any())
+            {
+                return Content("");
+            }
+
+            return PartialView("_CommentList", comments);
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitComment(string Comment, string GoogleDriveId)
+        [Route("SubmitComment")]
+        [Authorize]
+        public async Task<IActionResult> SubmitComment(string Comment, int Rating, int DocumentId)
         {
-            if (ModelState.IsValid)
+            if (string.IsNullOrEmpty(Comment) || Rating < 1 || Rating > 5)
             {
-                var document = await _context.Documents.FirstOrDefaultAsync(d => d.GoogleDriveId == GoogleDriveId);
-                if (document == null)
-                {
-                    return NotFound();
-                }
-
-                var user = await _userManager.GetUserAsync(User);
-
-                var userComment = new UserComment
-                {
-                    UserId = user?.Id,
-                    CommentDate = DateTime.Now,
-                    Comment = Comment,
-                    DocumentId = document.Id,
-                    Rating = 0
-                };
-
-                _context.UserComments.Add(userComment);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction("Detail", new { id = document.Id });
+                return BadRequest("Bình luận và đánh giá phải hợp lệ.");
             }
 
-            return BadRequest();
+            var document = await _context.Documents.FirstOrDefaultAsync(d => d.Id == DocumentId);
+            if (document == null)
+            {
+                return NotFound("Tài liệu không tồn tại.");
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized("Bạn cần đăng nhập để thực hiện đánh giá.");
+            }
+
+            var userComment = new UserComment
+            {
+                UserId = user.Id,
+                Comment = Comment,
+                Rating = Rating,
+                CommentDate = DateTime.Now,
+                DocumentId = DocumentId
+            };
+
+            _context.UserComments.Add(userComment);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Detail", new { id = DocumentId });
         }
 
         [HttpPost]
@@ -198,23 +246,8 @@ namespace StudyResource.Controllers
             }
         }
 
-        private async Task PopulateSelectLists(int? gradeId = null)
-        {
-            var grades = await _context.Grades.ToListAsync();
-            var documentTypes = await _context.DocumentTypes.ToListAsync();
-            var gradeSubjects = gradeId.HasValue
-                ? await _context.GradeSubjects.Where(gs => gs.GradeId == gradeId.Value).ToListAsync()
-                : new List<GradeSubject>();
-            var sets = await _context.Sets.ToListAsync();
-
-            ViewBag.Grades = new SelectList(grades, "Id", "Name");
-            ViewBag.GradeSubjects = new SelectList(gradeSubjects, "Id", "Name");
-            ViewBag.DocumentTypes = new SelectList(documentTypes, "Id", "Name");
-            ViewBag.GradeSubjectsJson = await _context.GradeSubjects.ToListAsync();
-            ViewBag.Sets = new SelectList(sets, "Id", "Name");
-        }
-
         [HttpGet]
+        [Route("tai-lieu-cua-toi")]
         public async Task<IActionResult> UserDocument()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -233,7 +266,25 @@ namespace StudyResource.Controllers
             return View(documents);
         }
 
+        private async Task PopulateSelectLists(int? gradeId = null)
+        {
+            var grades = await _context.Grades.ToListAsync();
+            var documentTypes = await _context.DocumentTypes.ToListAsync();
+            var gradeSubjects = gradeId.HasValue
+                ? await _context.GradeSubjects.Where(gs => gs.GradeId == gradeId.Value).ToListAsync()
+                : new List<GradeSubject>();
+            var sets = await _context.Sets.ToListAsync();
+
+            ViewBag.Grades = new SelectList(grades, "Id", "Name");
+            ViewBag.GradeSubjects = new SelectList(gradeSubjects, "Id", "Name");
+            ViewBag.DocumentTypes = new SelectList(documentTypes, "Id", "Name");
+            ViewBag.GradeSubjectsJson = await _context.GradeSubjects.ToListAsync();
+            ViewBag.Sets = new SelectList(sets, "Id", "Name");
+        }
+
+
         [HttpGet]
+        [Route("tao-tai-lieu")]
         public async Task<IActionResult> Create()
         {
             await PopulateSelectLists();
@@ -241,6 +292,7 @@ namespace StudyResource.Controllers
         }
 
         [HttpPost]
+        [Route("tao-tai-lieu")]
         public async Task<IActionResult> Create(CreateDocumentViewModel model)
         {
             if (ModelState.IsValid)
@@ -341,6 +393,7 @@ namespace StudyResource.Controllers
         }
 
         [HttpGet]
+        [Route("cap-nhat-tai-lieu")]
         public async Task<IActionResult> Update(int id)
         {
             var document = await _context.Documents
@@ -381,6 +434,7 @@ namespace StudyResource.Controllers
         }
 
         [HttpPost]
+        [Route("cap-nhat-tai-lieu")]
         public async Task<IActionResult> Update(int id, UpdateDocumentViewModel model)
         {
             if (!ModelState.IsValid)
