@@ -31,7 +31,7 @@
                                     var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w200&id={doc.GoogleDriveId}";
                                     var defaultImage = "/pdf-image.png";
                                 }
-                                <a href="/document/detail/@doc.Id" target="_blank">
+                                <a href="@Url.Action("Detail", "Document", new { id = doc.Id })" target="_blank">
                                     <img referrerPolicy="no-referrer"
                                          src="@thumbnailLink"
                                          alt="@doc.Title"
@@ -41,7 +41,7 @@
                             </div>
                             <div class="col-md-10">
                                 <div class="card-body">
-                                    <a href="/document/detail/@doc.Id" target="_blank">
+                                    <a href="@Url.Action("Detail", "Document", new { id = doc.Id })" target="_blank">
                                         <h4><strong class="text-uppercase card-title">@doc.Title</strong></h4>
                                     </a>
                                     <span class="text-uppercase">
