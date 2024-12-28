@@ -315,6 +315,11 @@ namespace StudyResource.Controllers
                     fileId = await _googleDriveService.UploadFileAsync(tempPath);
                 }
 
+                var referenceDocumentTypeId = _context.DocumentTypes
+                .Where(dt => dt.Name.ToLower() == "tài liệu tham khảo".ToLower())
+                .Select(dt => dt.Id)
+                .FirstOrDefault();
+
                 var document = new Document
                 {
                     Title = model.Title,
@@ -326,8 +331,8 @@ namespace StudyResource.Controllers
                     UploadDate = DateTime.Now,
                     IsApproved = User.IsInRole("Admin"),
                     GradeSubjectId = model.GradeSubjectId,
-                    DocumentTypeId = model.DocumentTypeId,
-                    SetId = model.SetId,
+                    DocumentTypeId = referenceDocumentTypeId, 
+                    SetId = null,
                     UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                 };
 

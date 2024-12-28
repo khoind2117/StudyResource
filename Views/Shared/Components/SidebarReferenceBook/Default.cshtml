@@ -1,0 +1,27 @@
+﻿@model IEnumerable<StudyResource.Models.Document>
+
+<div class="sidebar-section" style="max-height: 1000px; overflow-y: auto;">
+    <ul class="list-group">
+        @foreach (var document in Model)
+        {
+            var thumbnailLink = $"https://drive.google.com/thumbnail?id={document.GoogleDriveId}";
+            var defaultImage = "/pdf-image.png";
+
+            <li class="list-group-item d-flex align-items-center">
+                <img referrerPolicy="no-referrer"
+                     src="@thumbnailLink"
+                     alt="@document.Title"
+                     onerror="this.onerror=null; this.src='@defaultImage';"
+                     style="height:100px; width:80px" />
+                <div class="flex-grow-1 ml-3">
+                    <a href="@Url.Action("Detail", "Document", new { id = document.Id })">
+                        <span class="text-dark">@document.Title</span>
+                    </a>
+                    <small class="text-muted d-block">
+                        <i class="ti ti-clock"></i> @document.UploadDate.ToString("dd/MM/yyyy")
+                    </small>
+                </div>
+            </li>
+        }
+    </ul>
+</div>

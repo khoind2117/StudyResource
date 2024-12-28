@@ -6,105 +6,82 @@
 }
 
 <div class="container" style="margin-top:100px; margin-bottom:100px;">
-    <h3>Cập nhật tài liệu</h3>
-    <div>
-        <label>Tài liệu hiện tại:</label>
-        <a href="https://drive.google.com/file/d/@Model.GoogleDriveId/view" target="_blank">
-            <strong>Xem tệp trên Google Drive</strong>
-        </a>
-        <p>
-            <small>ID của tài liệu trên Google Drive: <code id="driveId">@Model.GoogleDriveId</code></small>
-            <button type="button" onclick="copyToClipboard()">Copy</button>
-        </p>
-    </div>
-    <form asp-action="Update" method="post" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label asp-for="Title" class="form-label">Tiêu đề</label>
-            <input asp-for="Title" class="form-control" />
-            <span asp-validation-for="Title" class="text-danger"></span>
+    <form asp-action="Update" method="post" enctype="multipart/form-data" class="mt-4">
+        <div class="card">
+            <div class="card-header bg-warning">
+                <h4 class="mb-0 text-white">
+                    <i class="ti ti-edit"></i> Cập nhật tài liệu
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label">Tiêu đề</label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label">Mô tả</label>
+                    <textarea asp-for="Description" class="form-control"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="FileUpload" class="form-label">Tải lên tài liệu mới</label>
+                    <div>
+                        <a href="https://drive.google.com/file/d/@Model.GoogleDriveId/view" target="_blank" class="btn btn-secondary mb-3">
+                            <i class="ti ti-brand-google-drive"></i> Xem trên Google Drive
+                        </a>
+                    </div>
+                    <input asp-for="FileUpload" class="form-control" type="file" />
+                    <span asp-validation-for="FileUpload" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="GradeId" class="form-label">Lớp học</label>
+                    <select asp-for="GradeId" class="form-select" id="gradeSelect">
+                        <option value="">--Chọn lớp học--</option>
+                        @foreach (var grade in ViewBag.Grades)
+                        {
+                            <option value="@grade.Value">@grade.Text</option>
+                        }
+                    </select>
+                    <span asp-validation-for="GradeId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="GradeSubjectId" class="form-label">Môn học</label>
+                    <select asp-for="GradeSubjectId" class="form-select" id="gradesubjectSelect">
+                        <option value="">--Chọn môn học--</option>
+                        @foreach (var gradeSubject in ViewBag.GradeSubjects)
+                        {
+                            <option value="@gradeSubject.Value">@gradeSubject.Text</option>
+                        }
+                    </select>
+                    <span asp-validation-for="GradeSubjectId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label for="keywords" class="form-label">Từ khóa</label>
+                    <input id="keywords" name="keywords" value='@ViewBag.KeywordsJson' class="form-control" placeholder="Nhập từ khóa..." />
+                    <small class="form-text text-muted">Nhấn dấu phẩy hay Enter để thêm từ khóa.</small>
+                </div>
+
+                <button type="submit" class="btn btn-warning">Cập nhật</button>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label asp-for="Description" class="form-label">Mô tả</label>
-            <textarea asp-for="Description" class="form-control"></textarea>
-            <span asp-validation-for="Description" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="FileUpload" class="form-label">Tải lên tài liệu</label>
-            <input asp-for="FileUpload" class="form-control" type="file" />
-            <span asp-validation-for="FileUpload" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="GradeId" class="form-label">Lớp học</label>
-            <select asp-for="GradeId" class="form-select" id="gradeSelect">
-                <option value="">--Chọn lớp học--</option>
-                @foreach (var grade in ViewBag.Grades)
-                {
-                    <option value="@grade.Value">@grade.Text</option>
-                }
-            </select>
-            <span asp-validation-for="GradeId" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="GradeSubjectId" class="form-label">Môn học</label>
-            <select asp-for="GradeSubjectId" class="form-select" id="gradesubjectSelect">
-                <option value="">--Chọn môn học--</option>
-                @foreach (var gradeSubject in ViewBag.GradeSubjects)
-                {
-                    <option value="@gradeSubject.Value">@gradeSubject.Text</option>
-                }
-            </select>
-            <span asp-validation-for="GradeSubjectId" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="DocumentTypeId" class="form-label">Loại tài liệu</label>
-            <select asp-for="DocumentTypeId" class="form-select">
-                <option value="">--Chọn loại tài liệu--</option>
-                @foreach (var grade in ViewBag.DocumentTypes)
-                {
-                    <option value="@grade.Value">@grade.Text</option>
-                }
-            </select>
-            <span asp-validation-for="DocumentTypeId" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="SetId" class="form-label">Bộ sách</label>
-            <select asp-for="SetId" class="form-select">
-                <option value="">--Chọn bộ sách--</option>
-                @foreach (var set in ViewBag.Sets)
-                {
-                    <option value="@set.Value">@set.Text</option>
-                }
-            </select>
-            <span asp-validation-for="SetId" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label for="keywords" class="form-label">Từ khóa</label>
-            <input id="keywords" name="keywords" value='@ViewBag.KeywordsJson' placeholder="Nhập từ khóa..." />
-            <small class="form-text text-muted">Nhấn dấu phẩy hay Enter để thêm từ khóa.</small>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Cập nhật</button>
     </form>
 </div>
 
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Khởi tạo Tagify cho input mà không có gợi ý
             const input = document.querySelector("#keywords");
             const tagify = new Tagify(input);
 
-            // Sự kiện khi thêm từ khóa
             tagify.on("add", e => console.log("Thêm từ khóa:", e.detail.data.value));
 
-            // Sự kiện khi xóa từ khóa
             tagify.on("remove", e => console.log("Xóa từ khóa:", e.detail.data.value));
         });
     </script>
@@ -126,13 +103,5 @@
                 gradesubjectSelect.appendChild(option);
             });
         });
-    </script>
-    <script>
-        function copyToClipboard() {
-            const driveId = document.getElementById("driveId").innerText;
-            navigator.clipboard.writeText(driveId).then(() => {
-                alert("Google Drive ID đã được sao chép!");
-            });
-        }
     </script>
 }

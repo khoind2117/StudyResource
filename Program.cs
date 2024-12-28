@@ -66,8 +66,8 @@ builder.Services.AddCors(options =>
 });
 #endregion
 #region Service
-builder.Services.AddScoped<GoogleDriveService>();
 builder.Services.AddScoped<SlugService>();
+builder.Services.AddScoped<GoogleDriveService>();
 #endregion
 
 #region Register Seed Service

@@ -187,7 +187,7 @@ namespace StudyResource.Areas.Admin.Controllers
             var model = await _context.Documents
                 .Include(d => d.User)
                 .OrderByDescending(d => d.Downloads)
-                .Take(8)
+                .Take(12)
                 .ToListAsync();
 
             return PartialView("_TopDownloadedDocuments", model);
@@ -199,7 +199,7 @@ namespace StudyResource.Areas.Admin.Controllers
             var model = await _context.Documents
                 .Include(d => d.User)
                 .OrderByDescending(d => d.Views)
-                .Take(8)
+                .Take(12)
                 .ToListAsync();
 
             return PartialView("_TopViewedDocuments", model);

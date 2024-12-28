@@ -1,4 +1,5 @@
-﻿using Google.Apis.Drive.v3;
+﻿using Aspose.Words;
+using Google.Apis.Drive.v3;
 using Microsoft.AspNetCore.Mvc;
 using StudyResource.Services;
 
@@ -35,7 +36,24 @@ namespace StudyResource.Controllers
                     return NotFound("File not found");
                 }
 
-                return File(fileStream, "application/pdf", fileDownloadName, enableRangeProcessing: true);
+                var fileExtension = Path.GetExtension(fileDownloadName).ToLower();
+                if (fileExtension == ".pdf")
+                {
+                    return File(fileStream, "application/pdf", fileDownloadName, enableRangeProcessing: true);
+                }
+                else if (fileExtension == ".docx")
+                {
+                    var document = new Document(fileStream);
+                    var pdfStream = new MemoryStream();
+                    document.Save(pdfStream, SaveFormat.Pdf);
+                    pdfStream.Position = 0;
+
+                    return File(pdfStream, "application/pdf", fileDownloadName.Replace(".docx", ".pdf"), enableRangeProcessing: true);
+                }
+                else
+                {
+                    return BadRequest("Unsupported file type");
+                }
             }
             catch (Exception ex)
             {

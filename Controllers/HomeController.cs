@@ -21,12 +21,7 @@ namespace StudyResource.Controllers
 
         public IActionResult Index()
         {
-            var documents = _context.Documents
-                .Include(d => d.GradeSubject)
-                .Include(d => d.DocumentType)
-                .ToList();
-
-            return View(documents);
+            return View();
         }
 
         public IActionResult Privacy()

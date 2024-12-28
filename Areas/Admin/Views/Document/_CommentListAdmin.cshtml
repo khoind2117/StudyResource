@@ -1,0 +1,11 @@
+﻿@model IEnumerable<StudyResource.ViewModels.Document.AdminDocumentDetailViewModel.UserComment>
+
+@foreach (var comment in Model)
+{
+    <tr>
+        <td class="text-break">@comment.Username</td>
+        <td class="text-break">@comment.Comment</td>
+        <td>@comment.Rating/5</td>
+        <td>@comment.CommentDate.ToString("dd/MM/yyyy")</td>
+    </tr>
+}
