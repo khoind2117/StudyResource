@@ -6,6 +6,7 @@ using StudyResource.Data;
 using StudyResource.Models;
 using StudyResource.Services;
 using StudyResource.ViewModels.Document;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Claims;
 using System.Text.Json;
@@ -155,12 +156,99 @@ namespace StudyResource.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Tài liệu đã được tạo thành công!";
-                return RedirectToAction("Create");
+                return RedirectToAction("Create", "Document", new { area = "Admin" });
             }
 
             await PopulateSelectLists();
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Detail(int? id, int offset = 0, int limit = 5)
+        {
+            var document = await _context.Documents
+               .Include(d => d.User)
+               .Include(d => d.DocumentType)
+               .Include(d => d.GradeSubject)
+                   .ThenInclude(gs => gs.Grade)
+               .Include(d => d.Set)
+               .Include(d => d.DocumentKeywords)
+                   .ThenInclude(dk => dk.Keyword)
+               .Include(d => d.UserComments)
+               .FirstOrDefaultAsync(d => d.Id == id);
+
+            if (document == null)
+            {
+                return NotFound();
+            }
+
+            var comments = await _context.UserComments
+                .Where(c => c.DocumentId == id)
+                .OrderByDescending(c => c.CommentDate)
+                .Skip(offset)
+                .Take(limit)
+                .Select(c => new AdminDocumentDetailViewModel.UserComment
+                {
+                    Id = c.Id,
+                    Username = c.User != null ? c.User.UserName : "Anonymous",
+                    Rating = c.Rating,
+                    Comment = c.Comment,
+                    CommentDate = c.CommentDate
+                })
+                .ToListAsync();
+
+            var totalComments = await _context.UserComments.CountAsync(c => c.DocumentId == id);
+            var averageRating = totalComments > 0 ? (double)_context.UserComments.Where(c => c.DocumentId == id).Average(c => c.Rating) : 0;
+
+            var viewModel = new AdminDocumentDetailViewModel
+            {
+                Id = document.Id,
+                Title = document.Title,
+                Slug = document.Slug,
+                Description = document.Description,
+                GoogleDriveId = document.GoogleDriveId,
+                DocumentTypeId = document.DocumentTypeId,
+                DocumentType = document.DocumentType,
+                GradeSubject = document.GradeSubject,
+                Downloads = document.Downloads,
+                Views = document.Views,
+                User = document.User,
+                UploadDate = document.UploadDate,
+                UserComments = comments,
+                DocumentKeywords = document.DocumentKeywords.ToList(),
+                TotalComments = totalComments,
+                AverageRating = averageRating,
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        [Route("LoadComments")]
+        public async Task<IActionResult> LoadCommentsAsync(int documentId, int offset = 0, int limit = 5)
+        {
+            var comments = await _context.UserComments
+                .Where(c => c.DocumentId == documentId)
+                .OrderByDescending(c => c.CommentDate)
+                .Skip(offset)
+                .Take(limit)
+                .Select(c => new AdminDocumentDetailViewModel.UserComment
+                {
+                    Id = c.Id,
+                    Username = c.User != null ? c.User.UserName : "Anonymous",
+                    Rating = c.Rating,
+                    Comment = c.Comment,
+                    CommentDate = c.CommentDate
+                })
+                .ToListAsync();
+
+            if (!comments.Any())
+            {
+                return Content("");
+            }
+
+            return PartialView("_CommentListAdmin", comments);
         }
 
         [HttpGet]
@@ -465,7 +553,7 @@ namespace StudyResource.Areas.Admin.Controllers
             _context.Documents.Update(document);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Update", new { id = id });
+            return RedirectToAction("Detail", "Document", new { area = "Admin", id = id });
         }
 
         [HttpDelete]
@@ -614,6 +702,20 @@ namespace StudyResource.Areas.Admin.Controllers
                 .ToListAsync();
 
             return View(pendingDocuments);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadCsv()
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "csv-format.csv");
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            return File(fileBytes, "text/csv", "csv-format.csv");
         }
     }
 }

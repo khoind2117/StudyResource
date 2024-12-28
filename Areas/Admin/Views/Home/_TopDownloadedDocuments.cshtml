@@ -2,50 +2,54 @@
 @model List<Document>
 @inject UserManager<User> UserManager
 
-<h5 class="fw-semibold mb-4">Tài liệu được tải nhiều nhất</h5>
-@foreach ( var doc in Model)
-{
-    <div class="col-sm-6 col-xl-3">
-        <div class="card overflow-hidden rounded-2">
-            <div class="position-relative">
-                @{
-                    var thumbnailLink = $"https://drive.google.com/thumbnail?id={doc.GoogleDriveId}";
-                    var defaultImage = "/pdf-image.png";
-                }
-                <a href="/admin/document/update/@doc.Id" target=_blank>
-                    <img referrerPolicy="no-referrer"
-                         src="@thumbnailLink"
-                         alt="@doc.Title"
-                         onerror="this.onerror=null; this.src='@defaultImage';"
-                         class="card-img-top rounded-0"
-                         style="height:300px"/>
-                </a>
-                <a href="/admin/document/update/@doc.Id" target=_blank class="bg-primary rounded-circle p-2 text-white d-inline-flex position-absolute bottom-0 end-0 mb-n3 me-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Add To Cart">
-                    <i class="ti ti-edit fs-4"></i>
-                </a>
-            </div>
-            <div class="card-body pt-3 p-4">
-                <h6 class="fw-semibold fs-4 text-truncate">@doc.Title</h6>
-                <span class="fw-semibold fs-4 text-truncate">
-                    Người đăng:
-                    @if (await UserManager.IsInRoleAsync(doc.User, "Admin"))
-                    {
-                        <span class="text-danger">
-                            Admin
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <i class="ti ti-download"></i> Tài liệu được tải nhiều nhất
+    </div>
+    <div class="card-body">
+        <div class="row">
+        @foreach (var doc in Model)
+        {
+            <div class="col-2">
+                <div class="card">
+                    <div class="position-relative">
+                        @{
+                            var thumbnailLink = $"https://drive.google.com/thumbnail?id={doc.GoogleDriveId}";
+                            var defaultImage = "/pdf-image.png";
+                        }
+                        <a href="/admin/document/detail/@doc.Id" target="_blank">
+                            <img referrerPolicy="no-referrer"
+                                    src="@thumbnailLink"
+                                    alt="@doc.Title"
+                                    onerror="this.onerror=null; this.src='@defaultImage';"
+                                    class="card-img-top"
+                                    style="height: 150px; object-fit: cover;" />
+                        </a>
+                        <a href="/admin/document/detail/@doc.Id" target="_blank" class="bg-primary rounded-circle p-2 text-white d-inline-flex position-absolute bottom-0 end-0 mb-n3 me-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Chi tiết">
+                            <i class="ti ti-file-search fs-4"></i>
+                        </a>
+                    </div>
+                    <div class="card-body pt-3 p-2">
+                        <h6 class="fw-semibold text-truncate">@doc.Title</h6>
+                        <span class="d-block fw-semibold text-truncate">
+                            Người đăng:
+                            @if (await UserManager.IsInRoleAsync(doc.User, "Admin"))
+                            {
+                                <span class="text-danger">Admin</span>
+                            }
+                            else
+                            {
+                                <span class="text-primary">@($"{doc.User.LastName} {doc.User.FirstName}")</span>
+                            }
                         </span>
-                    }
-                    else
-                    {
-                        <span class="text-primary">
-                            @($"{doc.User.LastName} {doc.User.FirstName}")
-                        </span>
-                    }
-                </span>
-                <div class="d-flex align-items-center justify-content-between">
-                    <h6 class="fw-semibold fs-4 mb-0">Lượt tải: @doc.Downloads</h6>
-                    <h6 class="fw-semibold fs-4 mb-0">Lượt xem: @doc.Views</h6>
+                        <div class="d-flex align-items-center justify-content-between mt-2">
+                            <span class="text-muted small">Lượt tải: @doc.Downloads</span>
+                            <span class="text-muted small">Lượt xem: @doc.Views</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+        }
         </div>
-    </div>    
-}
+    </div>
+</div>

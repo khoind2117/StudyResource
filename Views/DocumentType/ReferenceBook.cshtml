@@ -4,7 +4,74 @@
     ViewData["Title"] = "Tìm kiếm tài liệu tham khảo";
 }
 
-<div class="container" style="margin-top:100px; margin-bottom:100px;">
-    <h2>Tìm kiếm tài liệu tham khảo</h2>
+<div style="margin-top:100px; margin-bottom:100px;">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="btn-group w-100" role="group" aria-label="Document Filters">
+                <button id="loadLatest" class="btn btn-outline-primary w-50 active">Tài liệu mới nhất</button>
+                <button id="loadMostDownloaded" class="btn btn-outline-info w-50">Tài liệu tải nhiều nhất</button>
+            </div>
+
+            <div id="sidebarContainer">
+                @await Component.InvokeAsync("SidebarReferenceBook", new { filterType = "latest" })
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Tài liệu mới nhất</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled">
+                                    <li><a href="#">Tài liệu 1</a></li>
+                                    <li><a href="#">Tài liệu 2</a></li>
+                                    <li><a href="#">Tài liệu 3</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Tài liệu phổ biến</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled">
+                                    <li><a href="#">Tài liệu 1</a></li>
+                                    <li><a href="#">Tài liệu 2</a></li>
+                                    <li><a href="#">Tài liệu 3</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#loadLatest').click(function () {
+                $('#sidebarContainer').load('@Url.Action("SidebarReferenceBook", "DocumentType", new { filterType = "latest" })');
+            });
+
+            $('#loadMostDownloaded').click(function () {
+                $('#sidebarContainer').load('@Url.Action("SidebarReferenceBook", "DocumentType", new { filterType = "mostDownloaded" })');
+            });
+
+            $('#loadLatest, #loadMostDownloaded').click(function () {
+                $('#loadLatest, #loadMostDownloaded').removeClass('active');
+
+                $(this).addClass('active');
+            });
+        });
+
+    </script>
+}

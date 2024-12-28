@@ -88,10 +88,17 @@ namespace StudyResource.Controllers
             return View(documents);
         }
 
-        [HttpGet]        
+        [HttpGet]
+        [Route("tai-lieu-tham-khao")]
         public async Task<IActionResult> ReferenceBook()
         {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SidebarReferenceBook(string filterType)
+        {
+            return ViewComponent("SidebarReferenceBook", new { filterType });
         }
     }
 }

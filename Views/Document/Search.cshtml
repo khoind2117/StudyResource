@@ -10,7 +10,6 @@
 <div class="container" style="margin-top:100px; margin-bottom:100px;">
     <h4>Tìm kiếm tài liệu</h4>
     <h4>Kết quả tìm kiếm cho: "<strong>@ViewBag.Query</strong>"</h4>
-
     <hr />
 
     @if (ViewBag.Message != null)
@@ -31,7 +30,7 @@
                                     var thumbnailLink = $"https://drive.google.com/thumbnail?sz=w200&id={doc.GoogleDriveId}";
                                     var defaultImage = "/pdf-image.png";
                                 }
-                                <a href="/document/detail/@doc.Id" target="_blank">
+                                <a asp-controller="Document" asp-action="Detail" asp-route-id="@doc.Id" target="_blank">
                                     <img referrerPolicy="no-referrer"
                                          src="@thumbnailLink"
                                          alt="@doc.Title"
@@ -41,7 +40,7 @@
                             </div>
                             <div class="col-md-10">
                                 <div class="card-body">
-                                    <a href="/document/detail/@doc.Id" target="_blank">
+                                    <a asp-controller="Document" asp-action="Detail" asp-route-id="@doc.Id" target="_blank">
                                         <h4><strong class="text-uppercase card-title">@doc.Title</strong></h4>
                                     </a>
                                     <span class="text-uppercase">

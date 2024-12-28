@@ -6,52 +6,60 @@
     Layout = "_Layout";
 }
 
-<div class="container" style="margin-top:100px; margin-bottom:100px;">
-    <div class="register_section mx-auto my-5" style="max-width: 600px;">
-        <form asp-controller="Account" asp-action="Register" method="post" role="form">
+<div class="container d-flex align-items-center justify-content-center" style="height: 100vh;">
+    <div class="register_section mx-auto my-5 p-4 rounded shadow" style="max-width: 600px;">
+        <form asp-controller="Account" asp-action="Register" method="post" role="form" class="needs-validation" novalidate>
             <h1 class="text-center mb-4">Đăng ký</h1>
             <hr />
 
+            <!-- Họ và Tên -->
             <div class="row">
                 <div class="form-group mb-3 col-6">
                     <label asp-for="LastName" class="form-label">Họ của bạn</label>
-                    <input asp-for="LastName" class="form-control" placeholder="Nhập họ của bạn">
+                    <input asp-for="LastName" class="form-control" placeholder="Nhập họ của bạn" required>
                     <span asp-validation-for="LastName" class="text-danger"></span>
                 </div>
                 <div class="form-group mb-3 col-6">
                     <label asp-for="FirstName" class="form-label">Tên của bạn</label>
-                    <input asp-for="FirstName" class="form-control" placeholder="Nhập tên của bạn">
+                    <input asp-for="FirstName" class="form-control" placeholder="Nhập tên của bạn" required>
                     <span asp-validation-for="FirstName" class="text-danger"></span>
                 </div>
             </div>
 
+            <!-- Điện thoại và Email -->
             <div class="row">
                 <div class="form-group mb-3 col-6">
                     <label asp-for="PhoneNumber" class="form-label">Số điện thoại</label>
-                    <input asp-for="PhoneNumber" class="form-control" placeholder="Nhập số điện thoại">
+                    <input asp-for="PhoneNumber" class="form-control" placeholder="Nhập số điện thoại" required>
                     <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                 </div>
                 <div class="form-group mb-3 col-6">
                     <label asp-for="Email" class="form-label">Tài khoản Email</label>
-                    <input asp-for="Email" class="form-control" placeholder="Nhập email của bạn">
+                    <input asp-for="Email" class="form-control" placeholder="Nhập email của bạn" required>
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
             </div>
 
+            <!-- Mật khẩu -->
             <div class="row">
                 <div class="form-group mb-3 col-6">
                     <label asp-for="Password" class="form-label">Mật khẩu</label>
-                    <input asp-for="Password" type="password" class="form-control" placeholder="Nhập mật khẩu">
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Nhập mật khẩu" required>
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
                 <div class="form-group mb-3 col-6">
                     <label asp-for="ConfirmPassword" class="form-label">Mật khẩu xác nhận</label>
-                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Nhập lại mật khẩu">
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Nhập lại mật khẩu" required>
                     <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Đăng ký</button>
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary">Đăng ký</button>
+            </div>
+            <p class="text-center mt-3 mb-0">
+                Bạn đã có tài khoản? <a asp-action="Login" class="text-primary">Đăng nhập ở đây</a>
+            </p>
         </form>
     </div>
 </div>
