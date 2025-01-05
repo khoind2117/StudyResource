@@ -1,8 +1,11 @@
-﻿@using StudyResource.ViewModels.Document
+﻿@using Microsoft.AspNetCore.Identity
+@using StudyResource.ViewModels.Document
 @model AdminDocumentDetailViewModel
+@inject UserManager<User> UserManager
 
 @{
     Layout = "_AdminLayout";
+    ViewData["Title"] = "Chi tiết tài liệu";
 }
 
 <div class="container-fluid">
@@ -13,12 +16,65 @@
             </h4>
         </div>
         <div class="card-body">
-            <p><strong>Tiêu đề:</strong> @Model.Title</p>
-            <p><strong>Loại tài liệu:</strong> @Model.DocumentType?.Name</p>
-            <p><strong>Môn học + lớp:</strong> @Model.GradeSubject?.Name</p>
-            <p><strong>ID Google Drive:</strong> @Model.GoogleDriveId</p>
-            <p><strong>Mô tả:</strong> @Model.Description</p>
+            <div class="row d-flex align-items-center">
+                <div class="col-md-3">
+                    <p>
+                        <strong>Người đăng:</strong>
+                        @if (await UserManager.IsInRoleAsync(Model.User, "Admin"))
+                        {
+                            <span class="text-danger">Admin</span>
+                        }
+                        else
+                        {
+                            <span class="text-primary">@($"{Model.User.LastName} {Model.User.FirstName}")</span>
+                        }
+                    </p>
+                </div>
+
+                <div class="col-md-3">
+                    <p>
+                        <strong>Vai trò:</strong>
+                        @if (await UserManager.IsInRoleAsync(Model.User, "Admin"))
+                        {
+                            <span class="text-danger">Nhà quản trị</span>
+                        }
+                        else
+                        {
+                            <span class="text-primary">Người dùng</span>
+                        }
+                    </p>
+                </div>
+
+                <div class="col-md-3">
+                    <p><strong>Ngày đăng:</strong> @Model.UploadDate.ToString("dd/MM/yyyy")</p>
+                </div>
+
+                <div class="col-md-3">
+                    <p><strong>Giờ đăng:</strong> @Model.UploadDate.ToString("hh:mm tt")</p>
+                </div>
+            </div>
+
             <hr />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Tiêu đề:</strong> @Model.Title</p>
+                    <p><strong>Loại tài liệu:</strong> @Model.DocumentType?.Name</p>
+                    <p><strong>Lớp:</strong> @Model.GradeSubject?.Grade.Name</p>
+                    <p><strong>Môn học:</strong> @Model.GradeSubject?.Subject.Name</p>
+                    <p><strong>Môn học + lớp:</strong> @Model.GradeSubject?.Name</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Google Drive Id:</strong> @Model.GoogleDriveId</p>
+                </div>
+            </div>
+
+            <hr />
+
+            <p class="text-break"><strong>Mô tả:</strong> @Model.Description</p>
+            
+            <hr />
+            
             <div>
                 <a href="@Url.Action("Detail", "Document", new { id = Model.Id })" target="_blank" class="btn btn-info me-3">
                     <i class="ti ti-eye"></i> Xem trong trang người dùng
@@ -159,7 +215,7 @@
                                 showConfirmButton: false,
                                 timer: 3000
                             }).then(() => {
-                                location.href = '@Url.Action("Index", "Document", new { area = "Admin", id = Model.Id })';
+                                window.location.href = '@Url.Action("Index", "Document", new { area = "Admin" })';
                             });
                         },
                         error: function (xhr, status, error) {

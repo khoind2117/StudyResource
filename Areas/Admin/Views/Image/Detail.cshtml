@@ -1,0 +1,239 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using StudyResource.ViewModels.Image
+@model AdminImageDetailViewModel
+@inject UserManager<User> UserManager
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Chi tiết video";
+}
+
+@{
+    var fileSize = Model.FileSize;
+
+    string FormatFileSize(long sizeInBytes)
+    {
+        if (sizeInBytes < 1024)
+            return $"{sizeInBytes} byte";
+        else if (sizeInBytes < 1024 * 1024)
+            return $"{Math.Round(sizeInBytes / 1024.0, 2)} KB";
+        else if (sizeInBytes < 1024 * 1024 * 1024)
+            return $"{Math.Round(sizeInBytes / (1024.0 * 1024), 2)} MB";
+        else
+            return $"{Math.Round(sizeInBytes / (1024.0 * 1024 * 1024), 2)} GB";
+    }
+
+    var formattedFileSize = FormatFileSize(fileSize);
+}
+
+<div class="container-fluid">
+    <div class="card mb-4">
+        <div class="card-header bg-primary">
+            <h4 class="text-white mb-0">
+                <i class="ti ti-file-search"></i> Thông tin cơ bản
+            </h4>
+        </div>
+        <div class="card-body">
+            <div class="row d-flex align-items-center">
+                <div class="col-md-3">
+                    <p>
+                        <strong>Người đăng:</strong>
+                        @if (await UserManager.IsInRoleAsync(Model.User, "Admin"))
+                        {
+                            <span class="text-danger">Admin</span>
+                        }
+                        else
+                        {
+                            <span class="text-primary">@($"{Model.User.LastName} {Model.User.FirstName}")</span>
+                        }
+                    </p>
+                </div>
+
+                <div class="col-md-3">
+                    <p>
+                        <strong>Vai trò:</strong>
+                        @if (await UserManager.IsInRoleAsync(Model.User, "Admin"))
+                        {
+                            <span class="text-danger">Nhà quản trị</span>
+                        }
+                        else
+                        {
+                            <span class="text-primary">Người dùng</span>
+                        }
+                    </p>
+                </div>
+
+                <div class="col-md-3">
+                    <p><strong>Ngày đăng:</strong> @Model.UploadDate.ToString("dd/MM/yyyy")</p>
+                </div>
+
+                <div class="col-md-3">
+                    <p><strong>Giờ đăng:</strong> @Model.UploadDate.ToString("hh:mm tt")</p>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Tiêu đề:</strong> @Model.Title</p>
+                    <p><strong>Lớp:</strong> @Model.GradeSubject?.Grade.Name</p>
+                    <p><strong>Môn học:</strong> @Model.GradeSubject?.Subject.Name</p>
+                    <p><strong>Môn học + lớp:</strong> @Model.GradeSubject?.Name</p>
+                </div>
+
+                <div class="col-md-6">
+                    <p><strong>Public Id:</strong> @Model.PublicId</p>
+                    <p><strong>Dung lượng:</strong> @formattedFileSize</p>
+                    <p><strong>Định dạng:</strong> @Model.Format</p>
+                </div>
+            </div>
+
+            <hr />
+
+            <p class="text-break"><strong>Mô tả:</strong> @Model.Description</p>
+
+            <hr />
+
+            <div>
+                <a href="@Url.Action("Detail", "Image", new { area = "", id = Model.Id })" target="_blank" class="btn btn-info me-3">
+                    <i class="ti ti-eye"></i> Xem trong trang người dùng
+                </a>
+                <a href="@Model.Url" target="_blank" class="btn btn-secondary me-3">
+                    <i class="ti ti-cloud-search"></i> Xem trên Cloudinary
+                </a>
+                <a href="javascript:void(0)" class="btn btn-dark me-3" id="previewBtn">
+                    <i class="ti ti-eye"></i> Xem hình ảnh
+                </a>
+                <a href="@Model.DownloadUrl" class="btn btn-success me-3">
+                    <i class="ti ti-cloud-download"></i> Tải xuống
+                </a>
+                <a class="btn btn-warning me-3" href="@Url.Action("Update", "Image", new { area="Admin", id = Model.Id })">
+                    <i class="ti ti-edit"></i> Cập nhật
+                </a>
+                <a class="btn btn-danger me-3" href="javascript:void(0);"
+                   onclick="confirmDelete('@Url.Action("Delete", "Image", new { area = "Admin", id = Model.Id })');">
+                    <i class="ti ti-trash"></i> Xóa
+                </a>
+                <a asp-area="Admin" asp-controller="Image" asp-action="Index" class="btn btn-secondary">
+                    <i class="ti ti-arrow-left"></i> Quay lại
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary">
+            <h4 class="text-white mb-0">
+                <i class="ti ti-file-analytics"></i> Thống kê
+            </h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Số lượt tải xuống:</strong> @Model.Downloads</p>
+            <p><strong>Số lượt xem:</strong> @Model.Views</p>
+        </div>
+    </div>
+
+    <div class="card mb-4" id="image-preview">
+        <div class="card-header bg-primary">
+            <h4 class="text-white mb-0">
+                <i class="ti ti-eye"></i> Xem hình ảnh
+            </h4>
+        </div>
+        <div class="card-body">
+            <div class="embed-responsive embed-responsive-16by9">
+                <img class="embed-responsive-item w-100" src="@Model.Url" alt="Xem trước hình ảnh">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        // Delete
+        function confirmDelete(url) {
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Hình ảnh này sẽ bị xóa vĩnh viễn!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Có, xóa nó!',
+                cancelButtonText: 'Không, giữ nó!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Đang xử lý...',
+                        text: 'Vui lòng chờ trong giây lát.',
+                        icon: 'info',
+                        position: 'center',
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        success: function (response) {
+                            Swal.close();
+
+                            if (response.success) {
+                                Swal.fire({
+                                    title: 'Thành công!',
+                                    text: response.message,
+                                    icon: 'success',
+                                    toast: true,
+                                    position: 'bottom-end',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                }).then(() => {
+                                    window.location.href = '@Url.Action("Index", "Video", new { area = "admin" })';
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: response.message,
+                                    icon: 'error',
+                                    toast: true,
+                                    position: 'bottom-end',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.close();
+
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Có lỗi xảy ra trong quá trình xóa.',
+                                icon: 'error',
+                                toast: true,
+                                position: 'bottom-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+
+    <script>
+        document.getElementById('previewBtn').addEventListener('click', function () {
+            var element = document.getElementById('image-preview');
+            var offset = 0;
+
+            window.scrollTo({
+                top: element.offsetTop - offset,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+}

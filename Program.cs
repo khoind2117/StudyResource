@@ -65,13 +65,22 @@ builder.Services.AddCors(options =>
         });
 });
 #endregion
+
 #region Service
 builder.Services.AddScoped<SlugService>();
 builder.Services.AddScoped<GoogleDriveService>();
+builder.Services.AddScoped<CloudinaryService>();
 #endregion
 
 #region Register Seed Service
 builder.Services.AddTransient<Seed>();
+#endregion
+
+#region Kestrel Configuration
+builder.WebHost.ConfigureKestrel((context, options) =>
+{
+    options.Limits.MaxRequestBodySize = 50 * 1024 * 1024; // 50MB
+});
 #endregion
 
 var app = builder.Build();

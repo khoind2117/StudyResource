@@ -284,7 +284,7 @@ namespace StudyResource.Controllers
 
 
         [HttpGet]
-        [Route("tao-tai-lieu")]
+        [Route("tao-tai-lieu", Name = "GetCreateDocument")]
         public async Task<IActionResult> Create()
         {
             await PopulateSelectLists();
@@ -292,8 +292,8 @@ namespace StudyResource.Controllers
         }
 
         [HttpPost]
-        [Route("tao-tai-lieu")]
-        public async Task<IActionResult> Create(CreateDocumentViewModel model)
+        [Route("tao-tai-lieu", Name = "PostCreateDocument")]
+        public async Task<IActionResult> Create(UserCreateDocumentViewModel model)
         {
             if (ModelState.IsValid)
             {

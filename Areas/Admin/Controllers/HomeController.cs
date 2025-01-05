@@ -24,31 +24,32 @@ namespace StudyResource.Areas.Admin.Controllers
         public async Task<IActionResult> GetUploadAndDownloadDocuments()
         {
             var today = DateTime.Now;
-            var sevenDaysAgo = today.AddDays(-7);
+            var sevenDaysAgo = today.AddDays(-6);
 
-            var uploadCount = new List<int>();
-            for (int i = 6; i >= 0; i--)
-            {
-                var dayStart = today.AddDays(-i).Date;
-                var dayEnd = dayStart.AddDays(1).AddSeconds(-1);
+            var documentUploads = await _context.Documents
+                .Where(d => d.UploadDate >= sevenDaysAgo && d.UploadDate <= today)
+                .GroupBy(d => d.UploadDate.Date)
+                .Select(g => new { Date = g.Key, Count = g.Count() })
+                .AsNoTracking()
+                .ToListAsync();
 
-                var count = await _context.Documents
-                    .Where(d => d.UploadDate >= dayStart && d.UploadDate <= dayEnd)
-                    .CountAsync();
-                uploadCount.Add(count);
-            }
+            var downloadHistories = await _context.DownloadHistories
+                .Where(d => d.DownloadDate >= sevenDaysAgo && d.DownloadDate <= today)
+                .GroupBy(d => d.DownloadDate.Date)
+                .Select(g => new { Date = g.Key, Count = g.Count() })
+                .AsNoTracking()
+                .ToListAsync();
 
-            var downloadCount = new List<int>();
-            for (int i = 6; i >= 0; i--)
-            {
-                var dayStart = today.AddDays(-i).Date;
-                var dayEnd = dayStart.AddDays(1).AddSeconds(-1);
+            var days = Enumerable.Range(0, 7)
+                .Select(i => today.AddDays(-i).Date)
+                .Reverse()
+                .ToList();
 
-                var count = await _context.DownloadHistories
-                    .Where(d => d.DownloadDate >= dayStart && d.DownloadDate <= dayEnd)
-                    .CountAsync();
-                downloadCount.Add(count);
-            }
+            var uploadDict = documentUploads.ToDictionary(u => u.Date, u => u.Count);
+            var downloadDict = downloadHistories.ToDictionary(d => d.Date, d => d.Count);
+
+            var uploadCount = days.Select(day => uploadDict.GetValueOrDefault(day, 0)).ToList();
+            var downloadCount = days.Select(day => downloadDict.GetValueOrDefault(day, 0)).ToList();
 
             var model = new UploadAndDownloadDocumentViewModel
             {
@@ -64,19 +65,36 @@ namespace StudyResource.Areas.Admin.Controllers
         {
             var today = DateTime.Today;
 
-            var approvedCountToday = await _context.Documents
-                .CountAsync(d => d.IsApproved && d.UploadDate.Date == today);
-            var pendingCount = await _context.Documents
-                .CountAsync(d => !d.IsApproved);
-            var approvedCount = await _context.Documents
-                .CountAsync(d => d.IsApproved);
+            var documentCounts = await _context.Documents
+                .GroupBy(d => new
+                {
+                    IsApproved = d.IsApproved,
+                    IsToday = d.UploadDate.Date == today
+                })
+                .Select(g => new
+                {
+                    g.Key.IsApproved,
+                    g.Key.IsToday,
+                    Count = g.Count()
+                })
+                .ToListAsync();
+
+            var approvedCountToday = documentCounts
+                .Where(d => d.IsApproved && d.IsToday)
+                .Sum(d => d.Count);
+
+            var pendingCount = documentCounts
+                .Where(d => !d.IsApproved)
+                .Sum(d => d.Count);
+
+            var approvedCount = documentCounts
+                .Where(d => d.IsApproved)
+                .Sum(d => d.Count);
 
             var totalDocuments = approvedCount + pendingCount;
-            int approvalPercentage = 0;
-            if (totalDocuments > 0)
-            {
-                approvalPercentage = (int)((double)approvedCount / totalDocuments * 100);
-            }
+            int approvalPercentage = totalDocuments > 0
+                ? (int)((double)approvedCount / totalDocuments * 100)
+                : 0;
 
             var model = new PendingAndApprovedDocuments
             {
@@ -133,7 +151,7 @@ namespace StudyResource.Areas.Admin.Controllers
         {
             var model = await _context.Documents
                 .Include(d => d.User)
-                .Where(d => d.UploadDate.Date == DateTime.Today)
+                .OrderByDescending(d => d.UploadDate)
                 .Take(5)
                 .Select(d => new RecentDocumentViewModel
                 {
@@ -142,6 +160,7 @@ namespace StudyResource.Areas.Admin.Controllers
                     IsApproved = d.IsApproved,
                     User = d.User,
                 })
+                .AsNoTracking()
                 .ToListAsync();
 
             return PartialView("_RecentDocuments", model);
@@ -152,28 +171,41 @@ namespace StudyResource.Areas.Admin.Controllers
         {
             var today = DateTime.Today;
 
-            var groupedDocumentsToday = await _context.Documents
-                .Where(d => d.UploadDate.Date == today)
-                .GroupBy(d => d.UserId)
+            var contributions = await _context.Documents
+                .GroupBy(d => new { d.UserId, IsToday = d.UploadDate.Date == today })
+                .Select(g => new
+                {
+                    UserId = g.Key.UserId,
+                    IsToday = g.Key.IsToday,
+                    Count = g.Count()
+                })
                 .ToListAsync();
 
-            var groupedDocumentsAllTime = await _context.Documents
-               .GroupBy(d => d.UserId)
-               .ToListAsync();
+            var contributionsToday = contributions
+                .Where(c => c.IsToday)
+                .ToDictionary(c => c.UserId, c => c.Count);
 
-            var model = groupedDocumentsToday
-                .Join(
-                    _context.Users,
-                    g => g.Key,
-                    u => u.Id,
-                    (g, u) => new TopContributorsTodayViewModel
-                    {
-                        User = u,
-                        ContributionCountToday = g.Count(),
-                        ContributionCountAllTime = groupedDocumentsAllTime
-                        .FirstOrDefault(allTime => allTime.Key == g.Key)?
-                        .Count() ?? 0
-                    })
+            var contributionsAllTime = contributions
+                .GroupBy(c => c.UserId)
+                .ToDictionary(g => g.Key, g => g.Sum(c => c.Count));
+
+            var userIds = contributionsToday.Keys
+                .Concat(contributionsAllTime.Keys)
+                .Distinct()
+                .ToList();
+
+            var users = await _context.Users
+                .AsNoTracking()
+                .Where(u => userIds.Contains(u.Id))
+                .ToListAsync();
+
+            var model = users
+                .Select(u => new TopContributorsTodayViewModel
+                {
+                    User = u,
+                    ContributionCountToday = contributionsToday.ContainsKey(u.Id) ? contributionsToday[u.Id] : 0,
+                    ContributionCountAllTime = contributionsAllTime.ContainsKey(u.Id) ? contributionsAllTime[u.Id] : 0
+                })
                 .OrderByDescending(x => x.ContributionCountToday)
                 .Take(4)
                 .ToList();
@@ -188,6 +220,7 @@ namespace StudyResource.Areas.Admin.Controllers
                 .Include(d => d.User)
                 .OrderByDescending(d => d.Downloads)
                 .Take(12)
+                .AsNoTracking()
                 .ToListAsync();
 
             return PartialView("_TopDownloadedDocuments", model);
@@ -200,6 +233,7 @@ namespace StudyResource.Areas.Admin.Controllers
                 .Include(d => d.User)
                 .OrderByDescending(d => d.Views)
                 .Take(12)
+                .AsNoTracking()
                 .ToListAsync();
 
             return PartialView("_TopViewedDocuments", model);

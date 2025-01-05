@@ -40,6 +40,15 @@
                 </div>
             </div>
 
+            <!-- Tên đăng nhập-->
+            <div class="row">
+                <div class="form-group mb-3 col-12">
+                    <label asp-for="Username" class="form-label">Tên đăng nhập</label>
+                    <input asp-for="Username" class="form-control" placeholder="Nhập tên đăng nhập" required>
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+            </div>
+
             <!-- Mật khẩu -->
             <div class="row">
                 <div class="form-group mb-3 col-6">

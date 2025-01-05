@@ -1,0 +1,75 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model Image
+@inject UserManager<User> UserManager
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Chi tiết hình ảnh";
+}
+
+@{
+    var fileSize = Model.FileSize;
+
+    string FormatFileSize(long sizeInBytes)
+    {
+        if (sizeInBytes < 1024)
+            return $"{sizeInBytes} byte";
+        else if (sizeInBytes < 1024 * 1024)
+            return $"{Math.Round(sizeInBytes / 1024.0, 2)} KB";
+        else if (sizeInBytes < 1024 * 1024 * 1024)
+            return $"{Math.Round(sizeInBytes / (1024.0 * 1024), 2)} MB";
+        else
+            return $"{Math.Round(sizeInBytes / (1024.0 * 1024 * 1024), 2)} GB";
+    }
+
+    var formattedFileSize = FormatFileSize(fileSize);
+}
+
+<div class="container" style="margin-top:100px; margin-bottom:100px;">
+    <div class="image-info mt-4 mb-3">
+        <h4>@Model.Title</h4>
+        <div class="row">
+            <div class="col-md-3">
+                <p>
+                    <strong>Người đăng:</strong>
+                    @if (await UserManager.IsInRoleAsync(Model.User, "Admin"))
+                    {
+                        <span class="text-danger">Admin</span>
+                    }
+                    else
+                    {
+                        <span class="text-primary">@($"{Model.User.LastName} {Model.User.FirstName}")</span>
+                    }
+                </p>
+            </div>
+            <div class="col-md-3">
+                <p><strong>Ngày đăng:</strong> @Model.UploadDate.ToString("dd/MM/yyyy")</p>
+
+            </div>
+            <div class="col-md-3">
+                <p><strong>Lượt xem:</strong> @Model.Views</p>
+
+            </div>
+            <div class="col-md-3">
+                <p><strong>Lượt tải:</strong> @Model.Downloads</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mb-3">
+        <div class="col-md-10">
+            <div class="image-container border">
+                <img src="@Model.Url" alt="Hình ảnh" style="width: 100%; height: auto;" />
+            </div>
+        </div>
+    </div>
+
+    <p class="text-break"><strong>Mô tả:</strong> @Model.Description</p>
+
+    <div class="image-stats">
+        <p><strong>Dung lượng:</strong> @formattedFileSize</p>
+        <p><strong>Định dạng:</strong> @Model.Format</p>
+    </div>
+    <a href="@Model.DownloadUrl" class="btn btn-success me-3">
+        <i class="ti ti-cloud-download"></i> Tải xuống
+    </a>
+</div>

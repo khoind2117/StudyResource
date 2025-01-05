@@ -1,0 +1,120 @@
+﻿@using StudyResource.ViewModels.Image
+@model ImageUploadCsvViewModel
+
+@{
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary">
+            <h4 class="text-white mb-0">
+                <i class="ti ti-file-upload"></i> Nhập tài liệu từ tệp CSV
+            </h4>
+        </div>
+        <div class="card-body">
+            <form asp-controller="Image" asp-action="UploadCsv" method="post" enctype="multipart/form-data" class="mb-4">
+                <div class="form-group mb-3">
+                    <label asp-for="CsvFile" class="form-label fw-bold">Chọn tệp CSV</label>
+                    <input asp-for="CsvFile" type="file" class="form-control" />
+                    <span asp-validation-for="CsvFile" class="text-danger"></span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ti ti-upload"></i> Tải lên
+                    </button>
+                    <a asp-area="Admin" asp-controller="Image" asp-action="Index" class="btn btn-secondary">
+                        <i class="ti ti-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mt-4 shadow-sm">
+        <div class="card-header bg-success">
+            <h4 class="text-white mb-0">
+                <i class="ti ti-file-type-csv"></i> Định dạng tệp CSV
+            </h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <p class="text-success fw-bold fs-4">
+                    Để tải tệp CSV thành công, hãy đảm bảo rằng tệp của bạn tuân thủ định dạng bên dưới:
+                </p>
+                <a href="@Url.Action("DownloadCsv", "Video", new { area = "Admin"})" class="btn btn-success">
+                    <i class="ti ti-download"></i> Tải định dạng CSV
+                </a>
+            </div>
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center">Tên Cột</th>
+                        <th class="text-center">Hướng Dẫn</th>
+                        <th class="text-center">Ví Dụ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Tiêu đề</strong></td>
+                        <td>Tiêu đề của video</td>
+                        <td>CT Toán 6</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mô tả</strong></td>
+                        <td>Mô tả ngắn gọn về hình ảnh</td>
+                        <td>Công thức toán lớp 6 chương 1 số học</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PublicId</strong></td>
+                        <td>
+                            ID tệp trên Cloudinary:
+                            <code>https://res.cloudinary.com/{CloudName}/image/upload/{PublicId}</code>
+                        </td>
+                        <td>cong-thuc-toan-lop-6-chuong-1-so-hoc-4_sdruuv</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Môn học + Lớp</strong></td>
+                        <td>
+                            Nhập môn học và lớp theo định dạng:
+                            <span class="text-primary">"Môn học lớp X"</span>
+                        </td>
+                        <td>Toán lớp 6</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var errorList = @Html.Raw(Json.Serialize(TempData["ErrorList"]));
+
+            if (errorList && errorList.length > 0) {
+                let generalMessage = '<strong>Một số dữ liệu đã được nhập thành công.</strong><br/><br/>';
+
+                let errorMessage = generalMessage + 'Những hàng sau <strong>gặp lỗi</strong> và <strong>không</strong> thể nhập:<br/><br/>' + errorList.join('<br/>');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Cảnh báo khi nhập dữ liệu',
+                    html: errorMessage,
+                    confirmButtonText: 'Đã hiểu'
+                });
+            }
+
+            var successMessage = @Html.Raw(Json.Serialize(TempData["SuccessMessage"]));
+            if (successMessage && successMessage.length > 0) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thêm dữ liệu thành công',
+                    text: successMessage,
+                    confirmButtonText: 'Đã hiểu'
+                });
+            }
+        });
+    </script>
+}

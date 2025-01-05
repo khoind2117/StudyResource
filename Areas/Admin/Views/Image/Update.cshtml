@@ -1,0 +1,164 @@
+﻿@using StudyResource.ViewModels.Image
+@model UpdateImageViewModel
+
+@{
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header bg-warning">
+            <h4 class="text-white mb-0">
+                <i class="ti ti-edit"></i> Cập nhật hình ảnh
+            </h4>
+        </div>
+        <div class="card-body">
+            <form asp-area="Admin" asp-controller="Image" asp-action="Update" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label">Tiêu đề</label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label">Mô tả</label>
+                    <textarea asp-for="Description" class="form-control"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ImageUpload" class="form-label">Tải lên hình ảnh</label>
+                    <div>
+                        <a href="@Model.Url" target="_blank" class="btn btn-secondary mb-3">
+                            <i class="ti ti-cloud"></i> Xem trên Cloudinary
+                        </a>
+                    </div>
+                    <input asp-for="ImageUpload" class="form-control mb-2" type="file" accept=".jpg,.jpeg,.png" />
+                    <span asp-validation-for="ImageUpload" class="text-danger"></span>
+
+                    <span class="text-danger">Dung lượng tối đa: <strong>50 MB</strong></span>
+                    <br />
+                    <span class="text-danger">
+                        Hỗ trợ định dạng:
+                        <strong>.jpg</strong>,
+                        <strong>.jpeg</strong>,
+                        <strong>.png</strong>
+                    </span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="GradeId" class="form-label">Lớp học</label>
+                    <select asp-for="GradeId" class="form-select" id="gradeSelect">
+                        <option value="">--Chọn lớp học--</option>
+                        @foreach (var grade in ViewBag.Grades)
+                        {
+                            <option value="@grade.Value">@grade.Text</option>
+                        }
+                    </select>
+                    <span asp-validation-for="GradeId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="GradeSubjectId" class="form-label">Môn học</label>
+                    <select asp-for="GradeSubjectId" class="form-select" id="gradesubjectSelect">
+                        <option value="">--Chọn môn học--</option>
+                        @foreach (var gradeSubject in ViewBag.GradeSubjects)
+                        {
+                            <option value="@gradeSubject.Value">@gradeSubject.Text</option>
+                        }
+                    </select>
+                    <span asp-validation-for="GradeSubjectId" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <button type="submit" class="btn btn-warning me-2">
+                        <i class="ti ti-pencil-check"></i> Cập nhật
+                    </button>
+                    <a asp-area="Admin" asp-controller="Image" asp-action="Index" class="btn btn-secondary">
+                        <i class="ti ti-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        const gradeSubjects = @Html.Raw(Json.Serialize(ViewBag.GradeSubjectsJson));
+
+        document.getElementById("gradeSelect").addEventListener("change", function () {
+            const gradeId = this.value;
+            const gradesubjectSelect = document.getElementById("gradesubjectSelect");
+
+            gradesubjectSelect.innerHTML = '<option value="">--Chọn môn học--</option>';
+
+            const filteredSubjects = gradeSubjects.filter(gs => gs.gradeId == gradeId);
+
+            filteredSubjects.forEach(gs => {
+                const option = document.createElement("option");
+                option.value = gs.id;
+                option.textContent = gs.name;
+                gradesubjectSelect.appendChild(option);
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("form").submit(function (e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+
+                let processingAlert = Swal.fire({
+                    title: "Đang xử lý...",
+                    text: "Vui lòng đợi trong giây lát.",
+                    icon: "info",
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: $(this).attr("action"),
+                    method: $(this).attr("method"),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        Swal.close();
+                        if (response.success) {
+                            Swal.fire({
+                                title: "Thành công!",
+                                text: response.message,
+                                icon: "success",
+                                showConfirmButton: true,
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Thất bại!",
+                                text: response.message,
+                                icon: "error",
+                                showConfirmButton: true,
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.close();
+                        Swal.fire({
+                            title: "Lỗi!",
+                            text: "Đã xảy ra lỗi không xác định. Vui lòng thử lại sau.",
+                            icon: "error",
+                            showConfirmButton: true,
+                        });
+                    },
+                });
+            });
+        });
+    </script>
+}

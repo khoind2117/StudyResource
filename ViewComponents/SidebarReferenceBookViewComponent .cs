@@ -20,27 +20,35 @@ namespace StudyResource.ViewComponents
 
             IEnumerable<Document> documents;
 
+            var documentTypeId = await _context.DocumentTypes
+               .Where(d => d.Name.ToLower() == "tài liệu tham khảo")
+               .Select(d => d.Id)
+               .FirstOrDefaultAsync();
+
             switch (filterType)
             {
                 case "latest":
                     documents = await _context.Documents
-                                    .Where(d => d.IsApproved)
+                                    .Where(d => d.IsApproved && d.DocumentTypeId == documentTypeId)
                                     .OrderByDescending(d => d.UploadDate)
-                                    .Take(20)
+                                    .Take(10)
+                                    .AsNoTracking()
                                     .ToListAsync();
                     break;
                 case "mostDownloaded":
                     documents = await _context.Documents
-                                    .Where(d => d.IsApproved)
+                                    .Where(d => d.IsApproved && d.DocumentTypeId == documentTypeId)
                                     .OrderByDescending(d => d.Downloads)
-                                    .Take(20)
+                                    .Take(10)
+                                    .AsNoTracking()
                                     .ToListAsync();
                     break;
                 default:
                     documents = await _context.Documents
-                                    .Where(d => d.IsApproved)
+                                    .Where(d => d.IsApproved && d.DocumentTypeId == documentTypeId)
                                     .OrderByDescending(d => d.UploadDate)
-                                    .Take(20)
+                                    .Take(10)
+                                    .AsNoTracking()
                                     .ToListAsync();
                     break;
             }

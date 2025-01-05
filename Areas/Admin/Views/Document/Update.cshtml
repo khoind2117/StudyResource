@@ -108,14 +108,11 @@
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Khởi tạo Tagify cho input mà không có gợi ý
             const input = document.querySelector("#keywords");
             const tagify = new Tagify(input);
 
-            // Sự kiện khi thêm từ khóa
             tagify.on("add", e => console.log("Thêm từ khóa:", e.detail.data.value));
 
-            // Sự kiện khi xóa từ khóa
             tagify.on("remove", e => console.log("Xóa từ khóa:", e.detail.data.value));
         });
     </script>
@@ -137,13 +134,5 @@
                 gradesubjectSelect.appendChild(option);
             });
         });
-    </script>
-    <script>
-        function copyToClipboard() {
-            const driveId = document.getElementById("driveId").innerText;
-            navigator.clipboard.writeText(driveId).then(() => {
-                alert("Google Drive ID đã được sao chép!");
-            });
-        }
     </script>
 }

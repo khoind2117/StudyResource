@@ -24,6 +24,8 @@ namespace StudyResource.Data
         public DbSet<UserComment> UserComments { get; set; }
         public DbSet<Keyword> Keyword { get; set; }
         public DbSet<DocumentKeyword> DocumentKeywords { get; set; }
+        public DbSet<Video> Videos { get; set; }
+        public DbSet<Image> Images { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -136,6 +138,18 @@ namespace StudyResource.Data
                     .WithOne(d => d.GradeSubject)
                     .HasForeignKey(d => d.GradeSubjectId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                // One-to-Many relationship with Video
+                entity.HasMany(gs => gs.Videos)
+                    .WithOne(v => v.GradeSubject)
+                    .HasForeignKey(v => v.GradeSubjectId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // One-to-Many relationship with Image
+                entity.HasMany(gs => gs.Images)
+                    .WithOne(i => i.GradeSubject)
+                    .HasForeignKey(i => i.GradeSubjectId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Configuration for UserComment
@@ -171,6 +185,30 @@ namespace StudyResource.Data
                     .WithMany(dk => dk.DocumentKeywords)
                     .HasForeignKey(dk => dk.KeywordId)
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Video
+            modelBuilder.Entity<Video>(entity =>
+            {
+                entity.ToTable("Video").HasKey(v => v.Id);
+
+                // Many-to-One relationship with User
+                entity.HasOne(v => v.User)
+                    .WithMany(u => u.Videos)
+                    .HasForeignKey(v => v.UserId)
+                    .OnDelete(DeleteBehavior.SetNull);
+            });
+
+            // Image
+            modelBuilder.Entity<Image>(entity =>
+            {
+                entity.ToTable("Image").HasKey(v => v.Id);
+
+                // Many-to-One relationship with User
+                entity.HasOne(v => v.User)
+                    .WithMany(u => u.Images)
+                    .HasForeignKey(v => v.UserId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
             #endregion
         }

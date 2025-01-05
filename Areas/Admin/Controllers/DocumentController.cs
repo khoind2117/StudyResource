@@ -36,6 +36,8 @@ namespace StudyResource.Areas.Admin.Controllers
               .Include(d => d.DocumentType)
               .Include(d => d.User)
               .OrderByDescending(d => d.UploadDate)
+              .AsSplitQuery()
+              .AsNoTracking()
               .ToListAsync();
 
             return View(documents);
@@ -168,15 +170,19 @@ namespace StudyResource.Areas.Admin.Controllers
         public async Task<IActionResult> Detail(int? id, int offset = 0, int limit = 5)
         {
             var document = await _context.Documents
-               .Include(d => d.User)
-               .Include(d => d.DocumentType)
-               .Include(d => d.GradeSubject)
-                   .ThenInclude(gs => gs.Grade)
-               .Include(d => d.Set)
-               .Include(d => d.DocumentKeywords)
-                   .ThenInclude(dk => dk.Keyword)
-               .Include(d => d.UserComments)
-               .FirstOrDefaultAsync(d => d.Id == id);
+                .Include(d => d.User)
+                .Include(d => d.DocumentType)
+                .Include(d => d.GradeSubject)
+                    .ThenInclude(gs => gs.Grade)
+                .Include(d => d.GradeSubject)
+                    .ThenInclude(gs => gs.Subject)
+                .Include(d => d.Set)
+                .Include(d => d.DocumentKeywords)
+                    .ThenInclude(dk => dk.Keyword)
+                .Include(d => d.UserComments)
+                .AsSplitQuery()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(d => d.Id == id);
 
             if (document == null)
             {
@@ -196,6 +202,8 @@ namespace StudyResource.Areas.Admin.Controllers
                     Comment = c.Comment,
                     CommentDate = c.CommentDate
                 })
+                .AsSplitQuery()
+                .AsNoTracking()
                 .ToListAsync();
 
             var totalComments = await _context.UserComments.CountAsync(c => c.DocumentId == id);
@@ -408,6 +416,7 @@ namespace StudyResource.Areas.Admin.Controllers
                 .Include(d => d.Set)
                 .Include(d => d.DocumentKeywords)
                     .ThenInclude(dk => dk.Keyword)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (document == null)
