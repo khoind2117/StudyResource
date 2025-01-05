@@ -1,4 +1,6 @@
-﻿@model List<StudyResource.Models.Document>
+﻿@using Microsoft.AspNetCore.Identity
+@model List<StudyResource.Models.Document>
+@inject UserManager<User> UserManager
 
 @{
     ViewData["Title"] = "Home Page";
@@ -34,8 +36,11 @@
                             Etrain mang sứ mệnh xây dựng một hệ sinh thái giáo dục, kết nối nhà trường với học sinh và phụ huynh,
                             nhằm tạo nên môi trường giảng dạy và học tập toàn diện, hiệu quả.
                         </p>
-                        <a asp-controller="Account" asp-action="Login" class="btn_1">Đăng nhập</a>
-                        <a asp-controller="Account" asp-action="Register" class="btn_1">Đăng ký</a>
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <a asp-controller="Account" asp-action="Login" class="btn_1">Đăng nhập</a>
+                            <a asp-controller="Account" asp-action="Register" class="btn_1">Đăng ký</a>
+                        }
                     </div>
                 </div>
             </div>

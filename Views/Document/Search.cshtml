@@ -8,8 +8,21 @@
 }
 
 <div class="container" style="margin-top:100px; margin-bottom:100px;">
-    <h4>Tìm kiếm tài liệu</h4>
-    <h4>Kết quả tìm kiếm cho: "<strong>@ViewBag.Query</strong>"</h4>
+    <h4 class="text-dark">Tìm kiếm tài liệu</h4>
+    <strong>
+        Kết quả tìm kiếm cho:
+        <span class ="btn btn-sm btn-outline-info">@ViewBag.Query</span>
+    </strong>
+    
+    <br />
+    <strong>Hiển thị: </strong>
+    <span>
+        @{
+            var startItem = (Model.PageNumber - 1) * Model.PageSize + 1;
+            var endItem = Math.Min(Model.PageNumber * Model.PageSize, Model.TotalItemCount);
+        }
+        Xem <span class="text-danger">@startItem - @endItem</span> trên <span class="text-primary">@Model.TotalItemCount</span> kết quả
+    </span>
     <hr />
 
     @if (ViewBag.Message != null)

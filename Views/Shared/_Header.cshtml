@@ -30,13 +30,6 @@
                                     </button>
                                 </form>
                             </li>
-
-                            @* <li class="d-none d-lg-block">
-                                <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="btn_1">Admin</a>
-                            </li> *@
-                            @* <li class="nav-item">
-                                <a asp-controller="Document" asp-action="Index" class="dropdown-item">Thư viện</a>
-                            </li> *@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Thư viện
@@ -51,24 +44,26 @@
                                 <a asp-controller="DocumentType" asp-action="ReferenceBook" class="nav-link">Tài liệu tham khảo</a>
                             </li>
                             <li class="nav-item">
+                                <a asp-controller="Video" asp-action="Index" class="nav-link">Bài giảng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-controller="Image" asp-action="Index" class="nav-link">Công thức</a>
+                            </li>
+                            <li class="nav-item">
                                 <a asp-controller="Contact" asp-action="Index" class="nav-link">Liên hệ</a>
                             </li>
                           
                             @if (User.Identity.IsAuthenticated) // Nếu người dùng đã đăng nhập
                             {
-                            <li class="nav-item">
-                                <a asp-controller="Document" asp-action="Create" class="nav-link">Tải lên tài liệu</a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-controller="Document" asp-action="UserDocument" class="nav-link">Tài liệu của tôi</a>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Tài khoản
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Tài khoản
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+
                                         <a asp-controller="Account" asp-action="Manage" class="dropdown-item">Hồ sơ cá nhân</a>
+                                        <a asp-controller="Document" asp-action="Create" class="dropdown-item">Tải lên tài liệu</a>
+                                        <a asp-controller="Document" asp-action="UserDocument" class="dropdown-item">Tài liệu của tôi</a>
                                         <a asp-controller="Favorite" asp-action="Index" class="dropdown-item">Tài liệu yêu thích</a>
                                         <a asp-controller="DownloadHistory" asp-action="Index" class="dropdown-item">Lịch sử tải</a>
                                         <a asp-controller="Account" asp-action="Logout" class="dropdown-item"
@@ -76,8 +71,8 @@
                                         <form id="logout-form" asp-controller="Account" asp-action="Logout" method="post" class="d-none">
                                             @Html.AntiForgeryToken()
                                         </form>
-                                </div>
-                            </li>
+                                    </div>
+                                </li>
                             }
                             else
                             {

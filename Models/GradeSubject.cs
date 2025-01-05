@@ -13,5 +13,7 @@
         public Subject? Subject { get; set; }
 
         public virtual ICollection<Document>? Documents { get; set; }
+        public virtual ICollection<Video>? Videos { get; set; }
+        public virtual ICollection<Image>? Images { get; set; }
     }
 }

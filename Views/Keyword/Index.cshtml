@@ -55,16 +55,16 @@
                                     </a>
                                     <span class="text-uppercase">
                                         Người đăng:
-                                        <span class="text-danger mr-3">
-                                            @if (await UserManager.IsInRoleAsync(doc.User, "Admin"))
-                                            {
-                                                @:Admin
-                                            }
-                                            else
-                                            {
+                                        @if (await UserManager.IsInRoleAsync(doc.User, "Admin"))
+                                        {
+                                            <span class="text-danger mr-3">Admin</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-primary mr-3">
                                                 @($"{doc.User.LastName} {doc.User.FirstName}")
-                                            }
-                                        </span>
+                                            </span>
+                                        }
                                         Ngày đăng:
                                         <span class="text-primary mr-3">@doc.UploadDate.ToString("dd/MM/yyyy")</span>
                                         Lượt xem:

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using StudyResource.Data;
 using StudyResource.Dictionaries;
 using StudyResource.Models;
@@ -60,9 +61,9 @@ namespace StudyResource
             {
                 var adminUser = new User
                 {
-                    UserName = "admin@gmail.com",
+                    UserName = "admin",
                     FirstName = "Admin",
-                    LastName = "TLTN",
+                    LastName = "Real",
                     Email = "admin@gmail.com",
                     EmailConfirmed = true,
                     NormalizedUserName = "ADMIN@GMAIL.COM",
@@ -75,6 +76,28 @@ namespace StudyResource
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(adminUser, "Admin");
+                }
+
+                for (int i = 1; i <= 5; i++)
+                {
+                    var user = new User
+                    {
+                        UserName = $"user{i}",
+                        FirstName = $"Nguyễn Văn",
+                        LastName = $"{(char)('A' + i - 1)}",
+                        Email = $"user{i}@gmail.com",
+                        EmailConfirmed = true,
+                        NormalizedUserName = $"USER{i}@GMAIL.COM",
+                        NormalizedEmail = $"USER{i}@GMAIL.COM",
+                        SecurityStamp = Guid.NewGuid().ToString()
+                    };
+
+                    var userPassword = $"User@123";
+                    var userResult = await _userManager.CreateAsync(user, userPassword);
+                    if (userResult.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(user, "User");
+                    }
                 }
 
                 await _context.SaveChangesAsync();
@@ -192,8 +215,8 @@ namespace StudyResource
                     },
                     new DocumentType
                     {
-                        Name = "Bài giảng",
-                        Slug = _slugService.GenerateSlug("Bài giảng"),
+                        Name = "Tài liệu tham khảo",
+                        Slug = _slugService.GenerateSlug("Tài liệu tham khảo"),
                     }
                 };
 
@@ -229,112 +252,119 @@ namespace StudyResource
             }
             #endregion
 
-            #region Document
-            //if (!_context.Documents.Any())
-            //{
-            //    var documents = new List<Document>
-            //    {
-            //        new Document
-            //        {
-            //            Title = "Sách giáo khoa Vật Lý 11 Cánh Diều",
-            //            Slug = _slugService.GenerateSlug("Sách giáo khoa Vật Lý 11 Cánh Diều"),
-            //            Description = "Sách giáo khoa Vật Lý 11 Cánh Diều",
-            //            Views = 10,
-            //            Downloads = 10,
-            //            GoogleDriveId = "1jMFlkFeVAs0z8Cdapt3vQ3uE2T0tP9Hd",
-            //            UploadDate = DateTime.Now,
-            //            GradeSubjectId = 107,
-            //            DocumentTypeId = 1,
-            //            SetId = 1
-            //        },
-            //        new Document
-            //        {
-            //            Title = "Ngữ Văn Lớp 12 Tập Một",
-            //            Slug = _slugService.GenerateSlug("Ngữ Văn Lớp 12 Tập Một"),
-            //            Description = "Ngữ Văn Lớp 12 Tập Một",
-            //            Views = 20,
-            //            Downloads = 20,
-            //            GoogleDriveId = "18FAkSFzbOuh9W1vl5H9qJyL4Rlunv3tF",
-            //            UploadDate = DateTime.Now,
-            //            GradeSubjectId = 718,
-            //            DocumentTypeId = 1,
-            //            SetId = 2
-            //        },
-            //        new Document
-            //        {
-            //            Title = "Ngữ Văn Lớp 12 Tập Hai",
-            //            Slug = _slugService.GenerateSlug("Ngữ Văn Lớp 12 Tập Hai"),
-            //            Description = "Ngữ Văn Lớp 12 Tập Hai",
-            //            Views = 30,
-            //            Downloads = 30,
-            //            GoogleDriveId = "1B7r44HkqgemeRaC2VIO9XhJLSTvjDe2H",
-            //            UploadDate = DateTime.Now,
-            //            GradeSubjectId = 118,
-            //            DocumentTypeId = 1,
-            //            SetId = 3
-            //        },
-            //        new Document
-            //        {
-            //            Title = "Sách giáo khoa Giải tích Lớp 12",
-            //            Slug = _slugService.GenerateSlug("Sách giáo khoa Giải tích Lớp 12"),
-            //            Description = "Sách giáo khoa Giải tích Lớp 12",
-            //            Views = 40,
-            //            Downloads = 40,
-            //            GoogleDriveId = "1tOEv8fNWQwwxtzfLua13papq-8OQ_Q30",
-            //            UploadDate = DateTime.Now,
-            //            GradeSubjectId = 117,
-            //            DocumentTypeId = 1,
-            //            SetId = 1
-            //        },
-            //        new Document
-            //        {
-            //            Title = "Công nghệ Lớp 12",
-            //            Slug = _slugService.GenerateSlug("Công nghệ Lớp 12"),
-            //            Description = "Công nghệ Lớp 12",
-            //            Views = 50,
-            //            Downloads = 50,
-            //            GoogleDriveId = "1Zy2RHRuQOH_kt8fLhuGlclP00xBNSxVe",
-            //            UploadDate = DateTime.Now,
-            //            GradeSubjectId = 127,
-            //            DocumentTypeId = 1,
-            //            SetId = 1
-            //        },
-            //    };
+        //    #region DownloadHistory 2nd
+        //    if (!_context.DownloadHistories.Any())
+        //    {
+        //        var random = new Random();
+        //        var downloadHistory = new List<DownloadHistory>();
+        //        var startDate = new DateTime(2025, 1, 1);
+        //        var endDate = new DateTime(2025, 1, 5);
+        //        var totalMinutes = (int)(endDate - startDate).TotalMinutes;
 
-            //    _context.Documents.AddRange(documents);
-            //    await _context.SaveChangesAsync();
-            //}
-            #endregion
+        //        var userRole = await _context.Roles
+        //            .FirstOrDefaultAsync(r => r.Name == "User");
 
-            #region DownloadHistory
-            if (!_context.DownloadHistories.Any())
-            {
-                var random = new Random();
-                var downloadHistory = new List<DownloadHistory>();
-                var startDate = new DateTime(2024, 11, 7);
-                var endDate = new DateTime(2024, 11, 14);
-                var totalMinutes = (int)(endDate - startDate).TotalMinutes;
+        //        if (userRole != null)
+        //        {
+        //            var userIds = await _context.UserRoles
+        //                .Where(ur => ur.RoleId == userRole.Id)
+        //                .Select(ur => ur.UserId)
+        //                .ToListAsync();
 
-                for (int i = 0; i < 100; i++)
-                {
-                    var randomMinutes = random.Next(0, totalMinutes);
-                    var randomDate = startDate.AddMinutes(randomMinutes);
+        //            for (int i = 0; i < 1000; i++)
+        //            {
+        //                var randomMinutes = random.Next(0, totalMinutes);
+        //                var randomDate = startDate.AddMinutes(randomMinutes);
 
-                    var documentId = random.Next(1, 51);
-                    var userId = "c11527ac-24a4-4595-8372-c392fde740d8";
+        //                var randomUserId = userIds[random.Next(userIds.Count)];
 
-                    downloadHistory.Add(new DownloadHistory
-                    {
-                        DownloadDate = randomDate,
-                        UserId = userId,
-                        DocumentId = documentId
-                    });
-                }
+        //                var documentId = random.Next(1, 445);
 
-                _context.DownloadHistories.AddRange(downloadHistory);
-                await _context.SaveChangesAsync();
-            }
-            #endregion
-        }
+        //                var document = await _context.Documents
+        //                    .FirstOrDefaultAsync(d => d.Id == documentId);
+
+        //                if (document != null)
+        //                {
+        //                    document.Views += 3;
+        //                    document.Downloads += 1;
+        //                    _context.Documents.Update(document);
+        //                }
+
+        //                downloadHistory.Add(new DownloadHistory
+        //                {
+        //                    DownloadDate = randomDate,
+        //                    UserId = randomUserId,
+        //                    DocumentId = documentId
+        //                });
+        //            }
+
+        //            _context.DownloadHistories.AddRange(downloadHistory);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //    }
+        //    #endregion
+
+        //    #region UserComments 2nd
+        //    if (!_context.UserComments.Any())
+        //    {
+        //        var random = new Random();
+        //        var comments = new List<UserComment>();
+        //        var startDate = new DateTime(2025, 1, 1);
+        //        var endDate = new DateTime(2025, 1, 5);
+        //        var totalMinutes = (int)(endDate - startDate).TotalMinutes;
+
+        //        var userRole = await _context.Roles
+        //            .FirstOrDefaultAsync(r => r.Name == "User");
+
+        //        if (userRole != null)
+        //        {
+        //            var userIds = await _context.UserRoles
+        //                .Where(ur => ur.RoleId == userRole.Id)
+        //                .Select(ur => ur.UserId)
+        //                .ToListAsync();
+
+        //            var documentIds = await _context.Documents.Select(d => d.Id).ToListAsync();
+
+        //            var commentTemplates = new List<string>
+        //            {
+        //                "Tài liệu này rất hữu ích, tôi đã học được nhiều điều mới.",
+        //                "Không thích tài liệu này, mong muốn có nhiều thông tin hơn.",
+        //                "Tài liệu này cung cấp thông tin rất đầy đủ.",
+        //                "Mong rằng có thêm các tài liệu tương tự.",
+        //                "Rất tuyệt vời! Tài liệu này đã giúp tôi hoàn thành công việc.",
+        //                "Chất lượng tài liệu khá tốt, nhưng có thể cải thiện thêm.",
+        //                "Rất hay! Cảm ơn vì đã chia sẻ tài liệu này.",
+        //                "Tài liệu này khá dễ hiểu và dễ áp dụng.",
+        //                "Một tài liệu tuyệt vời, tôi sẽ giới thiệu cho bạn bè.",
+        //                "Tài liệu này hơi dài nhưng rất hữu ích."
+        //            };
+
+        //            for (int i = 0; i < 1000; i++) 
+        //            {
+        //                var randomMinutes = random.Next(0, totalMinutes);
+        //                var randomDate = startDate.AddMinutes(randomMinutes);
+
+        //                var randomUserId = userIds[random.Next(userIds.Count)];
+        //                var randomDocumentId = documentIds[random.Next(documentIds.Count)];
+
+        //                var randomRating = random.Next(1, 6);
+        //                var randomComment = commentTemplates[random.Next(commentTemplates.Count)];
+
+        //                comments.Add(new UserComment
+        //                {
+        //                    UserId = randomUserId,
+        //                    Comment = randomComment,
+        //                    Rating = randomRating,
+        //                    CommentDate = randomDate,
+        //                    DocumentId = randomDocumentId
+        //                });
+        //            }
+
+        //            _context.UserComments.AddRange(comments);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //    }
+        //    #endregion
+        //}
     }
 }

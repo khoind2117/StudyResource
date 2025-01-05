@@ -1,4 +1,5 @@
-﻿@model IEnumerable<StudyResource.Models.Document>
+﻿@using StudyResource.ViewModels.DocumentType
+@model ReferenceBookViewModel
 
 @{
     ViewData["Title"] = "Tìm kiếm tài liệu tham khảo";
@@ -18,36 +19,121 @@
         </div>
 
         <div class="col-md-9">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Tài liệu mới nhất</h5>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary">
+                            <h4 class="text-white mb-0">
+                                <i class="ti ti-file-star"></i> Tài liệu nổi bật
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="slick-carousel">
+                                @foreach (var doc in Model.SlickDocuments)
+                                {
+                                    <div class="slick-slide">
+                                        <a href="@Url.Action("Detail", "Document", new { id = doc.Id })">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <img src="https://drive.google.com/thumbnail?id=@doc.GoogleDriveId" alt="@doc.Title" class="img-fluid mr-3">
+                                                <div>
+                                                    <h5 class="h5">@doc.Title</h5>
+                                                    <small class="text-muted">
+                                                        <i class="ti ti-clock"></i> @doc.UploadDate.ToString("dd/MM/yyyy")
+                                                    </small>
+                                                    <small class="text-muted">
+                                                        <i class="ti ti-eye"></i> @doc.Views
+                                                    </small>
+                                                    <small class="text-muted">
+                                                        <i class="ti ti-download"></i> @doc.Downloads
+                                                    </small>
+                                                    <p class="text-muted text-wrap text-break">@doc.Description</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                }
                             </div>
-                            <div class="card-body">
-                                <ul class="list-unstyled">
-                                    <li><a href="#">Tài liệu 1</a></li>
-                                    <li><a href="#">Tài liệu 2</a></li>
-                                    <li><a href="#">Tài liệu 3</a></li>
-                                </ul>
-                            </div>
+
                         </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Tài liệu phổ biến</h5>
+                    @foreach (var grade in Model.Grades)
+                    {
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary">
+                                <h4 class="text-white mb-0">@grade.Name</h4>
                             </div>
                             <div class="card-body">
                                 <ul class="list-unstyled">
-                                    <li><a href="#">Tài liệu 1</a></li>
-                                    <li><a href="#">Tài liệu 2</a></li>
-                                    <li><a href="#">Tài liệu 3</a></li>
+                                    @foreach (var gradeSubject in grade.GradeSubjects)
+                                    {
+
+                                        var documentCount = gradeSubject.Documents
+                                        .Where(d => d.DocumentTypeId == ViewBag.DocumentTypeId)
+                                        .Count();
+
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <a href="@Url.Action("Index", "DocumentType", new { gradeId = grade.Id, subjectId = gradeSubject.Subject.Id })" class="text-dark">
+                                                <i class="ti ti-book-fill mr-2"></i>
+                                                @gradeSubject.Subject.Name
+                                            </a>
+                                            <span class="badge bg-primary text-white">@documentCount</span>
+                                        </li>
+                                    }
                                 </ul>
                             </div>
                         </div>
+                    }
+                </div>
+
+                <div class="col-md-4">
+                    <div class="bg-gradient-warning p-3 rounded-lg shadow-sm">
+                        <h5 class="text-warning mb-3">
+                            <i class="ti ti-star"></i> Tài liệu được đánh giá cao
+                        </h5>
+                        <ul class="list-unstyled">
+                            @foreach (var doc in Model.HighlyRatedDocuments)
+                            {
+                                var thumbnailLink = $"https://drive.google.com/thumbnail?id={doc.GoogleDriveId}";
+                                var defaultImage = "/pdf-image.png";
+
+                                <li class="d-flex align-items-center mb-3">
+                                    <img referrerPolicy="no-referrer"
+                                         src="@thumbnailLink"
+                                         alt="@doc.Title"
+                                         onerror="this.onerror=null; this.src='@defaultImage';"
+                                         class="rounded" style="height: 100px; width: 80px; object-fit: cover;" />
+                                    <div class="ml-3">
+                                        <a href="@Url.Action("Detail", "Document", new { id = doc.Id })" class="text-dark">
+                                            <h6 class="mb-1">@doc.Title</h6>
+                                        </a>
+                                        <small class="text-warning">
+                                            <i class="ti ti-star"></i>
+                                            @if (doc.UserComments.Any())
+                                            {
+                                                var averageRating = doc.UserComments.Average(uc => uc.Rating);
+                                                <span>@averageRating.ToString("0.0") sao</span> <!-- Hiển thị đánh giá trung bình -->
+                                            }
+                                            else
+                                            {
+                                                <span>Chưa có đánh giá</span> <!-- Trường hợp chưa có đánh giá -->
+                                            }
+                                        </small>
+                                        <br />
+                                        <small class="text-muted">
+                                            <i class="ti ti-clock"></i> @doc.UploadDate.ToString("dd/MM/yyyy")
+                                        </small>
+                                        <br />
+                                        <small class="text-muted">
+                                            <i class="ti ti-eye"></i> @doc.Views
+                                        </small>
+                                        <small class="text-muted">
+                                            <i class="ti ti-download"></i> @doc.Downloads
+                                        </small>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -71,7 +157,18 @@
 
                 $(this).addClass('active');
             });
-        });
 
+            $('.slick-carousel').slick({
+                dots: true,
+                infinite: true,
+                speed: 300,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                autoplay: true,
+                autoplaySpeed: 2000,
+                arrows: true,
+            });
+        });
     </script>
 }
+

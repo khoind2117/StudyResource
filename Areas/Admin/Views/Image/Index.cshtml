@@ -1,0 +1,279 @@
+﻿@model List<Image>
+
+@{
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <h3>Quản lý hình ảnh</h3>
+    <a asp-area="Admin" asp-controller="Image" asp-action="Create" class="btn btn-primary mb-3">
+        <i class="ti ti-cloud-upload"></i> Tạo hình ảnh
+    </a>
+    <a asp-area="Admin" asp-controller="Image" asp-action="UploadCsv" class="btn btn-primary mb-3 mx-3">
+        <i class="ti ti-file-type-csv"></i> Tải lên bằng tệp csv
+    </a>
+    <button class="btn btn-danger mb-3" onclick="deleteSelectedImages()">
+        <i class="ti ti-trash"></i> Xóa các hình ảnh đã chọn
+    </button>
+    <table id="imageTable" class="table table-striped table-bordered">
+        <thead class="bg-primary text-white">
+            <tr>
+                <th><input type="checkbox" id="selectAll" /></th>
+                <th>Thumbnail</th>
+                <th>Tiêu đề</th>
+                <th>Môn học</th>
+                <th>Người đăng</th>
+                <th>Ngày tải lên</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var image in Model)
+            {
+                <tr>
+                    <td><input type="checkbox" class="imageCheckbox" value="@image.Id" /></td>
+                    <td>
+                        <img referrerPolicy="no-referrer"
+                             src=@image.ThumbnailUrl
+                             alt="@image.Title"
+                             style="width: 150px; height: auto;" />
+                    </td>
+                    <td>@image.Title</td>
+                    <td>@image.GradeSubject?.Name</td>
+                    <td>@image.User?.UserName</td>
+                    <td>@image.UploadDate.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        @if (image.IsApproved)
+                        {
+                            <span class="badge bg-success">Đã duyệt</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Chưa duyệt</span>
+                        }
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column align gap-3">
+                            <a target="_blank" class="btn btn-primary btn-sm" href="@Url.Action("Detail", "Image", new { area = "Admin", id = image.Id })">
+                                <i class="ti ti-file-search"></i> Chi tiết
+                            </a>
+                            <a target="_blank" class="btn btn-warning btn-sm" href="@Url.Action("Update", "Image", new { area = "Admin", id = image.Id })">
+                                <i class="ti ti-edit"></i> Cập nhật
+                            </a>
+                            <a class="btn btn-danger btn-sm"
+                               href="javascript:void(0);"
+                               onclick="confirmDelete('@Url.Action("Delete", "Image", new { area = "Admin", id = image.Id })');">
+                                <i class="ti ti-trash"></i> Xóa
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#imageTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                responsive: true,
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                language: {
+                    lengthMenu: "Hiển thị _MENU_ mục mỗi trang",
+                    zeroRecords: "Không tìm thấy kết quả nào",
+                    info: "Hiển thị từ _START_ đến _END_ trong tổng số _TOTAL_ mục",
+                    infoEmpty: "Không có dữ liệu",
+                    infoFiltered: "(Được lọc từ _MAX_ tổng số mục)",
+                    search: "Tìm kiếm:",
+                    paginate: {
+                        first: "Đầu tiên",
+                        last: "Cuối cùng",
+                        next: "Tiếp theo",
+                        previous: "Trước"
+                    },
+                    emptyTable: "Không có dữ liệu trong bảng",
+                },
+
+                order: [[1, 'asc'], [0, 'desc']],
+            });
+        });
+
+        // Select All Checkbox
+        document.getElementById('selectAll').addEventListener('click', function () {
+            var checkboxes = document.querySelectorAll('.imageCheckbox');
+            for (var checkbox of checkboxes) {
+                checkbox.checked = this.checked;
+            }
+        });
+
+        // Delete
+        function confirmDelete(url) {
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Hình ảnh này sẽ bị xóa vĩnh viễn!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Có, xóa nó!',
+                cancelButtonText: 'Không, giữ nó!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Đang xử lý...',
+                        text: 'Vui lòng chờ trong giây lát.',
+                        icon: 'info',
+                        position: 'center',
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        success: function (response) {
+                            Swal.close();
+
+                            if (response.success) {
+                                Swal.fire({
+                                    title: 'Thành công!',
+                                    text: response.message,
+                                    icon: 'success',
+                                    toast: true,
+                                    position: 'bottom-end',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: response.message,
+                                    icon: 'error',
+                                    toast: true,
+                                    position: 'bottom-end',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.close();
+
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Có lỗi xảy ra trong quá trình xóa.',
+                                icon: 'error',
+                                toast: true,
+                                position: 'bottom-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        // Delete Selected Images
+        function deleteSelectedImages() {
+            var selectedIds = [];
+            var checkboxes = document.querySelectorAll('.imageCheckbox:checked');
+            for (var checkbox of checkboxes) {
+                selectedIds.push(checkbox.value);
+            }
+
+            if (selectedIds.length > 0) {
+                Swal.fire({
+                    title: 'Bạn có chắc chắn?',
+                    text: `Bạn có chắc chắn muốn xóa ${selectedIds.length} hình ảnh đã chọn?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Có, xóa chúng!',
+                    cancelButtonText: 'Không, giữ lại!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Đang xử lý...',
+                            text: 'Vui lòng chờ trong giây lát.',
+                            icon: 'info',
+                            position: 'center',
+                            showConfirmButton: false,
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("DeleteSelectedImages", "Image")',
+                            data: JSON.stringify(selectedIds),
+                            contentType: 'application/json; charset=utf-8',
+                            success: function () {
+                                Swal.close()
+
+                                Swal.fire({
+                                    title: 'Đã xóa!',
+                                    text: 'Các hình ảnh đã được xóa.',
+                                    icon: 'success',
+                                    toast: true,
+                                    position: 'bottom-end',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            },
+                            error: function () {
+                                Swal.close()
+
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: 'Có lỗi xảy ra khi xóa  hình ảnh.',
+                                    icon: 'error',
+                                    toast: true,
+                                    position: 'bottom-end',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                });
+                            }
+                        });
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Chưa chọn video',
+                    text: 'Vui lòng chọn ít nhất một hình ảnh để xóa.',
+                    icon: 'warning',
+                    toast: true,
+                    position: 'bottom-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            }
+        }
+    </script>
+}
+
+<style>
+    td {
+        overflow: hidden;
+        white-space: normal;
+        text-overflow: ellipsis;
+        max-width: 150px;
+    }
+</style>

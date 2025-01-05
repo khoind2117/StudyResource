@@ -4,6 +4,8 @@ namespace StudyResource.ViewModels.Account
 {
     public class RegisterViewModel
     {
+        [Required(ErrorMessage = "Làm ơn điền tên đăng nhập của bạn")]
+        public string Username { get; set; }
         [Required(ErrorMessage = "Làm ơn điền họ của bạn")]
         public string LastName { get; set; }
 

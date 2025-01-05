@@ -1,0 +1,203 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using X.PagedList
+@model X.PagedList.IPagedList<StudyResource.Models.Image>
+@inject UserManager<User> UserManager
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Công thức";
+}
+
+<div class="container" style="margin-top:100px; margin-bottom:100px;">
+    <h4 class="text-dark">Công thức</h4>
+    <strong>Lớp:</strong>
+    <span class="btn btn-sm btn-outline-info mr-3">@ViewBag.GradeName</span>
+    <strong>Môn học:</strong>
+    <span class="btn btn-sm btn-outline-info">@ViewBag.GradeSubjectName</span>
+    <br />
+    <strong>Hiển thị:</strong>
+    <span>
+        @{
+            var startItem = (Model.PageNumber - 1) * Model.PageSize + 1;
+            var endItem = Math.Min(Model.PageNumber * Model.PageSize, Model.TotalItemCount);
+        }
+        Xem <span class="text-danger">@startItem - @endItem</span> trên <span class="text-primary">@Model.TotalItemCount</span> kết quả
+    </span>
+    <hr />
+    <form id="searchForm" asp-controller="Image" asp-action="Index" method="get" class="row">
+        <div class="col-4">
+            <select id="gradeSelect" name="gradeId" class="form-control">
+                <option value="">Chọn lớp</option>
+                @foreach (var grade in ViewBag.Grades as List<Grade>)
+                {
+                    <option value="@grade.Id">@grade.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-4">
+            <select id="gradeSubjectSelect" name="gradeSubjectId" class="form-control" disabled>
+                <option value="">Chọn môn học</option>
+            </select>
+        </div>
+
+        <button id="searchButton" class="btn btn-primary ml-3">Tìm</button>
+    </form>
+    <hr />
+
+    <div id="imageContainer">
+        @if (Model != null && Model.Any())
+        {
+            <div class="row">
+                @foreach (var image in Model)
+                {
+                    <div class="col-3 mb-3">
+                        <div class="card mb-3">
+                            <a href="@Url.Action("Detail", "Image", new { id = image.Id })" target="_blank">
+                                <img referrerPolicy="no-referrer"
+                                     src="@image.ThumbnailUrl"
+                                     alt="@image.Title"
+                                     class="img-fluid" />
+                            </a>
+                            <span class="text-break my-1 mx-1">@image.Title</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">Không có video nào được tìm thấy.</p>
+        }
+    </div>
+
+    <nav>
+        <ul class="pagination justify-content-center">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { gradeId = ViewBag.SelectedGradeId, gradeSubjectId = ViewBag.SelectedGradeSubjectId, page = Model.PageNumber - 1 })">Trước</a>
+                </li>
+            }
+
+            @if (Model.PageNumber > 3)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { gradeId = ViewBag.SelectedGradeId, gradeSubjectId = ViewBag.SelectedGradeSubjectId, page = 1 })">1</a>
+                </li>
+                <li class="page-item disabled"><a class="page-link">...</a></li>
+            }
+
+            @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.PageCount, Model.PageNumber + 2); i++)
+            {
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { gradeId = ViewBag.SelectedGradeId, gradeSubjectId = ViewBag.SelectedGradeSubjectId, page = i })">@i</a>
+                </li>
+            }
+
+            @if (Model.PageNumber < Model.PageCount - 2)
+            {
+                <li class="page-item disabled"><a class="page-link">...</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { gradeId = ViewBag.SelectedGradeId, gradeSubjectId = ViewBag.SelectedGradeSubjectId, page = Model.PageCount })">@Model.PageCount</a>
+                </li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { gradeId = ViewBag.SelectedGradeId, gradeSubjectId = ViewBag.SelectedGradeSubjectId, page = Model.PageNumber + 1 })">Tiếp</a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var selectedGradeId = @Html.Raw(Json.Serialize(ViewBag.SelectedGradeId));
+            var selectedGradeSubjectId = @Html.Raw(Json.Serialize(ViewBag.SelectedGradeSubjectId));
+
+            if(selectedGradeId) {
+                $('#gradeSelect').val(selectedGradeId);
+                // Sau khi chọn lớp, gọi API lấy môn học
+                $.get('@Url.Action("GetSubjectsByGrade", "Image")', { gradeId: selectedGradeId }, function (data) {
+                    var subjectSelect = $('#gradeSubjectSelect');
+                    subjectSelect.empty();
+
+                    if (data.length > 0) {
+                        subjectSelect.prop('disabled', false);
+                        subjectSelect.append('<option value="">Chọn môn học</option>');
+
+                        $.each(data, function (index, subject) {
+                            subjectSelect.append('<option value="' + subject.id + '">' + subject.name + '</option>');
+                        });
+
+                        // Sau khi thêm các môn học, gán giá trị cho gradeSubjectSelect nếu có
+                        if (selectedGradeSubjectId) {
+                            subjectSelect.val(selectedGradeSubjectId);  // Gán giá trị đã chọn
+                        }
+                    } else {
+                        subjectSelect.prop('disabled', true);
+                        subjectSelect.append('<option value="">Không có môn học cho lớp này</option>');
+                    }
+                });
+            }
+
+            $('#gradeSelect').change(function () {
+                var gradeId = $(this).val();
+
+                if (gradeId) {
+                    $.get('@Url.Action("GetSubjectsByGrade", "Image")', { gradeId: gradeId }, function (data) {
+                        var subjectSelect = $('#gradeSubjectSelect');
+                        subjectSelect.empty();
+
+                        if (data.length > 0) {
+                            subjectSelect.prop('disabled', false);
+                            subjectSelect.append('<option value="">Chọn môn học</option>');
+
+                            $.each(data, function (index, subject) {
+                                subjectSelect.append('<option value="' + subject.id + '">' + subject.name + '</option>');
+                            });
+                        } else {
+                            subjectSelect.prop('disabled', true);
+                            subjectSelect.append('<option value="">Không có môn học cho lớp này</option>');
+                        }
+                    });
+                } else {
+                    $('#gradeSubjectSelect').prop('disabled', true).empty().append('<option value="">Chọn lớp trước</option>');
+                }
+            });
+
+
+            $('#searchButton').click(function () {
+                event.preventDefault();
+
+                var gradeId = $('#gradeSelect').val();
+                var gradeSubjectId = $('#gradeSubjectSelect').val();
+
+                if (!gradeId) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Vui lòng chọn lớp!',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                if (!gradeSubjectId) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Vui lòng chọn môn học!',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                $('#searchForm').submit();
+            });
+        });
+    </script>
+
+}

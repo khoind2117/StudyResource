@@ -361,6 +361,75 @@ namespace StudyResource.Migrations
                     b.ToTable("GradeSubject", (string)null);
                 });
 
+            modelBuilder.Entity("StudyResource.Models.Image", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DownloadUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Downloads")
+                        .HasColumnType("int");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Format")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("GradeSubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ThumbnailUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Views")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GradeSubjectId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Image", (string)null);
+                });
+
             modelBuilder.Entity("StudyResource.Models.Keyword", b =>
                 {
                     b.Property<int>("Id")
@@ -514,7 +583,8 @@ namespace StudyResource.Migrations
 
                     b.Property<string>("Comment")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime>("CommentDate")
                         .HasColumnType("datetime2");
@@ -535,6 +605,78 @@ namespace StudyResource.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserComments");
+                });
+
+            modelBuilder.Entity("StudyResource.Models.Video", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DownloadUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Downloads")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Duration")
+                        .HasColumnType("float");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Format")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("GradeSubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ThumbnailUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Views")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GradeSubjectId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Video", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -695,6 +837,24 @@ namespace StudyResource.Migrations
                     b.Navigation("Subject");
                 });
 
+            modelBuilder.Entity("StudyResource.Models.Image", b =>
+                {
+                    b.HasOne("StudyResource.Models.GradeSubject", "GradeSubject")
+                        .WithMany("Images")
+                        .HasForeignKey("GradeSubjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("StudyResource.Models.User", "User")
+                        .WithMany("Images")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("GradeSubject");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("StudyResource.Models.UserComment", b =>
                 {
                     b.HasOne("StudyResource.Models.Document", "Document")
@@ -708,6 +868,24 @@ namespace StudyResource.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("Document");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("StudyResource.Models.Video", b =>
+                {
+                    b.HasOne("StudyResource.Models.GradeSubject", "GradeSubject")
+                        .WithMany("Videos")
+                        .HasForeignKey("GradeSubjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("StudyResource.Models.User", "User")
+                        .WithMany("Videos")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("GradeSubject");
 
                     b.Navigation("User");
                 });
@@ -736,6 +914,10 @@ namespace StudyResource.Migrations
             modelBuilder.Entity("StudyResource.Models.GradeSubject", b =>
                 {
                     b.Navigation("Documents");
+
+                    b.Navigation("Images");
+
+                    b.Navigation("Videos");
                 });
 
             modelBuilder.Entity("StudyResource.Models.Keyword", b =>
@@ -761,7 +943,11 @@ namespace StudyResource.Migrations
 
                     b.Navigation("Favorites");
 
+                    b.Navigation("Images");
+
                     b.Navigation("UserComments");
+
+                    b.Navigation("Videos");
                 });
 #pragma warning restore 612, 618
         }

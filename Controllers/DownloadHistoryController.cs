@@ -55,6 +55,15 @@ namespace StudyResource.Controllers
                 userId = user.Id;
             }
 
+            var document = await _context.Documents.SingleOrDefaultAsync(d => d.Id == documentId);
+            if (document == null)
+            {
+                return NotFound("Document not found.");
+            }
+
+            document.Downloads++;
+            _context.Documents.Update(document);
+
             var downloadHistory = new DownloadHistory
             {
                 UserId = userId,

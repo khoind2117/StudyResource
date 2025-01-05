@@ -149,17 +149,17 @@
                         type: 'Delete',
                         url: url,
                         success: function (response) {
-                            Swal.fire({
+                                Swal.fire({
                                 title: 'Đã xóa!',
                                 text: 'Tài liệu đã được xóa.',
-                                icon: 'success',
-                                toast: true,
-                                position: 'bottom-end',
-                                showConfirmButton: false,
-                                timer: 3000
-                            }).then(() => {
-                                location.reload();
-                            });
+                                    icon: 'success',
+                                    toast: true,
+                                    position: 'bottom-end',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                }).then(() => {
+                                    location.reload();
+                                });
                         },
                         error: function (xhr, status, error) {
                             Swal.fire({

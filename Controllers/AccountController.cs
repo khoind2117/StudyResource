@@ -51,7 +51,7 @@ namespace StudyResource.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByEmailAsync(loginViewModel.Email);
+                var user = await _userManager.FindByNameAsync(loginViewModel.UserName);
                 if (user != null)
                 {
                     var result = await _signInManager.CheckPasswordSignInAsync(user, loginViewModel.Password, lockoutOnFailure: false);
@@ -96,16 +96,16 @@ namespace StudyResource.Controllers
 
             if (ModelState.IsValid)
             {
-                var userByUsername = await _userManager.FindByNameAsync(registerViewModel.Email);
+                var userByUsername = await _userManager.FindByNameAsync(registerViewModel.Username);
                 if (userByUsername != null)
                 {
-                    ModelState.AddModelError("UserName", "Tài khoản Email đã được sử dụng, vui lòng chọn tài khoản Email khác!");
+                    ModelState.AddModelError("UserName", "Tên đăng nhập đã được sử dụng, vui lòng chọn tên đăng nhập khác!");
                     return View(registerViewModel);
                 }
 
                 var user = new User
                 {
-                    UserName = registerViewModel.Email,
+                    UserName = registerViewModel.Username,
                     FirstName = registerViewModel.FirstName,
                     LastName = registerViewModel.LastName,
                     CreatedAt = DateTime.Now,
