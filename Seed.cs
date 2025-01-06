@@ -252,119 +252,120 @@ namespace StudyResource
             }
             #endregion
 
-        //    #region DownloadHistory 2nd
-        //    if (!_context.DownloadHistories.Any())
-        //    {
-        //        var random = new Random();
-        //        var downloadHistory = new List<DownloadHistory>();
-        //        var startDate = new DateTime(2025, 1, 1);
-        //        var endDate = new DateTime(2025, 1, 5);
-        //        var totalMinutes = (int)(endDate - startDate).TotalMinutes;
+            //    #region DownloadHistory 2nd
+            //    if (!_context.DownloadHistories.Any())
+            //    {
+            //        var random = new Random();
+            //        var downloadHistory = new List<DownloadHistory>();
+            //        var startDate = new DateTime(2025, 1, 1);
+            //        var endDate = new DateTime(2025, 1, 5);
+            //        var totalMinutes = (int)(endDate - startDate).TotalMinutes;
 
-        //        var userRole = await _context.Roles
-        //            .FirstOrDefaultAsync(r => r.Name == "User");
+            //        var userRole = await _context.Roles
+            //            .FirstOrDefaultAsync(r => r.Name == "User");
 
-        //        if (userRole != null)
-        //        {
-        //            var userIds = await _context.UserRoles
-        //                .Where(ur => ur.RoleId == userRole.Id)
-        //                .Select(ur => ur.UserId)
-        //                .ToListAsync();
+            //        if (userRole != null)
+            //        {
+            //            var userIds = await _context.UserRoles
+            //                .Where(ur => ur.RoleId == userRole.Id)
+            //                .Select(ur => ur.UserId)
+            //                .ToListAsync();
 
-        //            for (int i = 0; i < 1000; i++)
-        //            {
-        //                var randomMinutes = random.Next(0, totalMinutes);
-        //                var randomDate = startDate.AddMinutes(randomMinutes);
+            //            for (int i = 0; i < 1000; i++)
+            //            {
+            //                var randomMinutes = random.Next(0, totalMinutes);
+            //                var randomDate = startDate.AddMinutes(randomMinutes);
 
-        //                var randomUserId = userIds[random.Next(userIds.Count)];
+            //                var randomUserId = userIds[random.Next(userIds.Count)];
 
-        //                var documentId = random.Next(1, 445);
+            //                var documentId = random.Next(1, 445);
 
-        //                var document = await _context.Documents
-        //                    .FirstOrDefaultAsync(d => d.Id == documentId);
+            //                var document = await _context.Documents
+            //                    .FirstOrDefaultAsync(d => d.Id == documentId);
 
-        //                if (document != null)
-        //                {
-        //                    document.Views += 3;
-        //                    document.Downloads += 1;
-        //                    _context.Documents.Update(document);
-        //                }
+            //                if (document != null)
+            //                {
+            //                    document.Views += 3;
+            //                    document.Downloads += 1;
+            //                    _context.Documents.Update(document);
+            //                }
 
-        //                downloadHistory.Add(new DownloadHistory
-        //                {
-        //                    DownloadDate = randomDate,
-        //                    UserId = randomUserId,
-        //                    DocumentId = documentId
-        //                });
-        //            }
+            //                downloadHistory.Add(new DownloadHistory
+            //                {
+            //                    DownloadDate = randomDate,
+            //                    UserId = randomUserId,
+            //                    DocumentId = documentId
+            //                });
+            //            }
 
-        //            _context.DownloadHistories.AddRange(downloadHistory);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //    }
-        //    #endregion
+            //            _context.DownloadHistories.AddRange(downloadHistory);
+            //            await _context.SaveChangesAsync();
+            //        }
+            //    }
+            //    #endregion
 
-        //    #region UserComments 2nd
-        //    if (!_context.UserComments.Any())
-        //    {
-        //        var random = new Random();
-        //        var comments = new List<UserComment>();
-        //        var startDate = new DateTime(2025, 1, 1);
-        //        var endDate = new DateTime(2025, 1, 5);
-        //        var totalMinutes = (int)(endDate - startDate).TotalMinutes;
+            //    #region UserComments 2nd
+            //    if (!_context.UserComments.Any())
+            //    {
+            //        var random = new Random();
+            //        var comments = new List<UserComment>();
+            //        var startDate = new DateTime(2025, 1, 1);
+            //        var endDate = new DateTime(2025, 1, 5);
+            //        var totalMinutes = (int)(endDate - startDate).TotalMinutes;
 
-        //        var userRole = await _context.Roles
-        //            .FirstOrDefaultAsync(r => r.Name == "User");
+            //        var userRole = await _context.Roles
+            //            .FirstOrDefaultAsync(r => r.Name == "User");
 
-        //        if (userRole != null)
-        //        {
-        //            var userIds = await _context.UserRoles
-        //                .Where(ur => ur.RoleId == userRole.Id)
-        //                .Select(ur => ur.UserId)
-        //                .ToListAsync();
+            //        if (userRole != null)
+            //        {
+            //            var userIds = await _context.UserRoles
+            //                .Where(ur => ur.RoleId == userRole.Id)
+            //                .Select(ur => ur.UserId)
+            //                .ToListAsync();
 
-        //            var documentIds = await _context.Documents.Select(d => d.Id).ToListAsync();
+            //            var documentIds = await _context.Documents.Select(d => d.Id).ToListAsync();
 
-        //            var commentTemplates = new List<string>
-        //            {
-        //                "Tài liệu này rất hữu ích, tôi đã học được nhiều điều mới.",
-        //                "Không thích tài liệu này, mong muốn có nhiều thông tin hơn.",
-        //                "Tài liệu này cung cấp thông tin rất đầy đủ.",
-        //                "Mong rằng có thêm các tài liệu tương tự.",
-        //                "Rất tuyệt vời! Tài liệu này đã giúp tôi hoàn thành công việc.",
-        //                "Chất lượng tài liệu khá tốt, nhưng có thể cải thiện thêm.",
-        //                "Rất hay! Cảm ơn vì đã chia sẻ tài liệu này.",
-        //                "Tài liệu này khá dễ hiểu và dễ áp dụng.",
-        //                "Một tài liệu tuyệt vời, tôi sẽ giới thiệu cho bạn bè.",
-        //                "Tài liệu này hơi dài nhưng rất hữu ích."
-        //            };
+            //            var commentTemplates = new List<string>
+            //            {
+            //                "Tài liệu này rất hữu ích, tôi đã học được nhiều điều mới.",
+            //                "Không thích tài liệu này, mong muốn có nhiều thông tin hơn.",
+            //                "Tài liệu này cung cấp thông tin rất đầy đủ.",
+            //                "Mong rằng có thêm các tài liệu tương tự.",
+            //                "Rất tuyệt vời! Tài liệu này đã giúp tôi hoàn thành công việc.",
+            //                "Chất lượng tài liệu khá tốt, nhưng có thể cải thiện thêm.",
+            //                "Rất hay! Cảm ơn vì đã chia sẻ tài liệu này.",
+            //                "Tài liệu này khá dễ hiểu và dễ áp dụng.",
+            //                "Một tài liệu tuyệt vời, tôi sẽ giới thiệu cho bạn bè.",
+            //                "Tài liệu này hơi dài nhưng rất hữu ích."
+            //            };
 
-        //            for (int i = 0; i < 1000; i++) 
-        //            {
-        //                var randomMinutes = random.Next(0, totalMinutes);
-        //                var randomDate = startDate.AddMinutes(randomMinutes);
+            //            for (int i = 0; i < 1000; i++) 
+            //            {
+            //                var randomMinutes = random.Next(0, totalMinutes);
+            //                var randomDate = startDate.AddMinutes(randomMinutes);
 
-        //                var randomUserId = userIds[random.Next(userIds.Count)];
-        //                var randomDocumentId = documentIds[random.Next(documentIds.Count)];
+            //                var randomUserId = userIds[random.Next(userIds.Count)];
+            //                var randomDocumentId = documentIds[random.Next(documentIds.Count)];
 
-        //                var randomRating = random.Next(1, 6);
-        //                var randomComment = commentTemplates[random.Next(commentTemplates.Count)];
+            //                var randomRating = random.Next(1, 6);
+            //                var randomComment = commentTemplates[random.Next(commentTemplates.Count)];
 
-        //                comments.Add(new UserComment
-        //                {
-        //                    UserId = randomUserId,
-        //                    Comment = randomComment,
-        //                    Rating = randomRating,
-        //                    CommentDate = randomDate,
-        //                    DocumentId = randomDocumentId
-        //                });
-        //            }
+            //                comments.Add(new UserComment
+            //                {
+            //                    UserId = randomUserId,
+            //                    Comment = randomComment,
+            //                    Rating = randomRating,
+            //                    CommentDate = randomDate,
+            //                    DocumentId = randomDocumentId
+            //                });
+            //            }
 
-        //            _context.UserComments.AddRange(comments);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //    }
-        //    #endregion
-        //}
+            //            _context.UserComments.AddRange(comments);
+            //            await _context.SaveChangesAsync();
+            //        }
+            //    }
+            //    #endregion
+            //}
+        }
     }
 }
